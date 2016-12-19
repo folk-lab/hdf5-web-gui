@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="robots" content="noindex, nofollow">
+        <meta name="googlebot" content="noindex, nofollow">
+
+        <script type="text/javascript"
+            src="//code.jquery.com/jquery-1.9.1.js"></script>
+
+        <style type="text/css">
+            #container { margin: 0 auto; }
+        </style>
+
+        <title>Highcharts Demo</title>
+
+        <script type='text/javascript'>//<![CDATA[
+
+            $(function () {
+            var data = [];
+            for (var x = -10; x <= 10; x += 2) {
+            for (var y = -10; y <= 10; y += 2) {
+            var value = -2.5 * x + 0.5 * x * x - y * y;
+            data.push({
+            x: x,
+            z: y,
+            y: value,
+            value: value
+            });
+            }
+            }
+
+            var stops = [];
+            var num_tones = 16;
+            for (var i = 0; i < num_tones; i++) {
+            var tone = Math.round(255 - 255 * i / (num_tones - 1));
+            tone = 'rgb(' + tone + ',' + tone + ',' + tone + ')';
+            stops.push([(i + 0) / (num_tones), tone]);
+            stops.push([(i + 1) / (num_tones), tone]);
+            }
+
+            // Set up the chart
+            var chart = new Highcharts.Chart({
+            chart: {
+            //inverted: true,
+            renderTo: 'container',
+            margin: 100,
+            type: 'contour',
+            options3d: {
+            enabled: true,
+            alpha: 30,
+            beta: 45,
+            depth: 300,
+            viewDistance: 0,
+
+            frame: {
+            bottom: {
+            size: 10,
+            color: '#eecccc'
+            },
+            back: {
+            size: 10,
+            color: '#cceecc'
+            },
+            side: {
+            size: 10,
+            color: '#ccccee'
+            }
+            }
+            }
+            },
+            title: {
+            text: ''
+            },
+            subtitle: {
+            text: ''
+            },
+            plotOptions: {
+            scatter: {
+            width: 10,
+            height: 10,
+            depth: 10
+            }
+            },
+            yAxis: {
+            title: {
+            text: 'Axis-Y'
+            },
+            },
+            xAxis: {
+            title: {
+            text: 'Axis-X'
+            },
+            min: -10,
+            max: 10
+            },
+            zAxis: {
+            min: -10,
+            max: 10
+            },
+            colorAxis: {
+            stops: stops,
+            },
+            legend: {
+            enabled: false
+            },
+            tooltip: {
+            nearest: true,
+            },
+            series: [{
+            name: 'Reading',
+            colorByPoint: true,
+            data: data,
+            }]
+            });
+
+
+            // Add mouse events for rotation
+            $(chart.container).bind('mousedown.hc touchstart.hc', function (e) {
+            e = chart.pointer.normalize(e);
+
+            var posX = e.pageX,
+            posY = e.pageY,
+            alpha = chart.options.chart.options3d.alpha,
+            beta = chart.options.chart.options3d.beta,
+            newAlpha,
+            newBeta,
+            sensitivity = 5; // lower is more sensitive
+
+            $(document).bind({
+            'mousemove.hc touchdrag.hc': function (e) {
+
+            var xAxis = chart.xAxis[0];
+            var yAxis = chart.yAxis[0];
+            var zAxis = chart.zAxis[0];
+
+            // Run beta
+            newBeta = beta + (posX - e.pageX) / sensitivity;
+            newBeta = Math.min(90, Math.max(-90, newBeta));
+            chart.options.chart.options3d.beta = newBeta;
+            yAxis.update({
+            opposite: Math.sin(newBeta * Math.PI / 180) < 0
+            }, false);
+
+            // Run alpha
+            newAlpha = alpha + (e.pageY - posY) / sensitivity;
+            newAlpha = Math.min(90, Math.max(-90, newAlpha));
+            chart.options.chart.options3d.alpha = newAlpha;
+            xAxis.update({
+            opposite: Math.sin(newAlpha * Math.PI / 180) < 0
+            }, false);
+            zAxis.update({
+            opposite: Math.sin(newAlpha * Math.PI / 180) < 0
+            }, false);
+
+            chart.redraw(false);
+            },
+            'mouseup touchend': function () {
+            $(document).unbind('.hc');
+            }
+            });
+            });
+
+            });
+            //]]>
+
+        </script>
+
+        <!--
+        3-D contours don't work with the master branch of Highcharts yet :(
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/highcharts-3d.js"></script>
+        <script src="http://code.highcharts.com/modules/heatmap.js"></script>
+        -->
+        <script
+            src="https://rawgithub.com/paulo-raca/highcharts.com/axis-fixes/js/highcharts.src.js"></script>
+        <script
+            src="https://rawgithub.com/paulo-raca/highcharts.com/axis-fixes/js/highcharts-3d.src.js"></script>
+        <script
+            src="https://rawgithub.com/paulo-raca/highcharts.com/axis-fixes/js/modules/heatmap.src.js"></script>
+
+        <script
+            src="https://rawgithub.com/paulo-raca/highcharts-contour/master/highcharts-contour.js"></script>
+        <script
+            src="https://rawgithub.com/ironwallaby/delaunay/master/delaunay.js"></script>
+    </head>
+
+    <body>
+
+        <div id="container" style="height: 500px; width:500px"></div>
+
+    </body>
+
+</html>
