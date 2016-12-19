@@ -5,7 +5,9 @@
 // The gloabl variables for this applicaiton
 var DATA_RET =
     {
-        hdf5DataServer : 'http://localhost:5000/datasets/',
+        hdf5DataServer: window.location.protocol + '//' +
+                        window.location.hostname +
+                        ':5000/datasets/',
     };
 
 
