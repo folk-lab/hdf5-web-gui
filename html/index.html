@@ -5,9 +5,11 @@
 
         <title>MAX IV HDF5 Viewer</title>
 
-        <!-- Load Bootstrap css -->
+        <!-- Load external css -->
         <link rel="stylesheet"
-            href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+            href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 
         <!-- Load external javascript -->
         <script type="text/javascript" defer
@@ -17,24 +19,74 @@
         <script type="text/javascript" defer
             src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
         </script>
+        <script type="text/javascript" defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js">
+        </script>
 
-        <!-- Load javascript specific to this page -->
+        <!-- Load cssfor this page -->
+        <link rel="stylesheet" href="../css/data-plot-controls.css" />
+
+
+        <!-- Load javascript for this page -->
         <script type="text/javascript" defer
             src="../js/data-plot.js?v=201612161134"></script>
         <script type="text/javascript" defer
             src="../js/data-retrieval.js?v=201612161134"></script>
+        <script type="text/javascript" defer
+            src="../js/file-navigation.js?v=201612161134"></script>
     </head>
 
 
-    <body style="background-color:#2a2a2b">
+    <body>
 
         <!-- Use the Bootstrap layout library to set up the html -->
         <div class="container-fluid fill-height fill-width"
             id="applicationContainer">
 
-            <div class="row fill-width">
-                <div class="col-xs-12 col-lg-6" id="myDiv1" ></div>
-                <div class="col-xs-12 col-lg-6" id="myDiv2" ></div>
+            <div class="col-xs-12 col-lg-4">
+                <div class="col-xs-12 " id="jstree_div"></div>
+            </div>
+
+            <div class="col-xs-12 col-lg-8">
+
+                <div class="col-xs-4 " id="buttonDiv">
+                    <select class="form-control" id="selectType"
+                        onchange="changeType(value);">
+                        <option value="">Plot Type:</option>
+                        <!-- <option value="contour">2D Contour</option> -->
+                        <option value="heatmap">2D Heatmap</option>
+                        <option value="surface">3D Surface</option>
+                    </select>
+                </div>
+
+                <div class="col-xs-5 " id="buttonDiv">
+                    <select class="form-control" id="selectType"
+                        onchange="changeColor(value);">
+                        <option value="">Color Scheme:</option>
+                        <!-- <option value="pairs"     >Pairs   </option> -->
+                        <option value="Greys"     >Greys   </option>
+                        <option value="Greens"    >Greens  </option>
+                        <option value="Bluered"   >Bluered </option>
+                        <option value="Hot"       >Hot     </option>
+                        <option value="Picnic"    >Picnic  </option>
+                        <option value="Portland"  >Portland</option>
+                        <option value="Jet"       >Jet     </option>
+                        <option value="RdBu"      >RdBu    </option>
+                        <option value="Blackbody" >Blackbod</option>
+                        <option value="Earth"     >Earth   </option>
+                        <option value="Electric"  >Electric</option>
+                        <!-- <option value="YIOrRd"    >YIOrRd  </option> -->
+                        <!-- <option value="YIGnBu"    >YIGnBu  </option> -->
+                    </select>
+                </div>
+
+                <div class="col-xs-3 " id="buttonDiv">
+                    <button type="button" class="btn" id="logPlotButton"
+                        onclick="toggleLogPlot()"> Log Plot?
+                    </button>
+                </div>
+
+                <div class="col-xs-12 " id="plotCanvasDiv" ></div>
             </div>
 
         </div>
