@@ -5,7 +5,7 @@
 var DATA_PLOT = {
 
     plotCanvasDiv : document.getElementById('plotCanvasDiv'),
-    colorScale : 'Portland',
+    colorScale : 'RdBu',
     plotLogValues : false,
     plotType : 'heatmap',
     initialDataValues : [],
@@ -355,7 +355,7 @@ function toggleLogPlot() {
 }
 
 
-function initializeData(value) {
+function initializePlotData(value) {
     // Example for switching between different plotting types:
     //  https://plot.ly/python/custom-buttons/
 
@@ -397,4 +397,12 @@ function initializeData(value) {
     } else {
         DATA_PLOT.dataValues = DATA_PLOT.initialDataValues;
     }
+
+}
+
+
+function enablePlotControls() {
+    $('#logPlotButton').prop('disabled', false);
+    $('#selectPlotType').prop('disabled', false);
+    $('#selectColorScheme').prop('disabled', false);
 }

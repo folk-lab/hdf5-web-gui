@@ -1,4 +1,4 @@
-/*global $, displayData*/
+/*global $, getData, changeType, initializePlotData, plotData, toggleLogPlot*/
 'use strict';
 
 
@@ -6,10 +6,11 @@
 var FILE_NAV =
     {
         // h5serv has an issue with full hostnames
-        hdf5DataServer: window.location.protocol + '//' +
-                        window.location.hostname.replace('.maxiv.lu.se', '') +
-                        ':5000',
-        jstreeDict: [],
+        hdf5DataServer : window.location.protocol + '//' +
+                         window.location.hostname.replace('.maxiv.lu.se', '') +
+                         ':5000',
+        jstreeDict : [],
+        processEvent : true,
     };
 
 
@@ -58,44 +59,9 @@ function communicateWithServer(url) {
 }
 
 
-function getLinkCount(topLevelUrl, firstLevelKey2) {
-
-    var debug = true, linksUrl;
-
-    return $.when(communicateWithServer(topLevelUrl)).then(
-        function (response) {
-
-            var key = '';
-
-            if (debug) {
-                console.log('response.length: ' + response.length);
-
-                for (key in response) {
-                    if (response.hasOwnProperty(key)) {
-                        console.log(key + " -> " + response[key]);
-                    }
-                }
-            }
-
-            if (response.hasOwnProperty(firstLevelKey2)) {
-                linksUrl = response[firstLevelKey2];
-            }
-
-            // console.log('linkCount: ' + linkCount);
-            linksUrl = FILE_NAV.hdf5DataServer + '/groups/' + linksUrl +
-                '/links';
-            // console.log('linksUrl:  ' + linksUrl);
-
-            return linksUrl;
-            // getLinkTitles(linksUrl, 'links', title);
-        }
-    );
-}
-
-
 function getTopLevelUrl(initialUrl, firstLevelKey, relValue) {
 
-    var debug = true, topLevelUrl = '';
+    var debug = false, topLevelUrl = '';
 
     return $.when(communicateWithServer(initialUrl)).then(
         function (response) {
@@ -159,6 +125,7 @@ function getListOfItems(initialUrl, firstLevelKey, relValue) {
 
                             titleList[linkItem[relValue]] =
                                 {
+                                    title: linkItem.title,
                                     target: linkItem.target,
                                     class: linkItem.class,
                                     id: (
@@ -172,6 +139,10 @@ function getListOfItems(initialUrl, firstLevelKey, relValue) {
                                     h5domain: (
                                         linkItem.hasOwnProperty('h5domain')
                                         ? linkItem.h5domain : false
+                                    ),
+                                    collection: (
+                                        linkItem.hasOwnProperty('collection')
+                                        ? linkItem.collection : false
                                     ),
                                 };
                         }
@@ -189,77 +160,98 @@ function getListOfItems(initialUrl, firstLevelKey, relValue) {
 }
 
 
-$('#jstree_div').on("changed.jstree", function (eventInfo, data) {
+function addToTree(itemList, selectedId, createNewTree) {
 
-    var keyData, keyNode;
+    var i, keyTitle = '', type = '', icon = '', treeParent, treeId,
+        doesNodeExist = false, needToRefresh = false;
 
-    console.log(eventInfo);
-    console.log(data.selected);
-
-    for (keyData in data) {
-        if (data.hasOwnProperty(keyData)) {
-            console.log(keyData + ' -> ' + data[keyData]);
-        }
+    if (createNewTree) {
+        FILE_NAV.jstreeDict = [];
     }
-
-    for (keyNode in data.node) {
-        if (data.node.hasOwnProperty(keyNode)) {
-            console.log(keyNode + ' -> ' + data.node[keyNode]);
-        }
-    }
-
-    for (keyData in data.node.data) {
-        if (data.node.data.hasOwnProperty(keyData)) {
-            console.log(keyData + ' -> ' + data.node.data[keyData]);
-        }
-    }
-
-    getFolderContents(data.node.data.target);
-
-    // leaf = $('#jstree_div').jstree(true).get_node(),
-
-    // console.log('FILE_NAV.jstreeDict.length: ' + FILE_NAV.jstreeDict.length);
-
-    // for (i = 0; i < FILE_NAV.jstreeDict.length; i += 1) {
-    //     console.log('[' + i + '] text: ' + FILE_NAV.jstreeDict[i].text);
-
-    //     for (leaf in FILE_NAV.jstreeDict[i]) {
-    //         if (FILE_NAV.jstreeDict[i].hasOwnProperty(leaf)) {
-    //             console.log(leaf + ' -> ' + FILE_NAV.jstreeDict[i][leaf]);
-    //         }
-    //     }
-
-    // }
-});
-
-
-function fillTree(itemList) {
-
-    var keyTitle = '';
 
     for (keyTitle in itemList) {
         if (itemList.hasOwnProperty(keyTitle)) {
             console.log(keyTitle + " -> " + itemList[keyTitle].target);
 
-            FILE_NAV.jstreeDict.push({
-                // Teh key-value pairs needed by jstree
-                id : itemList[keyTitle].id,
-                parent : '#',
-                text : keyTitle,
-
-                // Save some additional information - is 'data' a good place to
-                // have it?
-                data : {
-                    type: 'folder',
-                    target: itemList[keyTitle].target
+            if (itemList[keyTitle].id) {
+                if (itemList[keyTitle].collection === 'groups') {
+                    treeId = itemList[keyTitle].id;
+                    type = 'folder';
+                    icon = 'glyphicon glyphicon-folder-close';
                 }
-            });
+                if (itemList[keyTitle].collection === 'datasets') {
+                    treeId = itemList[keyTitle].id;
+                    type = 'data';
+                    icon = 'glyphicon glyphicon-qrcode';
+                }
+            }
+
+            if (itemList[keyTitle].h5domain) {
+                treeId = itemList[keyTitle].h5domain;
+                type = 'file';
+                icon = 'glyphicon glyphicon-copy';
+            }
+
+            if (selectedId) {
+                treeParent = selectedId;
+            } else {
+                treeParent = '#';
+            }
+
+            // Check if this id exists already
+            if (!createNewTree) {
+                doesNodeExist = $('#jstree_div').jstree(true).get_node(treeId);
+            }
+
+            if (!doesNodeExist) {
+                FILE_NAV.jstreeDict.push({
+                    // The key-value pairs needed by jstree
+                    id : treeId,
+                    parent : treeParent,
+                    text : keyTitle,
+                    icon : icon,
+
+                    // Save some additional information - is this a good place
+                    // to put it?
+                    data : {
+                        type: type,
+                        target: itemList[keyTitle].target,
+                        h5path: itemList[keyTitle].h5path,
+                        h5domain: itemList[keyTitle].h5domain,
+                    }
+                });
+
+                needToRefresh = true;
+            }
         }
     }
 
-    $('#jstree_div').jstree({ 'core' : {
-        'data' : FILE_NAV.jstreeDict
-    } });
+    if (createNewTree) {
+        $('#jstree_div').jstree(
+            {
+                'core' : {
+                    'data' : FILE_NAV.jstreeDict
+                }
+            }
+        );
+    } else {
+        if (needToRefresh) {
+            FILE_NAV.processEvent = false;
+            $('#jstree_div').jstree(true).settings.core.data =
+                FILE_NAV.jstreeDict;
+            $('#jstree_div').jstree(true).refresh(selectedId);
+        }
+    }
+
+    for (i = 0; i < FILE_NAV.jstreeDict.length; i += 1) {
+        console.log(FILE_NAV.jstreeDict[i]);
+
+        // for (itemElement in treeItem) {
+        //     if (treeItem.hasOwnProperty(itemElement)) {
+        //         console.log(itemElement);
+        //     }
+        // }
+    }
 
     //$('#jstree_div').jstree({ 'core' : {
     //    'data' : [
@@ -273,23 +265,102 @@ function fillTree(itemList) {
 }
 
 
-function getFolderContents(topLevelUrl) {
-// Get a list of items in the root directory, then fill the jstree
+function displayData(inputUrl, selectedId) {
 
-    console.log('topLevelUrl: ' + topLevelUrl);
+    var debug = true, valueUrl;
+
+    if (debug) {
+        console.log('inputUrl: ' + inputUrl);
+    }
+
+    // The url that get the data from the server
+    valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+
+    if (debug) {
+        console.log('valueUrl: ' + valueUrl);
+    }
+
+
+    $.when(getData(valueUrl)).then(
+        function (response) {
+            initializePlotData(response.value);
+            toggleLogPlot();
+            enablePlotControls();
+        }
+    );
+}
+
+
+function getFileContents(inputUrl, selectedId) {
+// Get a list of items in a folder, then update the jstree object
+
+    var debug = true;
+
+    if (debug) {
+        console.log('inputUrl: ' + inputUrl);
+    }
 
     // Get the url to the links available
-    $.when(getLinkCount(topLevelUrl, 'id')).then(
+    $.when(getTopLevelUrl(inputUrl, 'hrefs', 'root')).then(
+        function (topLevelUrl) {
+
+            if (debug) {
+                console.log('topLevelUrl:  ' + topLevelUrl);
+            }
+
+            // Get the url to the links available
+            $.when(getTopLevelUrl(topLevelUrl, 'hrefs', 'links')).then(
+                function (linksUrl) {
+
+                    if (debug) {
+                        console.log('linksUrl:  ' + linksUrl);
+                    }
+
+                    // From each link, get its title and target url
+                    $.when(getListOfItems(linksUrl, 'links', 'title')).then(
+                        function (titleList) {
+                            if (debug) {
+                                console.log(titleList);
+                            }
+
+                            // Update the jstree object
+                            addToTree(titleList, selectedId, false);
+                        }
+                    );
+                }
+            );
+        }
+    );
+
+}
+
+
+function getFolderContents(topLevelUrl, selectedId) {
+// Get a list of items in a folder, then update the jstree object
+
+    var debug = false;
+
+    if (debug) {
+        console.log('topLevelUrl: ' + topLevelUrl);
+    }
+
+    // Get the url to the links available
+    $.when(getTopLevelUrl(topLevelUrl, 'hrefs', 'links')).then(
         function (linksUrl) {
 
-            console.log('linksUrl:  ' + linksUrl);
+            if (debug) {
+                console.log('linksUrl:  ' + linksUrl);
+            }
 
             // From each link, get its title and target url
             $.when(getListOfItems(linksUrl, 'links', 'title')).then(
                 function (titleList) {
-                    console.log(titleList);
-                    // Fill the jstree object
-                    // fillTree(titleList);
+                    if (debug) {
+                        console.log(titleList);
+                    }
+
+                    // Update the jstree object
+                    addToTree(titleList, selectedId, false);
                 }
             );
         }
@@ -299,7 +370,7 @@ function getFolderContents(topLevelUrl) {
 
 
 function getRootDirectoryContents() {
-// Get a list of items in the root directory, then fill the jstree
+// Get a list of items in the root directory, then create the jstree object
 
     var initialUrl = FILE_NAV.hdf5DataServer + '/groups';
 
@@ -310,7 +381,7 @@ function getRootDirectoryContents() {
             console.log('topLevelUrl: ' + topLevelUrl);
 
             // Get the url to the links available
-            $.when(getLinkCount(topLevelUrl, 'id')).then(
+            $.when(getTopLevelUrl(topLevelUrl, 'hrefs', 'links')).then(
                 function (linksUrl) {
 
                     console.log('linksUrl:  ' + linksUrl);
@@ -320,7 +391,7 @@ function getRootDirectoryContents() {
                         function (titleList) {
 
                             // Fill the jstree object
-                            fillTree(titleList);
+                            addToTree(titleList, false, true);
                         }
                     );
                 }
@@ -329,6 +400,92 @@ function getRootDirectoryContents() {
     );
 
 }
+
+
+$('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
+// When an item in the tree is clicked, do some stuff
+
+    var debug = true, keyData, keyNode;
+
+    $('#jstree_div').jstree(true).toggle_node(data.node.id);
+
+    if (data.node.data.type === 'folder') {
+
+        if (data.node.state.opened) {
+            $('#jstree_div').jstree(true).set_icon(data.node.id,
+                'glyphicon glyphicon-folder-open');
+        } else {
+            $('#jstree_div').jstree(true).set_icon(data.node.id,
+                'glyphicon glyphicon-folder-close');
+        }
+    }
+
+    if (data.node.data.type === 'file') {
+
+        if (data.node.state.opened) {
+            $('#jstree_div').jstree(true).set_icon(data.node.id,
+                'glyphicon glyphicon-paste');
+        } else {
+            $('#jstree_div').jstree(true).set_icon(data.node.id,
+                'glyphicon glyphicon-copy');
+        }
+    }
+
+    if (debug) {
+        console.log(eventInfo);
+        console.log(data.selected);
+
+        console.log('');
+        console.log('*** data ***');
+        for (keyData in data) {
+            if (data.hasOwnProperty(keyData)) {
+                console.log(keyData + ' -> ' + data[keyData]);
+            }
+        }
+
+        console.log('');
+        console.log('*** data.node ***');
+        for (keyNode in data.node) {
+            if (data.node.hasOwnProperty(keyNode)) {
+                console.log(keyNode + ' -> ' + data.node[keyNode]);
+            }
+        }
+
+        console.log('');
+        console.log('*** data.node.state ***');
+        for (keyData in data.node.state) {
+            if (data.node.state.hasOwnProperty(keyData)) {
+                console.log(keyData + ' -> ' + data.node.state[keyData]);
+            }
+        }
+
+        console.log('');
+        console.log('*** data.node.data ***');
+        for (keyData in data.node.data) {
+            if (data.node.data.hasOwnProperty(keyData)) {
+                console.log(keyData + ' -> ' + data.node.data[keyData]);
+            }
+        }
+    }
+
+    if (FILE_NAV.processEvent) {
+        if (data.node.data.type === 'folder') {
+            getFolderContents(data.node.data.target, data.selected);
+        }
+
+        if (data.node.data.type === 'file') {
+            getFileContents(data.node.data.target, data.selected);
+        }
+
+        if (data.node.data.type === 'data') {
+            displayData(data.node.data.target, data.selected);
+        }
+
+    } else {
+        FILE_NAV.processEvent = true;
+    }
+
+});
 
 
 // This function fires when the page is loaded

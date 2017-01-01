@@ -1,4 +1,4 @@
-/*global $, initializeData*/
+/*global $, initializePlotData*/
 'use strict';
 
 
@@ -25,7 +25,7 @@ $.ajaxSetup({
 function getData(dataValueUrl) {
 
     // Get the data
-    $.ajax({
+    return $.ajax({
         url: dataValueUrl,
 
         success: function (response) {
@@ -35,9 +35,9 @@ function getData(dataValueUrl) {
                 console.log("AJAX " + dataValueUrl + " request success");
             }
 
-            if (response.hasOwnProperty('value')) {
-                initializeData(response.value);
-            }
+            // if (response.hasOwnProperty('value')) {
+            //     initializePlotData(response.value);
+            // }
         },
 
         error: function (response) {
@@ -58,8 +58,8 @@ $(document).ready(function () {
         console.log('document is ready');
     }
 
-    getData(DATA_RET.hdf5DataServer + '/datasets/' +
-        "c64df0ee-c6a6-11e6-b2af-080027343bb1/" +
-        "value?host=AgBehenate_228.from-zdenek.maxiv.lu.se");
+    // getData(DATA_RET.hdf5DataServer + '/datasets/' +
+    //     "c64df0ee-c6a6-11e6-b2af-080027343bb1/" +
+    //     "value?host=AgBehenate_228.from-zdenek.maxiv.lu.se");
 
 });
