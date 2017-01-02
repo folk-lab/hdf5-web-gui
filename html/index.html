@@ -26,7 +26,6 @@
         <!-- Load cssfor this page -->
         <link rel="stylesheet" href="../css/data-plot-controls.css" />
 
-
         <!-- Load javascript for this page -->
         <script type="text/javascript" defer
             src="../js/data-plot.js?v=201612161134"></script>
@@ -43,49 +42,55 @@
         <div class="container-fluid fill-height fill-width"
             id="applicationContainer">
 
-            <div class="col-xs-12 col-lg-4">
+            <!-- The file browser-->
+            <div id="treeSectionDiv" class="col-xs-12 col-lg-4">
                 <div class="col-xs-12 " id="jstree_div"></div>
             </div>
 
-            <div class="col-xs-12 col-lg-8">
+            <!-- The plotting canvas and plotting controls -->
+            <div id="plotSectionDiv" class="col-xs-12 col-lg-8">
 
-                <div class="col-xs-4 " id="buttonDiv">
-                    <select class="form-control" id="selectPlotType"
-                        onchange="changeType(value);" disabled>
-                        <option value="">Plot Type:</option>
-                        <!-- <option value="contour">2D Contour</option> -->
-                        <option value="heatmap">2D Heatmap</option>
-                        <option value="surface">3D Surface</option>
-                    </select>
+                <div id="plotTypeButtonDiv" class="col-xs-4 form-group" >
+                    <label >Plot Type
+                        <select class="form-control" id="selectPlotType"
+                            onchange="changeType(value);" disabled>
+                            <!-- <option value="contour">2D Contour</option> -->
+                            <option value="heatmap">2D Heatmap</option>
+                            <option value="surface">3D Surface</option>
+                        </select>
+                    </label>
                 </div>
 
-                <div class="col-xs-3 " id="buttonDiv">
-                    <button type="button" class="btn" id="logPlotButton"
-                        onclick="toggleLogPlot()" disabled> Log Plot?
+                <div id="logButtonDiv" class="col-xs-3" >
+                    <button type="button" class="btn btn-success"
+                        id="logPlotButton" onclick="toggleLogPlot()" disabled>
+                        Log Plot!
                     </button>
                 </div>
 
-                <div class="col-xs-5 " id="buttonDiv">
-                    <select class="form-control" id="selectColorScheme"
-                        onchange="changeColor(value);" disabled>
-                        <option value="">Color Scheme:</option>
-                        <!-- <option value="pairs"     >Pairs   </option> -->
-                        <option value="Greys"     >Greys   </option>
-                        <option value="Greens"    >Greens  </option>
-                        <option value="Bluered"   >Bluered </option>
-                        <option value="Hot"       >Hot     </option>
-                        <option value="Picnic"    >Picnic  </option>
-                        <option value="Portland"  >Portland</option>
-                        <option value="Jet"       >Jet     </option>
-                        <option value="RdBu"      >RdBu    </option>
-                        <option value="Blackbody" >Blackbod</option>
-                        <option value="Earth"     >Earth   </option>
-                        <option value="Electric"  >Electric</option>
-                        <!-- <option value="YIOrRd"    >YIOrRd  </option> -->
-                        <!-- <option value="YIGnBu"    >YIGnBu  </option> -->
-                    </select>
+                <div id="colorButtonDiv" class="col-xs-4 form-group" >
+                    <label >Color Map
+                        <select id="selectColorScheme" class="form-control"
+                            onchange="changeColor(value);" disabled>
+                            <!-- <option value="pairs"     >Pairs   </option> -->
+                            <option value="RdBu"      >RdBu    </option>
+                            <option value="Greys"     >Greys   </option>
+                            <option value="Greens"    >Greens  </option>
+                            <option value="Bluered"   >Bluered </option>
+                            <option value="Hot"       >Hot     </option>
+                            <option value="Picnic"    >Picnic  </option>
+                            <option value="Portland"  >Portland</option>
+                            <option value="Jet"       >Jet     </option>
+                            <option value="Blackbody" >Blackbod</option>
+                            <option value="Earth"     >Earth   </option>
+                            <option value="Electric"  >Electric</option>
+                            <!-- <option value="YIOrRd"    >YIOrRd  </option> -->
+                            <!-- <option value="YIGnBu"    >YIGnBu  </option> -->
+                        </select>
+                    </label>
                 </div>
 
+                <!-- The plotting canvas will be placed here -->
                 <div class="col-xs-12 " id="plotCanvasDiv" ></div>
             </div>
 

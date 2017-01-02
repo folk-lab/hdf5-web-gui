@@ -1,2 +1,19 @@
-body{margin:50px;}
-.btn{outline:none !important;}
+body{
+    margin:10px;
+}
+
+.btn{
+    outline:none !important;
+}
+
+.form-group label {
+    float: left;
+    text-align: left;
+    font-weight: normal;
+}
+
+.form-group select {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+}

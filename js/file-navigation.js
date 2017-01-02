@@ -1,4 +1,4 @@
-/*global $, getData, changeType, initializePlotData, plotData, toggleLogPlot*/
+/*global $, getData, enablePlotControls, initializePlotData, plotData*/
 'use strict';
 
 
@@ -97,6 +97,8 @@ function getTopLevelUrl(initialUrl, firstLevelKey, relValue) {
         }
     );
 }
+
+
 function getListOfItems(initialUrl, firstLevelKey, relValue) {
 
     var debug = true;
@@ -161,6 +163,7 @@ function getListOfItems(initialUrl, firstLevelKey, relValue) {
 
 
 function addToTree(itemList, selectedId, createNewTree) {
+// Add new item to the file browser tree
 
     var i, keyTitle = '', type = '', icon = '', treeParent, treeId,
         doesNodeExist = false, needToRefresh = false;
@@ -181,7 +184,7 @@ function addToTree(itemList, selectedId, createNewTree) {
                 }
                 if (itemList[keyTitle].collection === 'datasets') {
                     treeId = itemList[keyTitle].id;
-                    type = 'data';
+                    type = 'datasets';
                     icon = 'glyphicon glyphicon-qrcode';
                 }
             }
@@ -266,6 +269,8 @@ function addToTree(itemList, selectedId, createNewTree) {
 
 
 function displayData(inputUrl, selectedId) {
+// When a dataset is selected, plot the data
+// → this needs to be improved so that it works for more than just images!
 
     var debug = true, valueUrl;
 
@@ -284,7 +289,7 @@ function displayData(inputUrl, selectedId) {
     $.when(getData(valueUrl)).then(
         function (response) {
             initializePlotData(response.value);
-            toggleLogPlot();
+            plotData();
             enablePlotControls();
         }
     );
@@ -477,7 +482,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             getFileContents(data.node.data.target, data.selected);
         }
 
-        if (data.node.data.type === 'data') {
+        if (data.node.data.type === 'datasets') {
             displayData(data.node.data.target, data.selected);
         }
 
@@ -488,10 +493,11 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 });
 
 
-// This function fires when the page is loaded
 $(document).ready(function () {
+// This function fires when the page is loaded
 
     console.log('document is ready');
 
+    // Fill the uppermost level of the file tree
     getRootDirectoryContents();
 });

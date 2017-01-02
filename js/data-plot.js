@@ -6,19 +6,65 @@ var DATA_PLOT = {
 
     plotCanvasDiv : document.getElementById('plotCanvasDiv'),
     colorScale : 'RdBu',
-    plotLogValues : false,
+    plotLogValues : true,
     plotType : 'heatmap',
     initialDataValues : [],
     logOfDataValues : [],
     dataValues : [],
-
+    resizeTimer : undefined,
+    plotWidth : 550,
+    plotHeight : 550,
 },
 
     // External libraries
     Plotly;
 
 
+function drawEmptyPlot() {
+// Draw an empty plot when there is no data yet selected
+
+    var data, layout, mainDataPlot;
+
+    mainDataPlot = {
+        z: [],
+        type: DATA_PLOT.plotType,
+        colorscale: DATA_PLOT.colorScale,
+    };
+
+    // All the data that is to be plotted
+    data = [mainDataPlot];
+
+    // The layout of the plotting canvas and axes.
+    layout = {
+        title: '',
+        showlegend: false,
+        autosize: false,
+        width: DATA_PLOT.plotWidth,
+        height: DATA_PLOT.plotHeight,
+        hovermode: 'closest',
+        bargap: 0,
+
+        xaxis: {
+            title: 'x',
+            showgrid: false,
+            zeroline: false
+        },
+
+        yaxis: {
+            title: 'y',
+            showgrid: false,
+            zeroline: false
+        },
+
+    };
+
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout);
+
+}
+
+
 function draw3DPlot() {
+// Draw a 3D surface plot of the data
 
     var data, layout;
 
@@ -55,8 +101,8 @@ function draw3DPlot() {
     layout = {
         title: 'AgBehenate_228',
         autosize: false,
-        width: 550,
-        height: 550,
+        width: DATA_PLOT.plotWidth,
+        height: DATA_PLOT.plotHeight,
         margin: {
             l: 65,
             r: 50,
@@ -83,6 +129,8 @@ function draw3DPlot() {
 
 function fillProfileHistograms(useFillLimitsX, xMin, xMax,
     useFillLimitsY, yMin, yMax) {
+// Fill x and y profile histograms, given the image and the dimensions of the
+// section of the image being viewed
 
     var debug = true, i, j, useFillLimits = false, histValuesX1 = [],
         histValuesY1 = [], histValuesX2 = [], histValuesY2 = [];
@@ -154,6 +202,8 @@ function fillProfileHistograms(useFillLimitsX, xMin, xMax,
 
 
 function draw2DPlot() {
+// Plot the image as a 2D heatmap along with x and y profile histograms that
+// update when zooming
 
     var profiles, xProfilePlot, yProfilePlot, data, layout, mainDataPlot;
 
@@ -207,8 +257,8 @@ function draw2DPlot() {
         title: 'AgBehenate_228',
         showlegend: false,
         autosize: false,
-        width: 550,
-        height: 550,
+        width: DATA_PLOT.plotWidth,
+        height: DATA_PLOT.plotHeight,
         hovermode: 'closest',
         bargap: 0,
 
@@ -241,35 +291,62 @@ function draw2DPlot() {
 
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout);
 
-
     // Refill the profile histograms when a zoom event occurs
     // Why isn't this done already in the plotly library?!
     DATA_PLOT.plotCanvasDiv.on('plotly_relayout', function (eventdata) {
 
-        var useFillLimitsX = false, xMin = 0, xMax = 0,
+        var debug = true, useFillLimitsX = false, xMin = 0, xMax = 0,
             useFillLimitsY = false, yMin = 0, yMax = 0;
 
-        console.log('plotly_relayout ' + DATA_PLOT.plotType);
+        if (debug) {
+            console.log('plotly_relayout ' + DATA_PLOT.plotType);
+            console.log(JSON.stringify(eventdata));
+        }
 
-        console.log(JSON.stringify(eventdata));
+        if (eventdata.hasOwnProperty('width') &&
+                eventdata.hasOwnProperty('height')) {
+
+            if (debug) {
+                console.log('Looks like a window resize event, not going to' +
+                    ' refill profile histograms');
+            }
+
+            return;
+        }
+
+
+        if ((eventdata.hasOwnProperty('xaxis.range[0]') &&
+                eventdata.hasOwnProperty('xaxis.range[1]')) ||
+                (eventdata.hasOwnProperty('yaxis.range[0]') &&
+                eventdata.hasOwnProperty('yaxis.range[1]'))) {
+
+            if (debug) {
+                console.log('Looks like a plot zoom event, carry on!');
+            }
+        }
+
 
         if (eventdata.hasOwnProperty('xaxis.range[0]') &&
                 eventdata.hasOwnProperty('xaxis.range[1]')) {
+
             xMin = Math.floor(eventdata['xaxis.range[0]']);
             xMax = Math.ceil(eventdata['xaxis.range[1]']);
             useFillLimitsX = true;
         }
         if (eventdata.hasOwnProperty('yaxis.range[0]') &&
                 eventdata.hasOwnProperty('yaxis.range[1]')) {
+
             yMin = Math.floor(eventdata['yaxis.range[0]']);
             yMax = Math.ceil(eventdata['yaxis.range[1]']);
             useFillLimitsY = true;
         }
 
-        console.log('x-axis start: ' + xMin);
-        console.log('x-axis end:   ' + xMax);
-        console.log('y-axis start: ' + yMin);
-        console.log('y-axis end:   ' + xMax);
+        if (debug) {
+            console.log('x-axis start: ' + xMin);
+            console.log('x-axis end:   ' + xMax);
+            console.log('y-axis start: ' + yMin);
+            console.log('y-axis end:   ' + xMax);
+        }
 
         profiles = fillProfileHistograms(useFillLimitsX, xMin, xMax,
             useFillLimitsY, yMin, yMax);
@@ -288,16 +365,19 @@ function draw2DPlot() {
 
 
 function plotData() {
+// Plot the data!
 
     if (DATA_PLOT.plotType === 'surface') {
-        draw3DPlot(DATA_PLOT.plotType);
+        draw3DPlot();
     } else {
-        draw2DPlot(DATA_PLOT.plotType);
+        draw2DPlot();
     }
 }
 
 
 function changeType(type) {
+// Change the plot type - not all work well for our large numbers of points,
+// I think that 'surface' and 'heatmap' seem to work best and are useful
 
     ///////////////////////////////////////////////////////////////////////////
     // Should use restyle instead of redrawing the entire plot:
@@ -318,6 +398,7 @@ function changeType(type) {
 
 
 function changeColor(colorscale) {
+// Change the color map
 
     if (colorscale !== '') {
         DATA_PLOT.colorScale = colorscale;
@@ -330,6 +411,7 @@ function changeColor(colorscale) {
 
 
 function toggleLogPlot() {
+// Switch between the use of log and non-log values
 
     DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
 
@@ -356,8 +438,7 @@ function toggleLogPlot() {
 
 
 function initializePlotData(value) {
-    // Example for switching between different plotting types:
-    //  https://plot.ly/python/custom-buttons/
+// Save the data and the log of the data to gloable variables
 
     var i, j, logOfValue = [];
 
@@ -402,7 +483,89 @@ function initializePlotData(value) {
 
 
 function enablePlotControls() {
+// The buttons are initially disabled when the page loads, enable them here
+
     $('#logPlotButton').prop('disabled', false);
     $('#selectPlotType').prop('disabled', false);
     $('#selectColorScheme').prop('disabled', false);
 }
+
+
+function calculatePlotSize() {
+// Calculate the plot size - needs to be improved for small screens
+
+    var debug = true,
+        windowWidth = $(window).width(),
+        windowHeight = $(window).height(),
+        appWidth = $('#applicationContainer').width(),
+        appHeight = $('#applicationContainer').height(),
+        divWidth = $('#plotCanvasDiv').width(),
+        divHeight = $('#plotCanvasDiv').height();
+
+    if (debug) {
+        console.log('appWidth:     ' + appWidth);
+        console.log('appHeight:    ' + appHeight);
+        console.log('windowWidth:  ' + windowWidth);
+        console.log('windowHeight: ' + windowHeight);
+        console.log('divWidth:     ' + divWidth);
+        console.log('divHeight:    ' + divHeight);
+    }
+
+    return {
+        width : divWidth,
+        height : windowHeight - 85,
+    };
+}
+
+
+$(window).resize(function () {
+// This function fires when the browser window is resized
+
+    var debug = true, dimensions;
+
+    if (debug) {
+        console.log('wait for it...');
+    }
+
+    // During a window resize event, the resize function will be called several
+    // times per second, on the order of 15! Best to wait a bit try to just
+    // resize once, as it's a bit costly for plotly to execute relyout
+    clearTimeout(DATA_PLOT.resizeTimer);
+
+    DATA_PLOT.resizeTimer = setTimeout(function () {
+
+        if (debug) {
+            console.log('about to run Plotly.relayout');
+        }
+
+        // Calculate the plot dimensions and save them
+        dimensions = calculatePlotSize();
+        DATA_PLOT.plotWidth = dimensions.width;
+        DATA_PLOT.plotHeight = dimensions.height;
+
+        // Reset the plot canvas dimensions
+        Plotly.relayout(DATA_PLOT.plotCanvasDiv, {
+            width: dimensions.width,
+            height: dimensions.height,
+        });
+    }, 200);
+});
+
+
+$(document).ready(function () {
+// This function fires when the page is loaded
+
+    var debug = false, dimensions;
+
+    if (debug) {
+        console.log('document is ready');
+    }
+
+    // Calculate the plot dimensions and save them
+    dimensions = calculatePlotSize();
+    DATA_PLOT.plotWidth = dimensions.width;
+    DATA_PLOT.plotHeight = dimensions.height;
+
+    // Draw an empty plot
+    drawEmptyPlot();
+});

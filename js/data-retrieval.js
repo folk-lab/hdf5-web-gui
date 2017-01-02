@@ -33,11 +33,9 @@ function getData(dataValueUrl) {
 
             if (debug) {
                 console.log("AJAX " + dataValueUrl + " request success");
+                console.log(response);
             }
 
-            // if (response.hasOwnProperty('value')) {
-            //     initializePlotData(response.value);
-            // }
         },
 
         error: function (response) {
