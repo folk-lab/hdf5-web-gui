@@ -60,11 +60,11 @@ function communicateWithServer(url) {
 }
 
 
-function changeDatasetIcon(nodeId, targetUrl) {
+function getDatasetIcon(title, nodeId, targetUrl, responses) {
 
-    var debug = false;
+    var debug = false, dataType = 'blah';
 
-    $.when(communicateWithServer(targetUrl)).then(
+    return $.when(communicateWithServer(targetUrl)).then(
         function (response) {
 
             var key = '';
@@ -84,14 +84,16 @@ function changeDatasetIcon(nodeId, targetUrl) {
                 console.log(response.shape.dims);
 
                 if (response.shape.dims.length > 1) {
-                    FILE_NAV.data.instance.set_icon(nodeId,
-                        'glyphicon glyphicon-picture');
-                    // $('#jstree_div').jstree(true).set_icon(nodeId,
-                    //    'glyphicon glyphicon-picture');
-                    FILE_NAV.processEvent = false;
-                    $('#jstree_div').jstree(true).refresh();
+                    dataType = 'image';
+                } else {
+                    dataType = 'text';
                 }
             }
+
+            responses.push({
+                title: title,
+                dataType: dataType
+            });
         }
     );
 
@@ -142,74 +144,6 @@ function getTopLevelUrl(initialUrl, firstLevelKey, relValue) {
 }
 
 
-function getListOfLinks(linksUrl) {
-// Given a 'links' url, make a list of all the links (files, folders, datasets)
-// saving some information about each one.
-
-    var debug = false;
-
-    return $.when(communicateWithServer(linksUrl)).then(
-        function (response) {
-
-            var key = '', titleList = {}, linkItem;
-
-            if (debug) {
-                console.log('response.length: ' + response.length);
-
-                for (key in response) {
-                    if (response.hasOwnProperty(key)) {
-                        console.log(key + " -> " + response[key]);
-                    }
-                }
-            }
-
-            // Look for the 'links' section
-            if (response.hasOwnProperty('links')) {
-
-                // Loop over each 'link' === folder, file, or dataset
-                for (key in response.links) {
-                    if (response.links.hasOwnProperty(key)) {
-
-                        linkItem = response.links[key];
-
-                        if (debug) {
-                            console.log(key + " -> " + linkItem.title);
-                        }
-
-                        titleList[linkItem.title] =
-                            {
-                                title: linkItem.title,
-                                target: linkItem.target,
-                                class: linkItem.class,
-                                id: (
-                                    linkItem.hasOwnProperty('id')
-                                    ? linkItem.id : false
-                                ),
-                                h5path: (
-                                    linkItem.hasOwnProperty('h5path')
-                                    ? linkItem.h5path : false
-                                ),
-                                h5domain: (
-                                    linkItem.hasOwnProperty('h5domain')
-                                    ? linkItem.h5domain : false
-                                ),
-                                collection: (
-                                    linkItem.hasOwnProperty('collection')
-                                    ? linkItem.collection : false
-                                ),
-                                dataType: false,
-                            };
-
-                    }
-                }
-            }
-
-            return titleList;
-        }
-    );
-}
-
-
 function addToTree(itemList, selectedId, createNewTree) {
 // Add new item to the file browser tree
 
@@ -224,6 +158,7 @@ function addToTree(itemList, selectedId, createNewTree) {
         if (itemList.hasOwnProperty(keyTitle)) {
             if (debug) {
                 console.log(keyTitle + " -> " + itemList[keyTitle].target);
+                console.log(keyTitle + " -> " + itemList[keyTitle].dataType);
             }
 
             if (itemList[keyTitle].id) {
@@ -235,7 +170,16 @@ function addToTree(itemList, selectedId, createNewTree) {
                 if (itemList[keyTitle].collection === 'datasets') {
                     treeId = itemList[keyTitle].id;
                     type = 'datasets';
-                    icon = 'glyphicon glyphicon-qrcode';
+
+                    if (itemList[keyTitle].dataType) {
+                        if (itemList[keyTitle].dataType === 'image') {
+                            icon = 'glyphicon glyphicon-picture';
+                        } else {
+                            icon = 'glyphicon glyphicon-th-list';
+                        }
+                    } else {
+                        icon = 'glyphicon glyphicon-qrcode';
+                    }
                 }
             }
 
@@ -292,7 +236,7 @@ function addToTree(itemList, selectedId, createNewTree) {
         );
     } else {
         if (needToRefresh) {
-            // FILE_NAV.processEvent = false;
+            FILE_NAV.processEvent = false;
             $('#jstree_div').jstree(true).settings.core.data =
                 FILE_NAV.jstreeDict;
             $('#jstree_div').jstree(true).refresh(selectedId);
@@ -305,23 +249,98 @@ function addToTree(itemList, selectedId, createNewTree) {
         }
     }
 
-    // After filling the tree, go back and check if the nodes added were of the
-    // dataset type, and if so, set a different icon depending on some more
-    // information
+}
 
-    // for (keyTitle in itemList) {
-    //     if (itemList.hasOwnProperty(keyTitle)) {
-    //         if (itemList[keyTitle].id) {
-    //             if (itemList[keyTitle].collection === 'datasets') {
-    //                 console.log('found a dataset');
 
-    //                 changeDatasetIcon(itemList[keyTitle].id,
-    //                     itemList[keyTitle].target);
-    //             }
-    //         }
-    //     }
-    // }
+function getListOfLinks(linksUrl, selectedId, createNewTree) {
+// Given a 'links' url, make a list of all the links (files, folders, datasets)
+// saving some information about each one.
 
+    var debug = false;
+
+    return $.when(communicateWithServer(linksUrl)).then(
+        function (response) {
+
+            var i, key = '', titleList = {}, linkItem, promises = [],
+                responses = [];
+
+            if (debug) {
+                console.log('response.length: ' + response.length);
+
+                for (key in response) {
+                    if (response.hasOwnProperty(key)) {
+                        console.log(key + " -> " + response[key]);
+                    }
+                }
+            }
+
+            // Look for the 'links' section
+            if (response.hasOwnProperty('links')) {
+
+                // Loop over each 'link' === folder, file, or dataset
+                for (key in response.links) {
+                    if (response.links.hasOwnProperty(key)) {
+
+                        linkItem = response.links[key];
+
+                        if (debug) {
+                            console.log(key + " -> " + linkItem.title);
+                        }
+
+                        titleList[linkItem.title] =
+                            {
+                                title: linkItem.title,
+                                target: linkItem.target,
+                                class: linkItem.class,
+                                id: (
+                                    linkItem.hasOwnProperty('id')
+                                    ? linkItem.id : false
+                                ),
+                                h5path: (
+                                    linkItem.hasOwnProperty('h5path')
+                                    ? linkItem.h5path : false
+                                ),
+                                h5domain: (
+                                    linkItem.hasOwnProperty('h5domain')
+                                    ? linkItem.h5domain : false
+                                ),
+                                collection: (
+                                    linkItem.hasOwnProperty('collection')
+                                    ? linkItem.collection : false
+                                ),
+                                dataType: false,
+                            };
+
+
+                        if (titleList[linkItem.title].collection ===
+                                'datasets') {
+                            console.log('datasets found!');
+                            promises.push(
+                                getDatasetIcon(linkItem.title,
+                                    titleList[linkItem.title].id,
+                                    linkItem.target, responses)
+                            );
+                        }
+                    }
+                }
+            }
+
+            $.when.apply(null, promises).done(function () {
+                console.log('All Done!');
+
+                for (i = 0; i < responses.length; i += 1) {
+                    console.log(responses[i]);
+                    titleList[responses[i].title].dataType =
+                        responses[i].dataType;
+                }
+
+                // Update the jstree object
+                addToTree(titleList, selectedId, createNewTree);
+            });
+
+            return titleList;
+        }
+    );
 }
 
 
@@ -379,14 +398,14 @@ function getFileContents(inputUrl, selectedId) {
                     }
 
                     // From each link, get its title and target url
-                    $.when(getListOfLinks(linksUrl)).then(
+                    $.when(getListOfLinks(linksUrl, selectedId, false)).then(
                         function (titleList) {
                             if (debug) {
                                 console.log(titleList);
                             }
 
                             // Update the jstree object
-                            addToTree(titleList, selectedId, false);
+                            // addToTree(titleList, selectedId, false);
                         }
                     );
                 }
@@ -415,14 +434,14 @@ function getFolderContents(topLevelUrl, selectedId) {
             }
 
             // From each link, get its title and target url
-            $.when(getListOfLinks(linksUrl)).then(
+            $.when(getListOfLinks(linksUrl, selectedId, false)).then(
                 function (titleList) {
                     if (debug) {
                         console.log(titleList);
                     }
 
                     // Update the jstree object
-                    addToTree(titleList, selectedId, false);
+                    // addToTree(titleList, selectedId, false);
                 }
             );
         }
@@ -453,11 +472,11 @@ function getRootDirectoryContents() {
                     }
 
                     // From each link, get its title and target url
-                    $.when(getListOfLinks(linksUrl)).then(
+                    $.when(getListOfLinks(linksUrl, false, true)).then(
                         function (titleList) {
 
                             // Fill the jstree object
-                            addToTree(titleList, false, true);
+                            // addToTree(titleList, false, true);
                         }
                     );
                 }
@@ -544,8 +563,8 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
         }
     }
 
+    console.log('FILE_NAV.processEvent: ' + FILE_NAV.processEvent);
     if (FILE_NAV.processEvent) {
-        FILE_NAV.processEvent = false;
 
         // Do different things depending on what type of item has been clicked
 
