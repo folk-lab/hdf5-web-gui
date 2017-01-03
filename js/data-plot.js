@@ -132,7 +132,7 @@ function fillProfileHistograms(useFillLimitsX, xMin, xMax,
 // Fill x and y profile histograms, given the image and the dimensions of the
 // section of the image being viewed
 
-    var debug = true, i, j, useFillLimits = false, histValuesX1 = [],
+    var debug = false, i, j, useFillLimits = false, histValuesX1 = [],
         histValuesY1 = [], histValuesX2 = [], histValuesY2 = [];
 
     if (debug) {
@@ -205,9 +205,13 @@ function draw2DPlot() {
 // Plot the image as a 2D heatmap along with x and y profile histograms that
 // update when zooming
 
-    var profiles, xProfilePlot, yProfilePlot, data, layout, mainDataPlot;
+    var debug = false, profiles, xProfilePlot, yProfilePlot, data, layout,
+        mainDataPlot;
 
-    console.log('DATA_PLOT.dataValues.length: ' + DATA_PLOT.dataValues.length);
+    if (debug) {
+        console.log('DATA_PLOT.dataValues.length: ' +
+            DATA_PLOT.dataValues.length);
+    }
 
     profiles = fillProfileHistograms(false, 0, 0, false, 0, 0);
 
@@ -295,7 +299,7 @@ function draw2DPlot() {
     // Why isn't this done already in the plotly library?!
     DATA_PLOT.plotCanvasDiv.on('plotly_relayout', function (eventdata) {
 
-        var debug = true, useFillLimitsX = false, xMin = 0, xMax = 0,
+        var useFillLimitsX = false, xMin = 0, xMax = 0,
             useFillLimitsY = false, yMin = 0, yMax = 0;
 
         if (debug) {
@@ -494,7 +498,7 @@ function enablePlotControls() {
 function calculatePlotSize() {
 // Calculate the plot size - needs to be improved for small screens
 
-    var debug = true,
+    var debug = false,
         windowWidth = $(window).width(),
         windowHeight = $(window).height(),
         appWidth = $('#applicationContainer').width(),
@@ -521,7 +525,7 @@ function calculatePlotSize() {
 $(window).resize(function () {
 // This function fires when the browser window is resized
 
-    var debug = true, dimensions;
+    var debug = false, dimensions;
 
     if (debug) {
         console.log('wait for it...');
