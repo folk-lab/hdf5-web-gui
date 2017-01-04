@@ -8,6 +8,7 @@ var DATA_PLOT = {
     colorScale : 'RdBu',
     plotLogValues : true,
     plotType : 'heatmap',
+    drawText : false,
     initialDataValues : [],
     logOfDataValues : [],
     dataValues : [],
@@ -23,11 +24,11 @@ var DATA_PLOT = {
 function drawEmptyPlot() {
 // Draw an empty plot when there is no data yet selected
 
-    var data, layout, mainDataPlot;
+    var data, layout, options, mainDataPlot;
 
     mainDataPlot = {
         z: [],
-        type: DATA_PLOT.plotType,
+        type: 'heatmap',
         colorscale: DATA_PLOT.colorScale,
     };
 
@@ -41,8 +42,6 @@ function drawEmptyPlot() {
         autosize: false,
         width: DATA_PLOT.plotWidth,
         height: DATA_PLOT.plotHeight,
-        hovermode: 'closest',
-        bargap: 0,
 
         xaxis: {
             title: 'x',
@@ -58,7 +57,131 @@ function drawEmptyPlot() {
 
     };
 
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout);
+    options = {
+        staticPlot: true,
+        showLink: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: [
+            'sendDataToCloud', 'hoverCompareCartesian',
+            'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+        displayModeBar: false,
+        showTips: false,
+        // scrollZoom: true,
+    };
+    // All options are here:
+    //  https://github.com/plotly/plotly.js/blob/master/src/plot_api/
+    //      plot_config.js
+    //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
+    //      buttons.js
+
+    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+
+}
+
+
+function drawText(itemTitle, itemValue) {
+// Draw an empty plot when there is no data yet selected
+
+    var debug = true, data, layout, options, mainDataPlot, string1, string2;
+
+    DATA_PLOT.drawText = true;
+
+    // Convert to strings, remove bad, bad things
+    string1 = String(itemTitle);
+    string2 = String(itemValue);
+    string1 = string1.replace(/\$/g, '');
+    string2 = string2.replace(/\$/g, '');
+
+    // Check for empty values
+    if (string2 === '') {
+        string2 = '<empty value>';
+    }
+
+    if (debug) {
+        console.log(itemTitle + ' --> ' + itemValue);
+        console.log(string1 + ' --> ' + string2);
+    }
+
+    mainDataPlot = {
+        z: [],
+        type: 'heatmap',
+        colorscale: DATA_PLOT.colorScale,
+    };
+
+    // All the data that is to be plotted
+    data = [mainDataPlot];
+
+    // The layout of the plotting canvas and axes.
+    layout = {
+        title: '',
+        showlegend: false,
+        autosize: false,
+        width: DATA_PLOT.plotWidth,
+        height: 300,
+
+        xaxis: {
+            title: '',
+            showgrid: false,
+            zeroline: false,
+            showticklabels : false,
+            ticks : '',
+        },
+
+        yaxis: {
+            title: '',
+            showgrid: false,
+            zeroline: false,
+            showticklabels : false,
+            ticks : '',
+        },
+
+        // More annotation examples here:
+        //  https://plot.ly/javascript/text-and-annotations/
+        annotations: [
+            {
+                x: 0,
+                y: 0,
+                xref: 'x',
+                yref: 'y',
+                text: '<b>' + string1 + '</b>' + '<br>' + string2,
+                showarrow: false,
+                font: {
+                    family: 'Courier New, monospace',
+                    size: 16,
+                    color: '#6d3636'
+                },
+                align: 'center',
+                bordercolor: '#ad3a3a',
+                borderwidth: 3,
+                borderpad: 4,
+                bgcolor: 'rgba(255, 255, 255, 0.9)',
+                opacity: 0.8
+            }
+        ],
+    };
+
+    options = {
+        staticPlot: true,
+        showLink: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: [
+            'sendDataToCloud', 'hoverCompareCartesian',
+            'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+        displayModeBar: false,
+        showTips: false,
+        // scrollZoom: true,
+    };
+    // All options are here:
+    //  https://github.com/plotly/plotly.js/blob/master/src/plot_api/
+    //      plot_config.js
+    //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
+    //      buttons.js
+
+    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
 }
 
@@ -66,7 +189,7 @@ function drawEmptyPlot() {
 function draw3DPlot() {
 // Draw a 3D surface plot of the data
 
-    var data, layout;
+    var data, layout, options;
 
     // data = [
     //     {
@@ -99,6 +222,7 @@ function draw3DPlot() {
 
     // And the layout
     layout = {
+        showlegend: false,
         title: 'AgBehenate_228',
         autosize: false,
         width: DATA_PLOT.plotWidth,
@@ -121,8 +245,22 @@ function draw3DPlot() {
         }
     };
 
+    options = {
+        staticPlot: false,
+        showLink: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: [
+            'sendDataToCloud', 'hoverCompareCartesian',
+            'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+        displayModeBar: true,
+        showTips: false,
+        // scrollZoom: true,
+    };
+
     // Present them
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout);
+    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
 }
 
@@ -206,7 +344,7 @@ function draw2DPlot() {
 // update when zooming
 
     var debug = false, profiles, xProfilePlot, yProfilePlot, data, layout,
-        mainDataPlot;
+        options, mainDataPlot;
 
     if (debug) {
         console.log('DATA_PLOT.dataValues.length: ' +
@@ -293,7 +431,21 @@ function draw2DPlot() {
         },
     };
 
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout);
+    options = {
+        staticPlot: false,
+        showLink: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: [
+            'sendDataToCloud', 'hoverCompareCartesian',
+            'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+        displayModeBar: true,
+        showTips: false,
+        // scrollZoom: true,
+    };
+
+    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
     // Refill the profile histograms when a zoom event occurs
     // Why isn't this done already in the plotly library?!
@@ -370,6 +522,8 @@ function draw2DPlot() {
 
 function plotData() {
 // Plot the data!
+
+    DATA_PLOT.drawText = false;
 
     if (DATA_PLOT.plotType === 'surface') {
         draw3DPlot();
@@ -492,6 +646,23 @@ function enablePlotControls() {
     $('#logPlotButton').prop('disabled', false);
     $('#selectPlotType').prop('disabled', false);
     $('#selectColorScheme').prop('disabled', false);
+
+    $('#plotTypeButtonDiv').show();
+    $('#logButtonDiv').show();
+    $('#colorButtonDiv').show();
+}
+
+
+function disablePlotControls() {
+// The buttons are initially disabled when the page loads, enable them here
+
+    $('#logPlotButton').prop('disabled', true);
+    $('#selectPlotType').prop('disabled', true);
+    $('#selectColorScheme').prop('disabled', true);
+
+    $('#plotTypeButtonDiv').hide();
+    $('#logButtonDiv').hide();
+    $('#colorButtonDiv').hide();
 }
 
 
@@ -515,17 +686,15 @@ function calculatePlotSize() {
         console.log('divHeight:    ' + divHeight);
     }
 
-    return {
-        width : divWidth,
-        height : windowHeight - 85,
-    };
+    DATA_PLOT.plotWidth = divWidth;
+    DATA_PLOT.plotHeight = windowHeight - 85;
 }
 
 
 $(window).resize(function () {
 // This function fires when the browser window is resized
 
-    var debug = false, dimensions;
+    var debug = false, plotHeight = DATA_PLOT.plotHeight;
 
     if (debug) {
         console.log('wait for it...');
@@ -543,15 +712,18 @@ $(window).resize(function () {
         }
 
         // Calculate the plot dimensions and save them
-        dimensions = calculatePlotSize();
-        DATA_PLOT.plotWidth = dimensions.width;
-        DATA_PLOT.plotHeight = dimensions.height;
+        calculatePlotSize();
 
-        // Reset the plot canvas dimensions
+        // Use smaller canvas when displaying text instead of images
+        if (DATA_PLOT.drawText) {
+            plotHeight = 300;
+        }
+
         Plotly.relayout(DATA_PLOT.plotCanvasDiv, {
-            width: dimensions.width,
-            height: dimensions.height,
+            width: DATA_PLOT.plotWidth,
+            height: plotHeight,
         });
+
     }, 200);
 });
 
@@ -559,17 +731,16 @@ $(window).resize(function () {
 $(document).ready(function () {
 // This function fires when the page is loaded
 
-    var debug = false, dimensions;
+    var debug = false;
 
     if (debug) {
         console.log('document is ready');
     }
 
     // Calculate the plot dimensions and save them
-    dimensions = calculatePlotSize();
-    DATA_PLOT.plotWidth = dimensions.width;
-    DATA_PLOT.plotHeight = dimensions.height;
+    calculatePlotSize();
 
-    // Draw an empty plot
-    drawEmptyPlot();
+    // Display welcome message, hide plot controls
+    disablePlotControls();
+    drawText('HDF5', '4ever');
 });

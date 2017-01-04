@@ -52,7 +52,8 @@
             <!-- The plotting canvas and plotting controls -->
             <div id="plotSectionDiv" class="col-xs-12 col-lg-8">
 
-                <div id="plotTypeButtonDiv" class="col-xs-4 form-group" >
+                <div id="plotTypeButtonDiv" class="col-xs-4 form-group"
+                    hidden>
                     <label >Plot Type
                         <select class="form-control" id="selectPlotType"
                             onchange="changeType(value);" disabled>
@@ -63,14 +64,14 @@
                     </label>
                 </div>
 
-                <div id="logButtonDiv" class="col-xs-3" >
+                <div id="logButtonDiv" class="col-xs-3" hidden>
                     <button type="button" class="btn btn-success"
                         id="logPlotButton" onclick="toggleLogPlot()" disabled>
                         Log Plot!
                     </button>
                 </div>
 
-                <div id="colorButtonDiv" class="col-xs-4 form-group" >
+                <div id="colorButtonDiv" class="col-xs-4 form-group" hidden>
                     <label >Color Map
                         <select id="selectColorScheme" class="form-control"
                             onchange="changeColor(value);" disabled>

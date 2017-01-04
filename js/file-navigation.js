@@ -1,4 +1,6 @@
-/*global $, getData, enablePlotControls, initializePlotData, plotData*/
+/*global $, getData, enablePlotControls, disablePlotControls,
+initializePlotData, plotData,
+drawText*/
 'use strict';
 
 
@@ -10,7 +12,7 @@ var FILE_NAV =
                          window.location.hostname.replace('.maxiv.lu.se', '') +
                          ':5000',
         jstreeDict : [],
-        processEvent : true,
+        processSelectNodeEvent : true,
         data : null,
     };
 
@@ -25,6 +27,7 @@ $.ajaxSetup({
 });
 
 
+// Send a request to the HDF5 REST server
 function communicateWithServer(url) {
 
     var debug = false;
@@ -60,9 +63,39 @@ function communicateWithServer(url) {
 }
 
 
-function getDatasetIcon(title, nodeId, targetUrl, responses) {
+// Get some information about a 'datasets' object
+function getDataValue(dataUrl, getItem) {
 
-    var debug = false, dataType = 'blah';
+    var debug = false, returnValue = '';
+
+    return $.when(communicateWithServer(dataUrl)).then(
+        function (response) {
+
+            var key = '';
+
+            if (debug) {
+                for (key in response) {
+                    if (response.hasOwnProperty(key)) {
+                        console.log(key + " -> " + response[key]);
+                    }
+                }
+            }
+
+            if (response.hasOwnProperty(getItem)) {
+                returnValue = response[getItem];
+            }
+
+            return returnValue;
+        }
+    );
+
+}
+
+
+// Get some information about a 'datasets' object
+function getDatasetInfo(title, nodeId, targetUrl, responses) {
+
+    var debug = true, dataType = 'none';
 
     return $.when(communicateWithServer(targetUrl)).then(
         function (response) {
@@ -80,13 +113,35 @@ function getDatasetIcon(title, nodeId, targetUrl, responses) {
             }
 
             if (response.hasOwnProperty('shape')) {
-                console.log(response.shape.dims.length);
-                console.log(response.shape.dims);
+                if (response.shape.hasOwnProperty('dims')) {
+                    console.log(response.shape.dims.length);
+                    console.log(response.shape.dims);
 
-                if (response.shape.dims.length > 1) {
-                    dataType = 'image';
-                } else {
-                    dataType = 'text';
+                    // These conditions are not correct, need to differentiate
+                    // between arrays, images, and single values
+                    if (response.shape.dims.length > 1) {
+                        dataType = 'image';
+                    } else {
+                        if (response.hasOwnProperty('type')) {
+                            if (response.type.hasOwnProperty('class')) {
+                                console.log(response.type.class);
+                                if (response.type.class === 'H5T_FLOAT' ||
+                                        response.type.class ===
+                                        'H5T_INTEGER') {
+                                    dataType = 'number';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (response.hasOwnProperty('type')) {
+                if (response.type.hasOwnProperty('class')) {
+                    console.log(response.type.class);
+                    if (response.type.class === 'H5T_STRING') {
+                        dataType = 'text';
+                    }
                 }
             }
 
@@ -147,8 +202,8 @@ function getTopLevelUrl(initialUrl, firstLevelKey, relValue) {
 function addToTree(itemList, selectedId, createNewTree) {
 // Add new item to the file browser tree
 
-    var debug = false, i, keyTitle = '', type = '', icon = '', treeParent,
-        treeId, doesNodeExist = false, needToRefresh = false;
+    var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
+        doesNodeExist = false, needToRefresh = false;
 
     if (createNewTree) {
         FILE_NAV.jstreeDict = [];
@@ -161,39 +216,44 @@ function addToTree(itemList, selectedId, createNewTree) {
                 console.log(keyTitle + " -> " + itemList[keyTitle].dataType);
             }
 
+            // Folders and datasets within HDF5 files
             if (itemList[keyTitle].id) {
+
+                treeId = itemList[keyTitle].id;
+
                 if (itemList[keyTitle].collection === 'groups') {
-                    treeId = itemList[keyTitle].id;
                     type = 'folder';
                     icon = 'glyphicon glyphicon-folder-close';
                 }
+
                 if (itemList[keyTitle].collection === 'datasets') {
-                    treeId = itemList[keyTitle].id;
                     type = 'datasets';
 
                     if (itemList[keyTitle].dataType) {
-                        if (itemList[keyTitle].dataType === 'image') {
+                        switch (itemList[keyTitle].dataType) {
+                        case 'image':
                             icon = 'glyphicon glyphicon-picture';
-                        } else {
-                            icon = 'glyphicon glyphicon-th-list';
+                            break;
+                        case 'text':
+                            icon = 'glyphicon glyphicon-list';
+                            break;
+                        case 'number':
+                            icon = 'glyphicon glyphicon-barcode';
+                            break;
+                        default:
+                            icon = 'glyphicon glyphicon-fire';
                         }
                     } else {
-                        icon = 'glyphicon glyphicon-qrcode';
+                        icon = 'glyphicon glyphicon-remove-circle';
                     }
                 }
             }
 
+            // HDF5 files
             if (itemList[keyTitle].h5domain) {
                 treeId = itemList[keyTitle].h5domain;
                 type = 'file';
-                // icon = 'glyphicon glyphicon-copy';
                 icon = '../images/hdf5-16px.png';
-            }
-
-            if (selectedId) {
-                treeParent = selectedId;
-            } else {
-                treeParent = '#';
             }
 
             // Check if this id exists already
@@ -207,17 +267,18 @@ function addToTree(itemList, selectedId, createNewTree) {
 
                     // The key-value pairs needed by jstree
                     id : treeId,
-                    parent : treeParent,
+                    parent : (selectedId === false ? '#' : selectedId),
                     text : keyTitle,
                     icon : icon,
 
                     // Save some additional information - is this a good place
                     // to put it?
                     data : {
-                        type: type,
-                        target: itemList[keyTitle].target,
-                        h5path: itemList[keyTitle].h5path,
-                        h5domain: itemList[keyTitle].h5domain,
+                        type : type,
+                        target : itemList[keyTitle].target,
+                        h5path : itemList[keyTitle].h5path,
+                        h5domain : itemList[keyTitle].h5domain,
+                        dataType : itemList[keyTitle].dataType,
                     }
                 });
 
@@ -226,6 +287,7 @@ function addToTree(itemList, selectedId, createNewTree) {
         }
     }
 
+    // Create or add to the jstree object
     if (createNewTree) {
         $('#jstree_div').jstree(
             {
@@ -236,7 +298,7 @@ function addToTree(itemList, selectedId, createNewTree) {
         );
     } else {
         if (needToRefresh) {
-            FILE_NAV.processEvent = false;
+            FILE_NAV.processSelectNodeEvent = false;
             $('#jstree_div').jstree(true).settings.core.data =
                 FILE_NAV.jstreeDict;
             $('#jstree_div').jstree(true).refresh(selectedId);
@@ -287,11 +349,16 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
                             console.log(key + " -> " + linkItem.title);
                         }
 
+                        // Save some of the information
                         titleList[linkItem.title] =
                             {
+                                // All links items have these objects
                                 title: linkItem.title,
                                 target: linkItem.target,
                                 class: linkItem.class,
+
+                                // Some link items have these objects, some
+                                // don't
                                 id: (
                                     linkItem.hasOwnProperty('id')
                                     ? linkItem.id : false
@@ -308,15 +375,23 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
                                     linkItem.hasOwnProperty('collection')
                                     ? linkItem.collection : false
                                 ),
+
+                                // This is a new object
                                 dataType: false,
                             };
 
-
+                        // For datasets, find out some more information
                         if (titleList[linkItem.title].collection ===
                                 'datasets') {
-                            console.log('datasets found!');
+
+                            if (debug) {
+                                console.log('datasets found!');
+                            }
+
+                            // Make a list of the ajax processes that will be
+                            // run, the output of each is saved to 'responses'
                             promises.push(
-                                getDatasetIcon(linkItem.title,
+                                getDatasetInfo(linkItem.title,
                                     titleList[linkItem.title].id,
                                     linkItem.target, responses)
                             );
@@ -325,9 +400,13 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
                 }
             }
 
+            // Wait until the extra information about all the datasets has
+            // been aquired, then add to the jstree object - should proabaly
+            // add some timeouts to this
             $.when.apply(null, promises).done(function () {
                 console.log('All Done!');
 
+                // Update each 'dataset' link item
                 for (i = 0; i < responses.length; i += 1) {
                     console.log(responses[i]);
                     titleList[responses[i].title].dataType =
@@ -344,9 +423,44 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
 }
 
 
-function displayData(inputUrl, selectedId) {
+function displayText(inputUrl, inputText) {
+// When a dataset is selected, display whatever text there is
+
+    var debug = true;
+
+    if (debug) {
+        console.log('inputUrl: ' + inputUrl);
+    }
+
+    // Get the link to the data
+    $.when(getTopLevelUrl(inputUrl, 'hrefs', 'data')).then(
+        function (dataUrl) {
+
+            if (debug) {
+                console.log('dataUrl:  ' + dataUrl);
+            }
+
+            // Get the data
+            $.when(getDataValue(dataUrl, 'value')).then(
+                function (value) {
+
+                    if (debug) {
+                        console.log('value:  ' + value);
+                    }
+
+                    // Display the data
+                    disablePlotControls();
+                    drawText(inputText, value);
+                }
+            );
+
+        }
+    );
+}
+
+
+function displayImage(inputUrl, selectedId) {
 // When a dataset is selected, plot the data
-// → this needs to be improved so that it works for more than just images!
 
     var debug = false, valueUrl;
 
@@ -354,19 +468,21 @@ function displayData(inputUrl, selectedId) {
         console.log('inputUrl: ' + inputUrl);
     }
 
-    // The url that get the data from the server
+    // Create the url that gets the data from the server
     valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
 
     if (debug) {
         console.log('valueUrl: ' + valueUrl);
     }
 
-
+    // Get the data (from data-retrieval.js), then plot it
     $.when(getData(valueUrl)).then(
         function (response) {
+
+            // Plotting functions from data-plot.js
+            enablePlotControls();
             initializePlotData(response.value);
             plotData();
-            enablePlotControls();
         }
     );
 }
@@ -403,9 +519,6 @@ function getFileContents(inputUrl, selectedId) {
                             if (debug) {
                                 console.log(titleList);
                             }
-
-                            // Update the jstree object
-                            // addToTree(titleList, selectedId, false);
                         }
                     );
                 }
@@ -439,9 +552,6 @@ function getFolderContents(topLevelUrl, selectedId) {
                     if (debug) {
                         console.log(titleList);
                     }
-
-                    // Update the jstree object
-                    // addToTree(titleList, selectedId, false);
                 }
             );
         }
@@ -474,9 +584,9 @@ function getRootDirectoryContents() {
                     // From each link, get its title and target url
                     $.when(getListOfLinks(linksUrl, false, true)).then(
                         function (titleList) {
-
-                            // Fill the jstree object
-                            // addToTree(titleList, false, true);
+                            if (debug) {
+                                console.log(titleList);
+                            }
                         }
                     );
                 }
@@ -487,8 +597,8 @@ function getRootDirectoryContents() {
 }
 
 
-$("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
 // Change the icon when a folder is opened
+$("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
 
     var debug = false;
 
@@ -500,6 +610,7 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
         data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-open');
     }
 
+// Change the icon when a folder is closed
 }).on('close_node.jstree', function (eventInfo, data) {
     var debug = false;
 
@@ -513,15 +624,14 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
 });
 
 
-$('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 // When an item in the tree is clicked, do some stuff
+$('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
     var debug = false, keyData, keyNode;
 
-    // Open or close the node
-    data.instance.toggle_node(data.node);
-
-    FILE_NAV.data = data;
+    // // Open or close the node
+    // data.instance.toggle_node(data.node);
+    $('#jstree_div').jstree(true).toggle_node(data.node.id);
 
     if (debug) {
 
@@ -561,34 +671,61 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
                 console.log(keyData + ' -> ' + data.node.data[keyData]);
             }
         }
+
+        console.log('FILE_NAV.processSelectNodeEvent: ' +
+            FILE_NAV.processSelectNodeEvent);
     }
 
-    console.log('FILE_NAV.processEvent: ' + FILE_NAV.processEvent);
-    if (FILE_NAV.processEvent) {
+
+    if (FILE_NAV.processSelectNodeEvent) {
 
         // Do different things depending on what type of item has been clicked
 
-        if (data.node.data.type === 'folder') {
+        switch (data.node.data.type) {
+
+        case 'folder':
             getFolderContents(data.node.data.target, data.selected);
-        }
+            break;
 
-        if (data.node.data.type === 'file') {
+        case 'file':
             getFileContents(data.node.data.target, data.selected);
-        }
+            break;
 
-        if (data.node.data.type === 'datasets') {
-            displayData(data.node.data.target, data.selected);
+        case 'datasets':
+
+            switch (data.node.data.dataType) {
+
+            case 'image':
+                displayImage(data.node.data.target, data.selected);
+                break;
+
+            case 'text':
+                displayText(data.node.data.target, data.node.text);
+                break;
+
+            case 'number':
+                displayText(data.node.data.target, data.node.text);
+                break;
+
+            default:
+                console.log('What the fuck do you want me to do with this?');
+            }
+
+            break;
+
+        default:
+            console.log('What the fuck do you want me to do with this shit?');
         }
 
     } else {
-        FILE_NAV.processEvent = true;
+        FILE_NAV.processSelectNodeEvent = true;
     }
 
 });
 
 
-$(document).ready(function () {
 // This function fires when the page is loaded
+$(document).ready(function () {
 
     var debug = false;
 
