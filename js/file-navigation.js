@@ -1,6 +1,5 @@
 /*global $, getData, enablePlotControls, disablePlotControls,
-initializePlotData, plotData,
-drawText*/
+initializePlotData, plotData, drawText*/
 'use strict';
 
 
@@ -114,14 +113,24 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
 
             if (response.hasOwnProperty('shape')) {
                 if (response.shape.hasOwnProperty('dims')) {
+
                     console.log(response.shape.dims.length);
                     console.log(response.shape.dims);
 
                     // These conditions are not correct, need to differentiate
                     // between arrays, images, and single values
-                    if (response.shape.dims.length > 1) {
+                    if (response.shape.dims.length === 3) {
+                        // WTF is this data? Need to ask Zdenek, example in:
+                        //  1.5_bar_cryo_pressure_2nd_run.h5
+                        //      → entry → detector → data
+                        dataType = '3D';
+                    }
+
+                    if (response.shape.dims.length === 2) {
                         dataType = 'image';
-                    } else {
+                    }
+
+                    if (response.shape.dims.length === 1) {
                         if (response.hasOwnProperty('type')) {
                             if (response.type.hasOwnProperty('class')) {
                                 console.log(response.type.class);
@@ -130,6 +139,18 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                                         'H5T_INTEGER') {
                                     dataType = 'number';
                                 }
+                            }
+                        }
+                    }
+
+                } else {
+                    if (response.hasOwnProperty('type')) {
+                        if (response.type.hasOwnProperty('class')) {
+                            console.log(response.type.class);
+                            if (response.type.class === 'H5T_FLOAT' ||
+                                    response.type.class ===
+                                    'H5T_INTEGER') {
+                                dataType = 'number';
                             }
                         }
                     }
@@ -231,6 +252,9 @@ function addToTree(itemList, selectedId, createNewTree) {
 
                     if (itemList[keyTitle].dataType) {
                         switch (itemList[keyTitle].dataType) {
+                        case '3D':
+                            icon = 'glyphicon glyphicon-certificate';
+                            break;
                         case 'image':
                             icon = 'glyphicon glyphicon-picture';
                             break;
@@ -292,7 +316,12 @@ function addToTree(itemList, selectedId, createNewTree) {
         $('#jstree_div').jstree(
             {
                 'core' : {
-                    'data' : FILE_NAV.jstreeDict
+                    'data' : FILE_NAV.jstreeDict,
+                    "themes": {
+                        "name": "default-dark",
+                        "dots": true,
+                        "icons": true
+                    },
                 }
             }
         );
@@ -423,7 +452,7 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
 }
 
 
-function displayText(inputUrl, inputText) {
+function displayText(inputUrl, inputText, fontColor) {
 // When a dataset is selected, display whatever text there is
 
     var debug = true;
@@ -450,7 +479,7 @@ function displayText(inputUrl, inputText) {
 
                     // Display the data
                     disablePlotControls();
-                    drawText(inputText, value);
+                    drawText(inputText, value, fontColor);
                 }
             );
 
@@ -695,20 +724,28 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             switch (data.node.data.dataType) {
 
+            case '3D':
+                disablePlotControls();
+                drawText('I don\'t know how to handle this yet!',
+                    'Sorry for the inconvenience :(',
+                    '#ad3a74');
+                break;
+
             case 'image':
                 displayImage(data.node.data.target, data.selected);
                 break;
 
             case 'text':
-                displayText(data.node.data.target, data.node.text);
+                displayText(data.node.data.target, data.node.text, '#3a74ad');
                 break;
 
             case 'number':
-                displayText(data.node.data.target, data.node.text);
+                displayText(data.node.data.target, data.node.text, '#ad3a3a');
                 break;
 
             default:
                 console.log('What the fuck do you want me to do with this?');
+                console.log(data.node.data.target);
             }
 
             break;

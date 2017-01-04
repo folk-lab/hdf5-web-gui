@@ -81,7 +81,7 @@ function drawEmptyPlot() {
 }
 
 
-function drawText(itemTitle, itemValue) {
+function drawText(itemTitle, itemValue, fontColor) {
 // Draw an empty plot when there is no data yet selected
 
     var debug = true, data, layout, options, mainDataPlot, string1, string2;
@@ -104,6 +104,10 @@ function drawText(itemTitle, itemValue) {
         console.log(string1 + ' --> ' + string2);
     }
 
+    // Check for color choice
+    fontColor = (fontColor === false ? '#ad3a3a' : fontColor);
+
+    // Setup the empty data
     mainDataPlot = {
         z: [],
         type: 'heatmap',
@@ -150,10 +154,10 @@ function drawText(itemTitle, itemValue) {
                 font: {
                     family: 'Courier New, monospace',
                     size: 16,
-                    color: '#6d3636'
+                    color: fontColor,
                 },
                 align: 'center',
-                bordercolor: '#ad3a3a',
+                bordercolor: fontColor,
                 borderwidth: 3,
                 borderpad: 4,
                 bgcolor: 'rgba(255, 255, 255, 0.9)',
@@ -740,7 +744,6 @@ $(document).ready(function () {
     // Calculate the plot dimensions and save them
     calculatePlotSize();
 
-    // Display welcome message, hide plot controls
-    disablePlotControls();
-    drawText('HDF5', '4ever');
+    // Display welcome message
+    drawText('MAX IV', 'HDF5 Data Viewer', '#3a74ad');
 });
