@@ -47,6 +47,114 @@ function getData(dataValueUrl) {
 }
 
 
+function readChunkedData(targetUrl, nodeId, shapeDims) {
+
+    var debug = true, valueUrl, chunks, matrix, numChunks, numChunkRows,
+        numChunkColumns, sliceStart, sliceWidth, sliceEnd, row,
+        completeImage = [], imageIndex, numImageRows, numImageColumns, i, j,
+        numLayoutRows, numLayoutColumns;
+
+
+    if (debug) {
+        console.log('shapeDims: ' + shapeDims);
+    }
+
+    // The slice width will end up being equal to the number of chunks
+    sliceStart = 0;
+    sliceWidth = 9;
+    sliceEnd = sliceStart + sliceWidth;
+    // Create the url that gets the data from the server, slice and dice the
+    // data
+    valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
+        '&select=[' + sliceStart + ':' + sliceEnd + ',:,:]';
+
+    // Set the number of chunks that are stiched together before starting a
+    // new row in the image
+    numLayoutRows = 3;
+    numLayoutColumns = 3;
+
+    if (debug) {
+        console.log('valueUrl: ' + valueUrl);
+    }
+
+    // Get the data (from data-retrieval.js), then plot it
+    return $.when(getData(valueUrl)).then(
+        function (response) {
+
+            chunks = response.value;
+            numChunks = chunks.length;
+
+            if (debug) {
+                console.log(chunks);
+                console.log('num chunks: ' + numChunks);
+            }
+
+            // Loop over each chunk
+            for (i = 0; i < numChunks; i += 1) {
+
+                // Each chunk should be a matrix (2D array)
+                matrix = chunks[i];
+                numChunkRows = matrix.length;
+                numChunkColumns = matrix[0].length;
+                if (debug) {
+                    console.log('numChunkRows:     ' + numChunkRows);
+                    console.log('numChunkColumns : ' + numChunkColumns);
+                }
+
+                // Loop over each row in the matrix
+                //
+                // I have no idea how these should be stiched together, or if
+                // they should be summed or something else - just gonna test
+                // some shit out
+                //
+                for (j = 0; j < numChunkRows; j += 1) {
+
+                    if (i === 0) {
+                        completeImage[j] = [];
+                    }
+                    if (i === numLayoutRows) {
+                        completeImage[j + numChunkRows] = [];
+                    }
+                    if (i === numLayoutRows * 2) {
+                        completeImage[j + 2 * numChunkRows] = [];
+                    }
+
+                    if (i < numLayoutRows) {
+                        imageIndex = j;
+                    } else if (i < numLayoutRows * 2) {
+                        imageIndex = j + numChunkRows;
+                    } else {
+                        imageIndex = j + 2 * numChunkRows;
+                    }
+
+                    row = matrix[j];
+
+                    // Append the rows together
+                    $.merge(completeImage[imageIndex], row);
+                }
+
+
+            }
+
+            if (debug) {
+                numImageRows = completeImage.length;
+                console.log('numImageRows:    ' + numImageRows);
+                numImageColumns = completeImage[0].length;
+                console.log('numImageColumns: ' + numImageColumns);
+
+                // for (j = 0; j < numImageRows; j += 1) {
+                //     console.log('completeImage[' + j + '].length: ' +
+                //         completeImage[j].length);
+                // }
+            }
+
+            return completeImage;
+        }
+    );
+
+}
+
+
 // This function fires when the page is loaded
 $(document).ready(function () {
 

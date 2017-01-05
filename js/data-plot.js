@@ -64,7 +64,7 @@ function drawEmptyPlot() {
         modeBarButtonsToRemove: [
             'sendDataToCloud', 'hoverCompareCartesian',
             'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
-            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: false,
         showTips: false,
         // scrollZoom: true,
@@ -173,7 +173,7 @@ function drawText(itemTitle, itemValue, fontColor) {
         modeBarButtonsToRemove: [
             'sendDataToCloud', 'hoverCompareCartesian',
             'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
-            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: false,
         showTips: false,
         // scrollZoom: true,
@@ -256,7 +256,7 @@ function draw3DPlot() {
         modeBarButtonsToRemove: [
             'sendDataToCloud', 'hoverCompareCartesian',
             'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
-            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: true,
         showTips: false,
         // scrollZoom: true,
@@ -442,7 +442,7 @@ function draw2DPlot() {
         modeBarButtonsToRemove: [
             'sendDataToCloud', 'hoverCompareCartesian',
             'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
-            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomIn2d'],
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: true,
         showTips: false,
         // scrollZoom: true,
@@ -572,10 +572,21 @@ function changeColor(colorscale) {
 }
 
 
-function toggleLogPlot() {
+function toggleLogPlot(useLog) {
 // Switch between the use of log and non-log values
 
-    DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
+    var debug = true;
+
+    if (debug) {
+        console.log('useLog: ' + useLog);
+    }
+
+    if (useLog === undefined) {
+        DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
+
+    } else {
+        DATA_PLOT.plotLogValues = useLog;
+    }
 
     if (DATA_PLOT.plotLogValues) {
         $("#logPlotButton").html('Log Plot!');

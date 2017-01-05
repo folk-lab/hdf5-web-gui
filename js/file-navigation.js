@@ -1,5 +1,5 @@
 /*global $, getData, enablePlotControls, disablePlotControls,
-initializePlotData, plotData, drawText*/
+initializePlotData, plotData, drawText, readChunkedData, toggleLogPlot*/
 'use strict';
 
 
@@ -124,6 +124,9 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                         //  1.5_bar_cryo_pressure_2nd_run.h5
                         //      → entry → detector → data
                         dataType = '3D';
+                        // Maybe it's eom way to store large images?:
+                        //  http://docs.h5py.org/en/latest/high/
+                        //      dataset.html#chunked-storage
                     }
 
                     if (response.shape.dims.length === 2) {
@@ -488,8 +491,8 @@ function displayText(inputUrl, inputText, fontColor) {
 }
 
 
-function displayImage(inputUrl, selectedId) {
 // When a dataset is selected, plot the data
+function displayImage(inputUrl, selectedId) {
 
     var debug = false, valueUrl;
 
@@ -514,6 +517,74 @@ function displayImage(inputUrl, selectedId) {
             plotData();
         }
     );
+}
+
+
+// Deal with chunked images/data
+function displayChunkedImage(targetUrl, nodeId) {
+// Help!:
+//  https://support.hdfgroup.org/HDF5/doc/_topic/Chunking/
+//  http://docs.h5py.org/en/latest/high/dataset.html#chunked-storage
+
+    var debug = true;
+
+    $.when(communicateWithServer(targetUrl)).then(
+        function (response) {
+
+            var key = '', shapeDims, layout, layoutDims;
+
+            if (debug) {
+                console.log('nodeId: ' + nodeId);
+
+                for (key in response) {
+                    if (response.hasOwnProperty(key)) {
+                        console.log(key + " -> " + response[key]);
+                    }
+                }
+            }
+
+            if (response.hasOwnProperty('shape')) {
+                if (response.shape.hasOwnProperty('dims')) {
+
+                    shapeDims = response.shape.dims;
+
+                    console.log(shapeDims.length);
+                    console.log(shapeDims);
+
+                }
+            }
+
+            if (response.hasOwnProperty('creationProperties')) {
+                if (response.creationProperties.hasOwnProperty('layout')) {
+                    layout = response.creationProperties.layout;
+                    if (layout.hasOwnProperty('dims')) {
+
+                        layoutDims = layout.dims;
+
+                        console.log(layoutDims.length);
+                        console.log(layoutDims);
+
+                    }
+                }
+            }
+
+            $.when(readChunkedData(targetUrl, nodeId, shapeDims)).then(
+                function (completeImage) {
+
+                    // Plotting functions from data-plot.js
+                    enablePlotControls();
+                    initializePlotData(completeImage);
+                    toggleLogPlot(false);
+                    plotData();
+                }
+            );
+        }
+    );
+
+    // disablePlotControls();
+    // drawText('I don\'t know how to handle this yet!',
+    //     'Sorry for the inconvenience :(',
+    //     '#ad3a74');
 }
 
 
@@ -725,10 +796,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             switch (data.node.data.dataType) {
 
             case '3D':
-                disablePlotControls();
-                drawText('I don\'t know how to handle this yet!',
-                    'Sorry for the inconvenience :(',
-                    '#ad3a74');
+                displayChunkedImage(data.node.data.target, data.selected);
                 break;
 
             case 'image':
@@ -744,7 +812,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
                 break;
 
             default:
-                console.log('What the fuck do you want me to do with this?');
+                console.log('Is this a fucking dataset? Me thinks not matey!');
                 console.log(data.node.data.target);
             }
 
