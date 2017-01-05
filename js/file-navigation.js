@@ -13,6 +13,7 @@ var FILE_NAV =
         jstreeDict : [],
         processSelectNodeEvent : true,
         data : null,
+        useDarkTheme : false,
     };
 
 
@@ -321,7 +322,8 @@ function addToTree(itemList, selectedId, createNewTree) {
                 'core' : {
                     'data' : FILE_NAV.jstreeDict,
                     "themes": {
-                        "name": "default-dark",
+                        name : (FILE_NAV.useDarkTheme === true ?
+                                'default-dark' : 'default'),
                         "dots": true,
                         "icons": true
                     },

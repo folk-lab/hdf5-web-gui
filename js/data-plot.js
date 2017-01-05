@@ -15,6 +15,7 @@ var DATA_PLOT = {
     resizeTimer : undefined,
     plotWidth : 550,
     plotHeight : 550,
+    useDarkTheme : false,
 },
 
     // External libraries
@@ -42,6 +43,10 @@ function drawEmptyPlot() {
         autosize: false,
         width: DATA_PLOT.plotWidth,
         height: DATA_PLOT.plotHeight,
+        paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
+        plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
 
         xaxis: {
             title: 'x',
@@ -124,6 +129,10 @@ function drawText(itemTitle, itemValue, fontColor) {
         autosize: false,
         width: DATA_PLOT.plotWidth,
         height: 300,
+        paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
+        plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
 
         xaxis: {
             title: '',
@@ -231,6 +240,12 @@ function draw3DPlot() {
         autosize: false,
         width: DATA_PLOT.plotWidth,
         height: DATA_PLOT.plotHeight,
+        hovermode: 'closest',
+        bargap: 0,
+        paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
+        plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
         margin: {
             l: 65,
             r: 50,
@@ -407,6 +422,10 @@ function draw2DPlot() {
         height: DATA_PLOT.plotHeight,
         hovermode: 'closest',
         bargap: 0,
+        paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
+        plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
 
         xaxis: {
             title: 'x',

@@ -50,28 +50,27 @@ function getData(dataValueUrl) {
 function readChunkedData(targetUrl, nodeId, shapeDims) {
 
     var debug = true, valueUrl, chunks, matrix, numChunks, numChunkRows,
-        numChunkColumns, sliceStart, sliceWidth, sliceEnd, row,
-        completeImage = [], imageIndex, numImageRows, numImageColumns, i, j,
-        numLayoutRows, numLayoutColumns;
+        numChunkColumns, sliceStart, sliceWidth, sliceEnd,
+        completeImage = [], imageRow, numImageRows, numImageColumns, i, j,
+        numLayoutRows;
 
 
     if (debug) {
         console.log('shapeDims: ' + shapeDims);
     }
 
+    // Set the number of chunks that are stiched together before starting a
+    // new row in the image
+    numLayoutRows = 3;
+
     // The slice width will end up being equal to the number of chunks
     sliceStart = 0;
-    sliceWidth = 9;
+    sliceWidth = numLayoutRows * numLayoutRows;
     sliceEnd = sliceStart + sliceWidth;
     // Create the url that gets the data from the server, slice and dice the
     // data
     valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
         '&select=[' + sliceStart + ':' + sliceEnd + ',:,:]';
-
-    // Set the number of chunks that are stiched together before starting a
-    // new row in the image
-    numLayoutRows = 3;
-    numLayoutColumns = 3;
 
     if (debug) {
         console.log('valueUrl: ' + valueUrl);
@@ -97,6 +96,7 @@ function readChunkedData(targetUrl, nodeId, shapeDims) {
                 numChunkRows = matrix.length;
                 numChunkColumns = matrix[0].length;
                 if (debug) {
+                    console.log('i: ' + i);
                     console.log('numChunkRows:     ' + numChunkRows);
                     console.log('numChunkColumns : ' + numChunkColumns);
                 }
@@ -109,28 +109,20 @@ function readChunkedData(targetUrl, nodeId, shapeDims) {
                 //
                 for (j = 0; j < numChunkRows; j += 1) {
 
-                    if (i === 0) {
-                        completeImage[j] = [];
-                    }
-                    if (i === numLayoutRows) {
-                        completeImage[j + numChunkRows] = [];
-                    }
-                    if (i === numLayoutRows * 2) {
-                        completeImage[j + 2 * numChunkRows] = [];
+
+                    // Initialize new rows in the complete image
+                    if (i % numLayoutRows === 0) {
+                        completeImage[j +
+                            (i / numLayoutRows) * numChunkRows] = [];
                     }
 
-                    if (i < numLayoutRows) {
-                        imageIndex = j;
-                    } else if (i < numLayoutRows * 2) {
-                        imageIndex = j + numChunkRows;
-                    } else {
-                        imageIndex = j + 2 * numChunkRows;
-                    }
+                    // Determine which row in the image to work with
+                    imageRow = j + Math.floor(i / numLayoutRows) *
+                        numChunkRows;
+                    // console.log('imageRow: ' + imageRow);
 
-                    row = matrix[j];
-
-                    // Append the rows together
-                    $.merge(completeImage[imageIndex], row);
+                    // Add the chunk row to the complete image row
+                    $.merge(completeImage[imageRow], matrix[j]);
                 }
 
 
