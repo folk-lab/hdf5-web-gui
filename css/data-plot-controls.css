@@ -1,5 +1,6 @@
 body{
     margin:10px;
+    overflow:hidden;
 }
 
 .btn{
@@ -16,4 +17,26 @@ body{
     display: inline-block;
     width: auto;
     vertical-align: middle;
+}
+
+#treeSectionDiv {
+    overflow: auto;
+}
+
+.debugRed {
+    border: solid red 5px;
+}
+
+.debugBlue {
+    border: solid blue 5px;
+}
+
+.debugGreen {
+    border: solid green 5px;
+}
+
+#logoImage {
+    margin-top:-8%;
+    display: inline-block;
+    vertical-align:middle
 }

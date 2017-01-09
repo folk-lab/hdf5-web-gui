@@ -1,4 +1,4 @@
-/*global $, initializePlotData*/
+/*global $*/
 'use strict';
 
 

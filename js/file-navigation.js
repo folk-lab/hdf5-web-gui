@@ -1,5 +1,6 @@
-/*global $, getData, enablePlotControls, disablePlotControls,
-initializePlotData, plotData, drawText, readChunkedData, toggleLogPlot*/
+/*global $, getData, enableImagePlotControls,
+initializeImageData, plotData, plotLine, drawText, readChunkedData,
+toggleLogPlot*/
 'use strict';
 
 
@@ -92,7 +93,8 @@ function getDataValue(dataUrl, getItem) {
 }
 
 
-// Get some information about a 'datasets' object
+// Get some information about a 'datasets' object - try and figure out if
+// it's an array, matrix, number, string, or somthing else
 function getDatasetInfo(title, nodeId, targetUrl, responses) {
 
     var debug = true, dataType = 'none';
@@ -112,6 +114,7 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                 }
             }
 
+            // Check for images and lines
             if (response.hasOwnProperty('shape')) {
                 if (response.shape.hasOwnProperty('dims')) {
 
@@ -124,7 +127,7 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                         // WTF is this data? Need to ask Zdenek, example in:
                         //  1.5_bar_cryo_pressure_2nd_run.h5
                         //      → entry → detector → data
-                        dataType = '3D';
+                        dataType = 'chunk';
                         // Maybe it's eom way to store large images?:
                         //  http://docs.h5py.org/en/latest/high/
                         //      dataset.html#chunked-storage
@@ -135,37 +138,28 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                     }
 
                     if (response.shape.dims.length === 1) {
-                        if (response.hasOwnProperty('type')) {
-                            if (response.type.hasOwnProperty('class')) {
-                                console.log(response.type.class);
-                                if (response.type.class === 'H5T_FLOAT' ||
-                                        response.type.class ===
-                                        'H5T_INTEGER') {
-                                    dataType = 'number';
-                                }
-                            }
+                        if (response.shape.dims[0] > 1) {
+                            dataType = 'line';
                         }
                     }
 
-                } else {
-                    if (response.hasOwnProperty('type')) {
-                        if (response.type.hasOwnProperty('class')) {
-                            console.log(response.type.class);
-                            if (response.type.class === 'H5T_FLOAT' ||
-                                    response.type.class ===
-                                    'H5T_INTEGER') {
-                                dataType = 'number';
-                            }
-                        }
-                    }
                 }
             }
 
-            if (response.hasOwnProperty('type')) {
-                if (response.type.hasOwnProperty('class')) {
-                    console.log(response.type.class);
-                    if (response.type.class === 'H5T_STRING') {
-                        dataType = 'text';
+            // Check for numbers and strings
+            if (dataType === 'none') {
+                if (response.hasOwnProperty('type')) {
+                    if (response.type.hasOwnProperty('class')) {
+                        console.log(response.type.class);
+
+                        if (response.type.class === 'H5T_STRING') {
+                            dataType = 'text';
+                        }
+
+                        if (response.type.class === 'H5T_FLOAT' ||
+                                response.type.class === 'H5T_INTEGER') {
+                            dataType = 'number';
+                        }
                     }
                 }
             }
@@ -256,23 +250,26 @@ function addToTree(itemList, selectedId, createNewTree) {
 
                     if (itemList[keyTitle].dataType) {
                         switch (itemList[keyTitle].dataType) {
-                        case '3D':
+                        case 'chunk':
                             icon = 'glyphicon glyphicon-certificate';
                             break;
                         case 'image':
                             icon = 'glyphicon glyphicon-picture';
                             break;
-                        case 'text':
-                            icon = 'glyphicon glyphicon-list';
+                        case 'line':
+                            icon = 'glyphicon glyphicon-signal';
                             break;
                         case 'number':
                             icon = 'glyphicon glyphicon-barcode';
                             break;
+                        case 'text':
+                            icon = 'glyphicon glyphicon-list';
+                            break;
                         default:
-                            icon = 'glyphicon glyphicon-fire';
+                            icon = 'glyphicon glyphicon-question-sign';
                         }
                     } else {
-                        icon = 'glyphicon glyphicon-remove-circle';
+                        icon = 'glyphicon glyphicon-remove-sign';
                     }
                 }
             }
@@ -307,7 +304,11 @@ function addToTree(itemList, selectedId, createNewTree) {
                         h5path : itemList[keyTitle].h5path,
                         h5domain : itemList[keyTitle].h5domain,
                         dataType : itemList[keyTitle].dataType,
-                    }
+                    },
+
+                    state : {
+                        checkbox_disabled : true
+                    },
                 });
 
                 needToRefresh = true;
@@ -327,7 +328,10 @@ function addToTree(itemList, selectedId, createNewTree) {
                         "dots": true,
                         "icons": true
                     },
-                }
+                },
+                // "plugins": ["checkbox"],
+                // "plugins": ["themes", "html_data", "checkbox",
+                //                         "ui", "crrm", "hotkeys"]
             }
         );
     } else {
@@ -457,6 +461,15 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
 }
 
 
+function displaySorryMessage(inputUrl) {
+    enableImagePlotControls(false);
+    drawText('I don\'t know how to handle this yet!',
+        'Sorry for the inconvenience :(',
+        '#ad3a74');
+    console.log('inputUrl: ' + inputUrl);
+}
+
+
 function displayText(inputUrl, inputText, fontColor) {
 // When a dataset is selected, display whatever text there is
 
@@ -483,7 +496,7 @@ function displayText(inputUrl, inputText, fontColor) {
                     }
 
                     // Display the data
-                    disablePlotControls();
+                    enableImagePlotControls(false);
                     drawText(inputText, value, fontColor);
                 }
             );
@@ -491,6 +504,38 @@ function displayText(inputUrl, inputText, fontColor) {
         }
     );
 }
+
+function displayLine(inputUrl, selectedId, nodeTitle) {
+
+    var debug = false, valueUrl;
+
+    if (debug) {
+        console.log('inputUrl: ' + inputUrl);
+    }
+
+    // Create the url that gets the data from the server
+    valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+
+    if (debug) {
+        console.log('valueUrl: ' + valueUrl);
+    }
+
+    // Get the data (from data-retrieval.js), then plot it
+    $.when(getData(valueUrl)).then(
+        function (response) {
+
+            if (debug) {
+                console.log(response.value);
+            }
+
+            // Plotting functions from data-plot.js
+            enableImagePlotControls(false);
+            plotLine(response.value, nodeTitle);
+        }
+    );
+
+}
+
 
 
 // When a dataset is selected, plot the data
@@ -514,8 +559,8 @@ function displayImage(inputUrl, selectedId) {
         function (response) {
 
             // Plotting functions from data-plot.js
-            enablePlotControls();
-            initializePlotData(response.value);
+            enableImagePlotControls(true);
+            initializeImageData(response.value);
             plotData();
         }
     );
@@ -574,19 +619,23 @@ function displayChunkedImage(targetUrl, nodeId) {
                 function (completeImage) {
 
                     // Plotting functions from data-plot.js
-                    enablePlotControls();
-                    initializePlotData(completeImage);
+                    enableImagePlotControls(true);
+                    initializeImageData(completeImage);
                     toggleLogPlot(false);
                     plotData();
                 }
             );
         }
     );
+}
 
-    // disablePlotControls();
-    // drawText('I don\'t know how to handle this yet!',
-    //     'Sorry for the inconvenience :(',
-    //     '#ad3a74');
+
+function displaySorryMessage(inputUrl) {
+    enableImagePlotControls(false);
+    drawText('I don\'t know how to handle this yet!',
+        'Sorry for the inconvenience :(',
+        '#ad3a74');
+    console.log('inputUrl: ' + inputUrl);
 }
 
 
@@ -797,7 +846,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             switch (data.node.data.dataType) {
 
-            case '3D':
+            case 'chunk':
                 displayChunkedImage(data.node.data.target, data.selected);
                 break;
 
@@ -805,23 +854,30 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
                 displayImage(data.node.data.target, data.selected);
                 break;
 
-            case 'text':
-                displayText(data.node.data.target, data.node.text, '#3a74ad');
+            case 'line':
+                // displaySorryMessage(data.node.data.target);
+                displayLine(data.node.data.target, data.selected,
+                    data.node.text);
                 break;
 
             case 'number':
                 displayText(data.node.data.target, data.node.text, '#ad3a3a');
                 break;
 
+            case 'text':
+                displayText(data.node.data.target, data.node.text, '#3a74ad');
+                break;
+
             default:
                 console.log('Is this a fucking dataset? Me thinks not matey!');
-                console.log(data.node.data.target);
+                displaySorryMessage(data.node.data.target);
             }
 
             break;
 
         default:
             console.log('What the fuck do you want me to do with this shit?');
+            displaySorryMessage(data.node.data.target);
         }
 
     } else {
@@ -831,15 +887,37 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 });
 
 
+// Set the height of the div containing the file browsing tree
+function setTreeDivHeight() {
+
+    var window_height = $(window).height(),
+        content_height = window_height - 120;
+
+    $('#treeSectionDiv').height(content_height);
+
+}
+
+
+// This function fires when the browser window is resized
+$(window).resize(function () {
+    setTreeDivHeight();
+});
+
+
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.log('document is ready');
+        $("#treeSectionDiv").addClass('debugGreen');
     }
+
+    // Set the height of the div containing the file browsing tree
+    setTreeDivHeight();
 
     // Fill the uppermost level of the file tree
     getRootDirectoryContents();
+
 });

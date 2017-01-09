@@ -89,7 +89,7 @@ function drawEmptyPlot() {
 function drawText(itemTitle, itemValue, fontColor) {
 // Draw an empty plot when there is no data yet selected
 
-    var debug = true, data, layout, options, mainDataPlot, string1, string2;
+    var debug = false, data, layout, options, mainDataPlot, string1, string2;
 
     DATA_PLOT.drawText = true;
 
@@ -199,30 +199,71 @@ function drawText(itemTitle, itemValue, fontColor) {
 }
 
 
-function draw3DPlot() {
+function drawLine(value, nodeTitle) {
 // Draw a 3D surface plot of the data
 
     var data, layout, options;
 
-    // data = [
-    //     {
-    //         z: DATA_PLOT.dataValues,
-    //         type: plotType,
-    //         colorscale: [
-    //             [0, 'rgb(250, 250, 250)'],
-    //             [1.0 / 10000, 'rgb(200, 200, 200)'],
-    //             [1.0 / 1000, 'rgb(150, 150, 150)'],
-    //             [1.0 / 100, 'rgb(100, 100, 100)'],
-    //             [1.0 / 10, 'rgb(50, 50, 50)'],
-    //             [1.0, 'rgb(0, 0, 0)'],
-    //         ],
-    //         colorbar: {
-    //             tick0: 0,
-    //             tickmode: 'array',
-    //             tickvals: [0, 1000, 10000, 100000]
-    //         }
-    //     }
-    // ];
+    // Create data object
+    data = [
+        {
+            y: value,
+            mode: 'lines',
+            type: 'scatter'
+        }
+    ];
+
+    // And the layout
+    layout = {
+        showlegend: false,
+        title: nodeTitle,
+        autosize: false,
+        width: DATA_PLOT.plotWidth,
+        height: DATA_PLOT.plotHeight,
+        hovermode: 'closest',
+        bargap: 0,
+        paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
+        plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                '#333333' : '#ffffff'),
+        margin: {
+            l: 65,
+            r: 50,
+            b: 65,
+            t: 90,
+        },
+        xaxis: {
+            title: 'array index',
+        },
+        yaxis: {
+            title: 'values',
+        }
+    };
+
+    options = {
+        staticPlot: false,
+        showLink: false,
+        displaylogo: false,
+        modeBarButtonsToRemove: [
+            'sendDataToCloud', 'hoverCompareCartesian',
+            'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
+            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
+        displayModeBar: true,
+        showTips: false,
+        // scrollZoom: true,
+    };
+
+    // Present them
+    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+
+}
+
+
+function draw3DPlot() {
+// Draw a 3D surface plot of the data
+
+    var data, layout, options;
 
     // Create data object
     data = [
@@ -236,7 +277,7 @@ function draw3DPlot() {
     // And the layout
     layout = {
         showlegend: false,
-        title: 'AgBehenate_228',
+        title: 'Title goes here',
         autosize: false,
         width: DATA_PLOT.plotWidth,
         height: DATA_PLOT.plotHeight,
@@ -415,7 +456,7 @@ function draw2DPlot() {
     // space each plot takes up is a range from 0 to 1, and follows the keyword
     // 'domain'
     layout = {
-        title: 'AgBehenate_228',
+        title: 'Title goes here',
         showlegend: false,
         autosize: false,
         width: DATA_PLOT.plotWidth,
@@ -543,6 +584,11 @@ function draw2DPlot() {
 }
 
 
+function plotLine(value, nodeTitle) {
+    drawLine(value, nodeTitle);
+}
+
+
 function plotData() {
 // Plot the data!
 
@@ -629,8 +675,8 @@ function toggleLogPlot(useLog) {
 }
 
 
-function initializePlotData(value) {
-// Save the data and the log of the data to gloable variables
+// Save the image data and the log of the image data to global variables
+function initializeImageData(value) {
 
     var i, j, logOfValue = [];
 
@@ -674,36 +720,27 @@ function initializePlotData(value) {
 }
 
 
-function enablePlotControls() {
+function enableImagePlotControls(enableControls) {
 // The buttons are initially disabled when the page loads, enable them here
 
-    $('#logPlotButton').prop('disabled', false);
-    $('#selectPlotType').prop('disabled', false);
-    $('#selectColorScheme').prop('disabled', false);
+    var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
+        divNames = ['#plotTypeButtonDiv', '#logButtonDiv', '#colorButtonDiv'];
 
-    $('#plotTypeButtonDiv').show();
-    $('#logButtonDiv').show();
-    $('#colorButtonDiv').show();
+    for (i = 0; i < divNames.length; i += 1) {
+        if (enableControls) {
+            $(divNames[i]).removeClass(classNames);
+        } else {
+            $(divNames[i]).addClass(classNames);
+        }
+    }
+
 }
 
 
-function disablePlotControls() {
-// The buttons are initially disabled when the page loads, enable them here
-
-    $('#logPlotButton').prop('disabled', true);
-    $('#selectPlotType').prop('disabled', true);
-    $('#selectColorScheme').prop('disabled', true);
-
-    $('#plotTypeButtonDiv').hide();
-    $('#logButtonDiv').hide();
-    $('#colorButtonDiv').hide();
-}
-
-
-function calculatePlotSize() {
 // Calculate the plot size - needs to be improved for small screens
+function calculatePlotSize() {
 
-    var debug = false,
+    var debug = true, newPlotDivHeight,
         windowWidth = $(window).width(),
         windowHeight = $(window).height(),
         appWidth = $('#applicationContainer').width(),
@@ -720,19 +757,26 @@ function calculatePlotSize() {
         console.log('divHeight:    ' + divHeight);
     }
 
+    // DATA_PLOT.plotWidth = divWidth;
+    // DATA_PLOT.plotHeight = windowHeight - 95;
+
+    newPlotDivHeight = windowHeight - 120;
+    console.log('newPlotDivHeight: ' + newPlotDivHeight);
+    $('#plotCanvasDiv').height(newPlotDivHeight);
     DATA_PLOT.plotWidth = divWidth;
-    DATA_PLOT.plotHeight = windowHeight - 85;
+    DATA_PLOT.plotHeight = newPlotDivHeight;
 }
 
 
-$(window).resize(function () {
 // This function fires when the browser window is resized
+$(window).resize(function () {
 
-    var debug = false, plotHeight = DATA_PLOT.plotHeight;
+    var debug = true, plotHeight = DATA_PLOT.plotHeight;
 
     if (debug) {
         console.log('wait for it...');
     }
+
 
     // During a window resize event, the resize function will be called several
     // times per second, on the order of 15! Best to wait a bit try to just
@@ -751,6 +795,8 @@ $(window).resize(function () {
         // Use smaller canvas when displaying text instead of images
         if (DATA_PLOT.drawText) {
             plotHeight = 300;
+        } else {
+            plotHeight = DATA_PLOT.plotHeight;
         }
 
         Plotly.relayout(DATA_PLOT.plotCanvasDiv, {
@@ -762,18 +808,19 @@ $(window).resize(function () {
 });
 
 
-$(document).ready(function () {
 // This function fires when the page is loaded
+$(document).ready(function () {
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.log('document is ready');
+        $("#plotCanvasDiv").addClass('debugRed');
     }
 
     // Calculate the plot dimensions and save them
     calculatePlotSize();
 
     // Display welcome message
-    drawText('MAX IV', 'HDF5 Data Viewer', '#3a74ad');
+    drawText('Welcome!', '(click stuff on the left)', '#3a74ad');
 });
