@@ -14,6 +14,8 @@
         -->
         <link rel="stylesheet"
             href="../css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
+        <link href="../css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css"
+            rel="stylesheet">
 
         <!-- Load external javascript -->
         <script type="text/javascript" defer
@@ -26,10 +28,14 @@
         <script type="text/javascript" defer
             src="../js/jstree/3.2.1/jstree.min.js?v=201701010000">
         </script>
+        <script type="text/javascript" defer
+            src="../js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js"></script>
 
         <!-- Load css for this page -->
         <link rel="stylesheet"
             href="../css/data-plot-controls.css?v=201701030823"/>
+        <link rel="stylesheet"
+            href="../css/navmenu.css">
 
         <!-- Load javascript for this page -->
         <script type="text/javascript" defer
@@ -51,11 +57,98 @@
         <div class="container-fluid fill-height fill-width"
             id="applicationContainer">
 
-            <!-- Navigation bar -->
+            <div class="navmenu navmenu-default navmenu-fixed-left
+                offcanvas-sm">
+
+                <div class="col-xs-5">
+                    <a class="navbar-brand" href="#">
+                        <img alt="Brand" id="logoImage"
+                           src="../images/maxiv-logo-101x35.png"></a>
+                </div>
+
+                <div class="col-xs-7">
+                    <a class="navmenu-brand visible-md visible-lg"
+                        href="#">HDF5 Data Viewer</a>
+                </div>
+
+                <!-- The file browser-->
+                <div id="treeSectionDiv" class="col-xs-12">
+
+                    <div >
+                        <span class="glyphicon glyphicon-hdd"></span>
+                        <b>Data Storage</b>
+                    </div>
+
+                    <div class="col-xs-12 " id="jstree_div"></div>
+
+                </div>
+
+            </div>
+
+            <div class="navbar navbar-default navbar-fixed-top hidden-md
+                hidden-lg">
+                <button type="button" class="navbar-toggle"
+                    data-toggle="offcanvas" data-target=".navmenu">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">HDF5 Data Viewer</a>
+            </div>
+
+            <div class="container">
+                <div class="collapse navbar-collapse col-lg-8" id="plotControls">
+
+                    <form class="navbar-form navbar-left">
+                        <div id="plotTypeButtonDiv"
+                            class="col-xs-5 form-group hidden-xs hidden-sm
+                            hidden-md hidden-lg" >
+                            <select class="form-control" id="selectPlotType"
+                                onchange="changeType(value);" >
+                                <option value="heatmap">2D Heatmap</option>
+                                <option value="surface">3D Surface</option>
+                            </select>
+                        </div>
+
+                        <div id="logButtonDiv" class="col-xs-4
+                            hidden-xs hidden-sm hidden-md hidden-lg" >
+                            <button type="button" class="btn btn-success"
+                                id="logPlotButton"
+                                onclick="toggleLogPlot()" > Log Plot!
+                            </button>
+                        </div>
+
+                        <div id="colorButtonDiv" class="form-group col-xs-3
+                            hidden-xs hidden-sm hidden-md hidden-lg" >
+                            <select id="selectColorScheme"
+                                class="form-control"
+                                onchange="changeColor(value);" >
+                                <option value="RdBu"     >RdBu    </option>
+                                <option value="Greys"    >Greys   </option>
+                                <option value="Greens"   >Greens  </option>
+                                <option value="Bluered"  >Bluered </option>
+                                <option value="Hot"      >Hot     </option>
+                                <option value="Picnic"   >Picnic  </option>
+                                <option value="Portland" >Portland</option>
+                                <option value="Jet"      >Jet     </option>
+                                <option value="Blackbody">Blackbod</option>
+                                <option value="Earth"    >Earth   </option>
+                                <option value="Electric" >Electric</option>
+                            </select>
+                        </div>
+                    </form>
+
+                </div>
+
+                <div id="plotCanvasDiv" class="col-xs-12" ></div>
+
+            </div><!-- /.container -->
+
+
+            <!--
             <nav class="navbar navbar-default ">
                 <div class="container-fluid">
 
-                    <!-- Brand and toggle -->
                     <div class="navbar-header col-lg-4">
 
                         <button type="button" class="navbar-toggle collapsed"
@@ -75,101 +168,16 @@
 
                     </div>
 
-                    <!-- Plot controls -->
-                    <div class="collapse navbar-collapse col-lg-8" id="plotControls">
-
-                        <form class="navbar-form navbar-left">
-                            <div id="plotTypeButtonDiv"
-                                class="col-xs-5 form-group hidden-xs hidden-sm
-                                hidden-md hidden-lg" >
-                                <select class="form-control" id="selectPlotType"
-                                    onchange="changeType(value);" >
-                                    <option value="heatmap">2D Heatmap</option>
-                                    <option value="surface">3D Surface</option>
-                                </select>
-                            </div>
-
-                            <div id="logButtonDiv" class="col-xs-4
-                                hidden-xs hidden-sm hidden-md hidden-lg" >
-                                <button type="button" class="btn btn-success"
-                                    id="logPlotButton"
-                                    onclick="toggleLogPlot()" > Log Plot!
-                                </button>
-                            </div>
-
-                            <div id="colorButtonDiv" class="form-group col-xs-3
-                                hidden-xs hidden-sm hidden-md hidden-lg" >
-                                <select id="selectColorScheme"
-                                    class="form-control"
-                                    onchange="changeColor(value);" >
-                                    <option value="RdBu"     >RdBu    </option>
-                                    <option value="Greys"    >Greys   </option>
-                                    <option value="Greens"   >Greens  </option>
-                                    <option value="Bluered"  >Bluered </option>
-                                    <option value="Hot"      >Hot     </option>
-                                    <option value="Picnic"   >Picnic  </option>
-                                    <option value="Portland" >Portland</option>
-                                    <option value="Jet"      >Jet     </option>
-                                    <option value="Blackbody">Blackbod</option>
-                                    <option value="Earth"    >Earth   </option>
-                                    <option value="Electric" >Electric</option>
-                                </select>
-                            </div>
-                        </form>
-
-                        <!-- Links , buttons, etc. -->
-                        <ul class="nav navbar-nav navbar-right ">
-
-                            <!-- Reload Page -->
-                            <li class="hidden-sm hidden-md hidden-lg">
-                                <div class="btn-group"
-                                    data-toggle="buttons">
-
-                                    <label class="btn btn-labels">
-                                        <span class="glyphicon
-                                            glyphicon-refresh">
-                                            <span class="hidden-xs hidden-sm">
-                                                Reload App
-                                            </span>
-                                        </span>
-                                    </label>
-
-                                    <button class="btn" onclick="reloadPage()">
-                                        Reload page
-                                    </button>
-
-                                </div >
-                            </li>
-
-                        </ul>
-                    </div>
                 </div>
             </nav>
+            -->
 
-
-            <!-- Left side of page -->
-            <div id="leftSideDiv" class="col-xs-12 col-lg-4">
-
-                <!-- The file browser-->
-                <div id="treeSectionDiv" class="col-xs-12">
-
-                    <div >
-                        <span class="glyphicon glyphicon-hdd"></span>
-                        <b>Data Storage</b>
-                    </div>
-
-                    <div class="col-xs-12 " id="jstree_div"></div>
-
-                </div>
-
-            </div>
 
 
             <!-- The plotting canvas and plotting controls -->
             <div id="rightSideDiv" class="col-xs-12 col-lg-8">
 
                 <!-- The plotting canvas will be placed here -->
-                <div id="plotCanvasDiv" class="col-xs-12" ></div>
 
             </div>
 

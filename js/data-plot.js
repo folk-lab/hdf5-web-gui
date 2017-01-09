@@ -585,6 +585,10 @@ function draw2DPlot() {
 
 
 function plotLine(value, nodeTitle) {
+// Plot the data!
+
+    DATA_PLOT.drawText = false;
+
     drawLine(value, nodeTitle);
 }
 
