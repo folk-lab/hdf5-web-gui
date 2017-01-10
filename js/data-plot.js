@@ -72,13 +72,7 @@ function drawEmptyPlot() {
             'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: false,
         showTips: false,
-        // scrollZoom: true,
     };
-    // All options are here:
-    //  https://github.com/plotly/plotly.js/blob/master/src/plot_api/
-    //      plot_config.js
-    //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
-    //      buttons.js
 
     Plotly.purge(DATA_PLOT.plotCanvasDiv);
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
@@ -250,8 +244,13 @@ function drawLine(value, nodeTitle) {
             'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: true,
         showTips: false,
-        // scrollZoom: true,
+        scrollZoom: true,
     };
+    // All options are here:
+    //  https://github.com/plotly/plotly.js/blob/master/src/plot_api/
+    //      plot_config.js
+    //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
+    //      buttons.js
 
     // Present them
     Plotly.purge(DATA_PLOT.plotCanvasDiv);
@@ -315,8 +314,13 @@ function draw3DPlot() {
             'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: true,
         showTips: false,
-        // scrollZoom: true,
+        scrollZoom: true,
     };
+    // All options are here:
+    //  https://github.com/plotly/plotly.js/blob/master/src/plot_api/
+    //      plot_config.js
+    //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
+    //      buttons.js
 
     // Present them
     Plotly.purge(DATA_PLOT.plotCanvasDiv);
@@ -419,7 +423,8 @@ function draw2DPlot() {
         z: DATA_PLOT.dataValues,
         // zmin: 2,
         // zmax: 4,
-        zsmooth: 'best',
+        zsmooth: false,
+        // zsmooth: 'best',
         type: DATA_PLOT.plotType,
         // line: {
         //     smoothing: 0.5
@@ -505,8 +510,13 @@ function draw2DPlot() {
             'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
         displayModeBar: true,
         showTips: false,
-        // scrollZoom: true,
+        scrollZoom: true,
     };
+    // All options are here:
+    //  https://github.com/plotly/plotly.js/blob/master/src/plot_api/
+    //      plot_config.js
+    //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
+    //      buttons.js
 
     Plotly.purge(DATA_PLOT.plotCanvasDiv);
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
