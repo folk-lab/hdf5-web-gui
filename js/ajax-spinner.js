@@ -5,12 +5,24 @@
 // The global variables for this applicaiton
 var AJAX_SPINNER =
     {
-        ajaxLoader          : null,
-        ajaxLoaderTimeOut   : null,
+        ajaxLoader : null,
+        ajaxLoaderTimeOut : null,
+        dataLoading : false,
     },
 
     // Objects from external javascript libraries
     AjaxLoader;
+
+
+// Settings used in all ajax requests
+$.ajaxSetup({
+    type:       'GET',
+    dataType:   'json',
+    async:      true,
+    cache:      false,
+    timeout:    2000
+});
+
 
 function turnOffLoadingIcon(doItFast) {
 
@@ -61,56 +73,53 @@ function createLoadingIcon() {
 }
 
 
-// Settings used in all ajax requests
-$.ajaxSetup({
-type:       'GET',
-dataType:   'json',
-async:      true,
-cache:      false,
-timeout:    700
-});
+function dataIsLoading(isDataLoading) {
+
+    AJAX_SPINNER.dataLoading = isDataLoading;
+}
 
 
 // A method for display a loading icon when ajax does something and then
 // gets a little stuck
 $(document).ajaxStart(function () {
 
-// console.log('ajaxStart');
+    // console.log('ajaxStart');
 
-// If the mysql server is in the middle of being reached (it can have
-// problems) then keep displaying the loading icon, and don't create a new
-// one.
-if (!AJAX_SPINNER.mysqlDataLoading) {
+    // If the mysql server is in the middle of being reached (it can have
+    // problems) then keep displaying the loading icon, and don't create a new
+    // one.
+    //if (!AJAX_SPINNER.dataLoading) {
 
-// Turn on the loading icon, but fade in the modal - looks nicer when
-// ajax is just having small hiccups (less than 900 ms)
-AJAX_SPINNER.ajaxLoader.show();
-AJAX_SPINNER.ajaxLoaderTimeOut = setTimeout(function () {
-$('.modal').fadeIn();
-}, 800); // Waits before fading .modal in
-}
+    // Turn on the loading icon, but fade in the modal - looks nicer when
+    // ajax is just having small hiccups (less than 900 ms)
+    AJAX_SPINNER.ajaxLoader.show();
+    AJAX_SPINNER.ajaxLoaderTimeOut = setTimeout(function () {
+        $('.modal').fadeIn();
+    }, 100); // Waits before fading .modal in
+    //}
 });
+
 
 $(document).ajaxStop(function () {
 
-// console.log('ajaxStop');
+    // console.log('ajaxStop');
 
-// If the mysql server is in the middle of being reached (it can have
-// problems) then keep displaying the loading icon.
-if (!AJAX_SPINNER.mysqlDataLoading) {
+    // If the mysql server is in the middle of being reached (it can have
+    // problems) then keep displaying the loading icon.
+    //if (!AJAX_SPINNER.dataLoading) {
 
-// Cancels if request finished < .5 seconds
-clearTimeout(AJAX_SPINNER.ajaxLoaderTimeOut);
-$('.modal').fadeOut();
+    // Cancels if request finished < .5 seconds
+    clearTimeout(AJAX_SPINNER.ajaxLoaderTimeOut);
+    $('.modal').fadeOut();
 
-// Turn off the loading icon
-setTimeout(function () {
-AJAX_SPINNER.ajaxLoader.hide();
-}, 500);
-}
+    // Turn off the loading icon
+    setTimeout(function () {
+        AJAX_SPINNER.ajaxLoader.hide();
+    }, 500);
+    //}
 });
 
 
 $(document).ready(function () {
     createLoadingIcon();
-}
+});

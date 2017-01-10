@@ -38,9 +38,9 @@
 
         <!-- Load external javascript -->
         <script type="text/javascript" defer
-            src="../js/plotly/plotly-latest.min.js?v=201701010000"></script>
-        <script type="text/javascript" defer
             src="../js/jquery/jquery-3.1.1.min.js?v=201701010000"></script>
+        <script type="text/javascript" defer
+            src="../js/plotly/plotly-latest.min.js?v=201701010000"></script>
         <script type="text/javascript" defer
             src="../js/bootstrap/3.3.7/js/bootstrap.min.js?v=201701010000">
         </script>
@@ -118,7 +118,7 @@
             </div>
 
             <!-- Container for plot canvas and controls -->
-            <div class="container">
+            <div id="plotContainer" class="container">
                 <div
                     class="collapse navbar-collapse col-lg-8">
 
@@ -167,13 +167,12 @@
                 </div>
 
                 <!-- The plotting canvas will be placed here -->
-                <div id="plotCanvasDiv" class="col-xs-12" ></div>
+                <div id="plotCanvasDiv" class="col-xs-12 animate-bottom"
+                    style="display:none;"></div>
 
-            </div>
+                <!-- Process loading icon -->
+                <div id="loader"></div>
 
-            <!-- Process loading icon -->
-            <div class="modal loader-div">
-                <canvas id="spinner" class="loader-canvas"></canvas>
             </div>
 
         </div>

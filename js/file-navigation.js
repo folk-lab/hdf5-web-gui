@@ -554,6 +554,7 @@ function displayImage(inputUrl, selectedId) {
         console.log('valueUrl: ' + valueUrl);
     }
 
+
     // Get the data (from data-retrieval.js), then plot it
     $.when(getData(valueUrl)).then(
         function (response) {
@@ -689,6 +690,7 @@ function getFolderContents(topLevelUrl, selectedId) {
         console.log('topLevelUrl: ' + topLevelUrl);
     }
 
+    showLoadingSpinner(true);
     // Get the url to the links available
     $.when(getTopLevelUrl(topLevelUrl, 'hrefs', 'links')).then(
         function (linksUrl) {
@@ -703,6 +705,7 @@ function getFolderContents(topLevelUrl, selectedId) {
                     if (debug) {
                         console.log(titleList);
                     }
+                    showLoadingSpinner(false);
                 }
             );
         }
@@ -902,6 +905,16 @@ function setTreeDivHeight() {
 $(window).resize(function () {
     setTreeDivHeight();
 });
+
+
+function showLoadingSpinner(showSpinner) {
+    if (showSpinner) {
+        document.getElementById("loader").style.display = "block";
+    } else {
+        document.getElementById("loader").style.display = "none";
+    }
+}
+
 
 
 // This function fires when the page is loaded

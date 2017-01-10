@@ -1,6 +1,7 @@
 /*global $*/
 'use strict';
 
+
 // Global variables
 var DATA_PLOT = {
 
@@ -759,6 +760,8 @@ function calculatePlotSize() {
         windowHeight = $(window).height(),
         appWidth = $('#applicationContainer').width(),
         appHeight = $('#applicationContainer').height(),
+        containerWidth = $('#plotContainer').width(),
+        containerHeight = $('#plotContainer').height(),
         divWidth = $('#plotCanvasDiv').width(),
         divHeight = $('#plotCanvasDiv').height();
 
@@ -769,6 +772,8 @@ function calculatePlotSize() {
         console.log('windowHeight: ' + windowHeight);
         console.log('divWidth:     ' + divWidth);
         console.log('divHeight:    ' + divHeight);
+        console.log('containerWidth:     ' + containerWidth);
+        console.log('containerHeight:    ' + containerHeight);
     }
 
     // DATA_PLOT.plotWidth = divWidth;
@@ -777,7 +782,7 @@ function calculatePlotSize() {
     newPlotDivHeight = windowHeight - 80;
     console.log('newPlotDivHeight: ' + newPlotDivHeight);
     $('#plotCanvasDiv').height(newPlotDivHeight);
-    DATA_PLOT.plotWidth = divWidth;
+    DATA_PLOT.plotWidth = containerWidth;
     DATA_PLOT.plotHeight = newPlotDivHeight;
 }
 
@@ -822,6 +827,12 @@ $(window).resize(function () {
 });
 
 
+function showPlotCanvas() {
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("plotCanvasDiv").style.display = "block";
+}
+
+
 // This function fires when the page is loaded
 $(document).ready(function () {
 
@@ -838,4 +849,6 @@ $(document).ready(function () {
 
     // Display welcome message
     drawText('Welcome!', '(click stuff on the left)', '#3a74ad');
+
+    setTimeout(showPlotCanvas, 300);
 });
