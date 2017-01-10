@@ -1,4 +1,4 @@
-html, body {
+html, BODY {
   height: 100%;
 }
 body {
@@ -45,10 +45,30 @@ body {
   }
 }
 
+
+/*******************/
 /* Jason's changes */
+/*******************/
+
 .navmenu, .navbar-offcanvas {
-    width: 330px;
+    min-width: 330px;
 }
+
+.navmenu-brand {
+    padding-top: 10px;
+    padding-right: 0px;
+    padding-bottom: 10px;
+    padding-left: 0px;
+    margin: 0;
+}
+
+.navbar-brand {
+    padding-top: 10px;
+    padding-right: 0px;
+    padding-bottom: 10px;
+    padding-left: 0px;
+}
+
 /*
 @media (min-width: 1200px) {
     .container {

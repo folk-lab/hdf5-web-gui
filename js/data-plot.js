@@ -764,7 +764,7 @@ function calculatePlotSize() {
     // DATA_PLOT.plotWidth = divWidth;
     // DATA_PLOT.plotHeight = windowHeight - 95;
 
-    newPlotDivHeight = windowHeight - 120;
+    newPlotDivHeight = windowHeight - 80;
     console.log('newPlotDivHeight: ' + newPlotDivHeight);
     $('#plotCanvasDiv').height(newPlotDivHeight);
     DATA_PLOT.plotWidth = divWidth;
@@ -815,11 +815,12 @@ $(window).resize(function () {
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('document is ready');
         $("#plotCanvasDiv").addClass('debugRed');
+        $("#plotControls").addClass('debugBlue');
     }
 
     // Calculate the plot dimensions and save them

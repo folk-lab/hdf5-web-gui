@@ -1,9 +1,28 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
     <head>
 
-        <title>MAX IV HDF5 Viewer</title>
+        <title>MAX IV HDF5 Data Viewer</title>
+
+        <!-- Basic shit -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0,
+                user-scalable=no">
+
+        <!-- No Caching -->
+        <meta http-equiv="Cache-Control"
+            content="no-cache, no-store, must-revalidate"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <meta http-equiv="Expires" content="0"/>
+
+        <!-- Make the app fullscreen on a smartphone. -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="icon" href="../images/rings.png?v=201701010000">
+        <link rel="apple-touch-icon"
+            href="../images/rings.png?v=201701010000">
 
         <!-- Load external css -->
         <link rel="stylesheet"
@@ -14,8 +33,8 @@
         -->
         <link rel="stylesheet"
             href="../css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
-        <link href="../css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css"
-            rel="stylesheet">
+        <link rel="stylesheet"
+            href="../css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css?v=201701010000">
 
         <!-- Load external javascript -->
         <script type="text/javascript" defer
@@ -29,21 +48,21 @@
             src="../js/jstree/3.2.1/jstree.min.js?v=201701010000">
         </script>
         <script type="text/javascript" defer
-            src="../js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js"></script>
+            src="../js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js?v=201701010000"></script>
 
         <!-- Load css for this page -->
         <link rel="stylesheet"
-            href="../css/data-plot-controls.css?v=201701030823"/>
+            href="../css/data-plot-controls.css?v=201701101009"/>
         <link rel="stylesheet"
-            href="../css/navmenu.css">
+            href="../css/navmenu.css?v=201701101009">
 
         <!-- Load javascript for this page -->
         <script type="text/javascript" defer
-            src="../js/data-plot.js?v=201701030823"></script>
+            src="../js/data-plot.js?v=201701101009"></script>
         <script type="text/javascript" defer
-            src="../js/data-retrieval.js?v=201701030823"></script>
+            src="../js/data-retrieval.js?v=201701101009"></script>
         <script type="text/javascript" defer
-            src="../js/file-navigation.js?v=201701030823"></script>
+            src="../js/file-navigation.js?v=201701101009"></script>
 
     </head>
 
@@ -60,6 +79,7 @@
             <div class="navmenu navmenu-default navmenu-fixed-left
                 offcanvas-sm">
 
+                <!-- Brand image and name -->
                 <div class="col-xs-5">
                     <a class="navbar-brand" href="#">
                         <img alt="Brand" id="logoImage"
@@ -74,8 +94,8 @@
                 <!-- The file browser-->
                 <div id="treeSectionDiv" class="col-xs-12">
 
-                    <div >
-                        <span class="glyphicon glyphicon-hdd"></span>
+                    <div class="col-xs-12 ">
+                        <span class="glyphicon glyphicon-hdd">&nbsp;</span>
                         <b>Data Storage</b>
                     </div>
 
@@ -85,21 +105,26 @@
 
             </div>
 
+            <!-- The mobile menu button -->
             <div class="navbar navbar-default navbar-fixed-top hidden-md
                 hidden-lg">
                 <button type="button" class="navbar-toggle"
                     data-toggle="offcanvas" data-target=".navmenu">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+                    <span class="icon-bar">&nbsp;</span>
+                    <span class="icon-bar">&nbsp;</span>
+                    <span class="icon-bar">&nbsp;</span>
                 </button>
                 <a class="navbar-brand" href="#">HDF5 Data Viewer</a>
             </div>
 
+            <!-- Container for plot canvas and controls -->
             <div class="container">
-                <div class="collapse navbar-collapse col-lg-8" id="plotControls">
+                <div
+                    class="collapse navbar-collapse col-lg-8">
 
-                    <form class="navbar-form navbar-left">
+                    <!-- Plot controls -->
+                    <form id="plotControls" class="navbar-form navbar-left">
+
                         <div id="plotTypeButtonDiv"
                             class="col-xs-5 form-group hidden-xs hidden-sm
                             hidden-md hidden-lg" >
@@ -136,48 +161,13 @@
                                 <option value="Electric" >Electric</option>
                             </select>
                         </div>
+
                     </form>
 
                 </div>
 
-                <div id="plotCanvasDiv" class="col-xs-12" ></div>
-
-            </div><!-- /.container -->
-
-
-            <!--
-            <nav class="navbar navbar-default ">
-                <div class="container-fluid">
-
-                    <div class="navbar-header col-lg-4">
-
-                        <button type="button" class="navbar-toggle collapsed"
-                            data-toggle="collapse"
-                            data-target="#plotControls">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar">&nbsp;</span>
-                            <span class="icon-bar">&nbsp;</span>
-                            <span class="icon-bar">&nbsp;</span>
-                        </button>
-
-                        <a class="navbar-brand" href="#">
-                            <img alt="Brand" id="logoImage"
-                               src="../images/maxiv-logo-101x35.png"></a>
-
-                        <a class="navbar-brand" href="#">HDF5 Data Viewer</a>
-
-                    </div>
-
-                </div>
-            </nav>
-            -->
-
-
-
-            <!-- The plotting canvas and plotting controls -->
-            <div id="rightSideDiv" class="col-xs-12 col-lg-8">
-
                 <!-- The plotting canvas will be placed here -->
+                <div id="plotCanvasDiv" class="col-xs-12" ></div>
 
             </div>
 

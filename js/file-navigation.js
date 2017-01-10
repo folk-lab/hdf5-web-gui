@@ -891,7 +891,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 function setTreeDivHeight() {
 
     var window_height = $(window).height(),
-        content_height = window_height - 120;
+        content_height = window_height - 80;
 
     $('#treeSectionDiv').height(content_height);
 
@@ -907,7 +907,7 @@ $(window).resize(function () {
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('document is ready');
