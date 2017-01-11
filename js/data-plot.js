@@ -1,4 +1,4 @@
-/*global $*/
+/*global $, loadingData*/
 'use strict';
 
 
@@ -21,6 +21,11 @@ var DATA_PLOT = {
 
     // External libraries
     Plotly;
+
+
+function purgePlotCanvas() {
+    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+}
 
 
 function drawEmptyPlot() {
@@ -75,7 +80,7 @@ function drawEmptyPlot() {
         showTips: false,
     };
 
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
 }
@@ -188,7 +193,7 @@ function drawText(itemTitle, itemValue, fontColor) {
     //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
     //      buttons.js
 
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
 }
@@ -254,7 +259,7 @@ function drawLine(value, nodeTitle) {
     //      buttons.js
 
     // Present them
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
 }
@@ -324,7 +329,7 @@ function draw3DPlot() {
     //      buttons.js
 
     // Present them
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
 }
@@ -519,7 +524,7 @@ function draw2DPlot() {
     //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
     //      buttons.js
 
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+    purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
 
     // Refill the profile histograms when a zoom event occurs
@@ -601,6 +606,8 @@ function plotLine(value, nodeTitle) {
     DATA_PLOT.drawText = false;
 
     drawLine(value, nodeTitle);
+
+    loadingData(false);
 }
 
 
@@ -614,6 +621,8 @@ function plotData() {
     } else {
         draw2DPlot();
     }
+
+    loadingData(false);
 }
 
 
@@ -655,7 +664,7 @@ function changeColor(colorscale) {
 function toggleLogPlot(useLog) {
 // Switch between the use of log and non-log values
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('useLog: ' + useLog);
@@ -663,7 +672,6 @@ function toggleLogPlot(useLog) {
 
     if (useLog === undefined) {
         DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
-
     } else {
         DATA_PLOT.plotLogValues = useLog;
     }
@@ -755,7 +763,7 @@ function enableImagePlotControls(enableControls) {
 // Calculate the plot size - needs to be improved for small screens
 function calculatePlotSize() {
 
-    var debug = true, newPlotDivHeight,
+    var debug = false, newPlotDivHeight,
         windowWidth = $(window).width(),
         windowHeight = $(window).height(),
         appWidth = $('#applicationContainer').width(),
@@ -764,6 +772,8 @@ function calculatePlotSize() {
         containerHeight = $('#plotContainer').height(),
         divWidth = $('#plotCanvasDiv').width(),
         divHeight = $('#plotCanvasDiv').height();
+
+    newPlotDivHeight = windowHeight - 80;
 
     if (debug) {
         console.log('appWidth:     ' + appWidth);
@@ -774,13 +784,9 @@ function calculatePlotSize() {
         console.log('divHeight:    ' + divHeight);
         console.log('containerWidth:     ' + containerWidth);
         console.log('containerHeight:    ' + containerHeight);
+        console.log('newPlotDivHeight: ' + newPlotDivHeight);
     }
 
-    // DATA_PLOT.plotWidth = divWidth;
-    // DATA_PLOT.plotHeight = windowHeight - 95;
-
-    newPlotDivHeight = windowHeight - 80;
-    console.log('newPlotDivHeight: ' + newPlotDivHeight);
     $('#plotCanvasDiv').height(newPlotDivHeight);
     DATA_PLOT.plotWidth = containerWidth;
     DATA_PLOT.plotHeight = newPlotDivHeight;
@@ -790,7 +796,7 @@ function calculatePlotSize() {
 // This function fires when the browser window is resized
 $(window).resize(function () {
 
-    var debug = true, plotHeight = DATA_PLOT.plotHeight;
+    var debug = false, plotHeight = DATA_PLOT.plotHeight;
 
     if (debug) {
         console.log('wait for it...');
@@ -828,7 +834,7 @@ $(window).resize(function () {
 
 
 function showPlotCanvas() {
-    document.getElementById("loader").style.display = "none";
+    console.log('showPlotCanvas');
     document.getElementById("plotCanvasDiv").style.display = "block";
 }
 
@@ -847,8 +853,8 @@ $(document).ready(function () {
     // Calculate the plot dimensions and save them
     calculatePlotSize();
 
-    // Display welcome message
-    drawText('Welcome!', '(click stuff on the left)', '#3a74ad');
+    // // Display welcome message
+    // drawText('Welcome!', '(click stuff on the left)', '#3a74ad');
 
-    setTimeout(showPlotCanvas, 300);
+    showPlotCanvas();
 });

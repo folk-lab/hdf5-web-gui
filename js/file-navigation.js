@@ -1,6 +1,6 @@
-/*global $, getData, enableImagePlotControls,
-initializeImageData, plotData, plotLine, drawText, readChunkedData,
-toggleLogPlot*/
+/*global $, getData, enableImagePlotControls, initializeImageData, plotData,
+plotLine, drawText, readChunkedData, toggleLogPlot, loadingData,
+purgePlotCanvas*/
 'use strict';
 
 
@@ -20,11 +20,11 @@ var FILE_NAV =
 
 // Settings used in all ajax requests
 $.ajaxSetup({
-    type:       'GET',
-    dataType:   'json',
-    async:      true,
-    cache:      false,
-    timeout:    10000
+    type : 'GET',
+    dataType : 'json',
+    async : true,
+    cache : false,
+    timeout : 10000
 });
 
 
@@ -97,7 +97,7 @@ function getDataValue(dataUrl, getItem) {
 // it's an array, matrix, number, string, or somthing else
 function getDatasetInfo(title, nodeId, targetUrl, responses) {
 
-    var debug = true, dataType = 'none';
+    var debug = false, dataType = 'none';
 
     return $.when(communicateWithServer(targetUrl)).then(
         function (response) {
@@ -118,8 +118,11 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
             if (response.hasOwnProperty('shape')) {
                 if (response.shape.hasOwnProperty('dims')) {
 
-                    console.log(response.shape.dims.length);
-                    console.log(response.shape.dims);
+
+                    if (debug) {
+                        console.log(response.shape.dims.length);
+                        console.log(response.shape.dims);
+                    }
 
                     // These conditions are not correct, need to differentiate
                     // between arrays, images, and single values
@@ -150,7 +153,9 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
             if (dataType === 'none') {
                 if (response.hasOwnProperty('type')) {
                     if (response.type.hasOwnProperty('class')) {
-                        console.log(response.type.class);
+                        if (debug) {
+                            console.log(response.type.class);
+                        }
 
                         if (response.type.class === 'H5T_STRING') {
                             dataType = 'text';
@@ -442,11 +447,16 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
             // been aquired, then add to the jstree object - should proabaly
             // add some timeouts to this
             $.when.apply(null, promises).done(function () {
-                console.log('All Done!');
+
+                if (debug) {
+                    console.log('All Done!');
+                }
 
                 // Update each 'dataset' link item
                 for (i = 0; i < responses.length; i += 1) {
-                    console.log(responses[i]);
+                    if (debug) {
+                        console.log(responses[i]);
+                    }
                     titleList[responses[i].title].dataType =
                         responses[i].dataType;
                 }
@@ -498,6 +508,9 @@ function displayText(inputUrl, inputText, fontColor) {
                     // Display the data
                     enableImagePlotControls(false);
                     drawText(inputText, value, fontColor);
+
+                    // Turn off loader thingy
+                    loadingData(false);
                 }
             );
 
@@ -574,7 +587,7 @@ function displayChunkedImage(targetUrl, nodeId) {
 //  https://support.hdfgroup.org/HDF5/doc/_topic/Chunking/
 //  http://docs.h5py.org/en/latest/high/dataset.html#chunked-storage
 
-    var debug = true;
+    var debug = false;
 
     $.when(communicateWithServer(targetUrl)).then(
         function (response) {
@@ -671,6 +684,9 @@ function getFileContents(inputUrl, selectedId) {
                             if (debug) {
                                 console.log(titleList);
                             }
+
+                            // Turn off loader thingy
+                            loadingData(false);
                         }
                     );
                 }
@@ -690,7 +706,6 @@ function getFolderContents(topLevelUrl, selectedId) {
         console.log('topLevelUrl: ' + topLevelUrl);
     }
 
-    showLoadingSpinner(true);
     // Get the url to the links available
     $.when(getTopLevelUrl(topLevelUrl, 'hrefs', 'links')).then(
         function (linksUrl) {
@@ -705,7 +720,9 @@ function getFolderContents(topLevelUrl, selectedId) {
                     if (debug) {
                         console.log(titleList);
                     }
-                    showLoadingSpinner(false);
+
+                    // Turn off loader thingy
+                    loadingData(false);
                 }
             );
         }
@@ -741,6 +758,13 @@ function getRootDirectoryContents() {
                             if (debug) {
                                 console.log(titleList);
                             }
+
+                            // Turn off loader thingy
+                            loadingData(false);
+
+                            // Display welcome message
+                            drawText('Welcome!', '(click stuff on the left)',
+                                '#3a74ad');
                         }
                     );
                 }
@@ -833,6 +857,9 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
     if (FILE_NAV.processSelectNodeEvent) {
 
+        // Show loader thingy
+        loadingData(true);
+
         // Do different things depending on what type of item has been clicked
 
         switch (data.node.data.type) {
@@ -847,6 +874,9 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
         case 'datasets':
 
+            // Empty the plot canvas, get ready for some new stuff
+            purgePlotCanvas();
+
             switch (data.node.data.dataType) {
 
             case 'chunk':
@@ -858,7 +888,6 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
                 break;
 
             case 'line':
-                // displaySorryMessage(data.node.data.target);
                 displayLine(data.node.data.target, data.selected,
                     data.node.text);
                 break;
@@ -905,16 +934,6 @@ function setTreeDivHeight() {
 $(window).resize(function () {
     setTreeDivHeight();
 });
-
-
-function showLoadingSpinner(showSpinner) {
-    if (showSpinner) {
-        document.getElementById("loader").style.display = "block";
-    } else {
-        document.getElementById("loader").style.display = "none";
-    }
-}
-
 
 
 // This function fires when the page is loaded
