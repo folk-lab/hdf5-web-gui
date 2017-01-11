@@ -834,7 +834,7 @@ $(window).resize(function () {
 
 
 function showPlotCanvas() {
-    console.log('showPlotCanvas');
+    // console.log('showPlotCanvas');
     document.getElementById("plotCanvasDiv").style.display = "block";
 }
 

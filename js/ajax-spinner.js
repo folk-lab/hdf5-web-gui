@@ -5,9 +5,10 @@
 // The global variables for this applicaiton
 var AJAX_SPINNER =
     {
+        debug : false,
+        loadingData : false,
         loaderVisible : true,
         ajaxLoaderTimeOut : null,
-        loadingData : false,
     };
 
 
@@ -21,64 +22,89 @@ $.ajaxSetup({
 });
 
 
-function showLoadingSpinner(showSpinner) {
+function showLoadingSpinner(showSpinner, timeDelay) {
 
-    console.log('showSpinner: ' + showSpinner);
-    console.log('AJAX_SPINNER.loaderVisible:   ' + AJAX_SPINNER.loaderVisible);
-    console.log('AJAX_SPINNER.loadingData:     ' + AJAX_SPINNER.loadingData);
+    AJAX_SPINNER.debug = false;
+
+    if (timeDelay === undefined) {
+        timeDelay = 100;
+    }
+
+    if (AJAX_SPINNER.debug) {
+        console.log('showSpinner: ' + showSpinner);
+        console.log('timeDelay:   ' + timeDelay);
+        console.log('AJAX_SPINNER.loaderVisible:   ' +
+            AJAX_SPINNER.loaderVisible);
+        console.log('AJAX_SPINNER.loadingData:     ' +
+            AJAX_SPINNER.loadingData);
+    }
 
     if (showSpinner) {
         if (!AJAX_SPINNER.loaderVisible) {
 
             AJAX_SPINNER.loaderVisible = true;
 
-            console.log('starting loader in 100 ms');
+            if (AJAX_SPINNER.debug) {
+                console.log('* starting loader in ' + timeDelay + ' ms');
+            }
 
             AJAX_SPINNER.ajaxLoaderTimeOut = setTimeout(function () {
                 document.getElementById("loader").style.display = "block";
                 AJAX_SPINNER.loaderVisible = true;
-                console.log('loader stopped');
-            }, 100);
+
+                if (AJAX_SPINNER.debug) {
+                    console.log('* loader started');
+                }
+            }, timeDelay);
         }
 
     } else {
-        // if (AJAX_SPINNER.loaderVisible && !AJAX_SPINNER.loadingData) {
-        if (!AJAX_SPINNER.loadingData) {
+        if (AJAX_SPINNER.loaderVisible && !AJAX_SPINNER.loadingData) {
+        // if (!AJAX_SPINNER.loadingData) {
 
             // Cancels if request finished before timeout set in ajaxStart()
             clearTimeout(AJAX_SPINNER.ajaxLoaderTimeOut);
             AJAX_SPINNER.loaderVisible = false;
 
-            console.log('stopping loader in 100 ms');
+            if (AJAX_SPINNER.debug) {
+                console.log('~ stopping loader in ' + timeDelay + ' ms');
+            }
 
             // Turn off the loader
             setTimeout(function () {
                 document.getElementById("loader").style.display = "none";
                 AJAX_SPINNER.loaderVisible = false;
-                console.log('loader stopped');
-            }, 100);
+
+                if (AJAX_SPINNER.debug) {
+                    console.log('~ loader stopped');
+                }
+            }, timeDelay);
         }
     }
 
 }
 
 
-function loadingData(areWeLoadingData) {
-    console.log('loadingData: ' + areWeLoadingData);
+function loadingData(areWeLoadingData, timeDelay) {
+    if (AJAX_SPINNER.debug) {
+        console.log('loadingData: ' + areWeLoadingData);
+    }
     AJAX_SPINNER.loadingData = areWeLoadingData;
-    showLoadingSpinner(areWeLoadingData);
+    showLoadingSpinner(areWeLoadingData, timeDelay);
 }
 
 
-// A method for display a loading icon when ajax does something and then
-// gets a little stuck
 $(document).ajaxStart(function () {
-    console.log('ajaxStart');
+    if (AJAX_SPINNER.debug) {
+        console.log('ajaxStart');
+    }
     showLoadingSpinner(true);
 });
 
 
 $(document).ajaxStop(function () {
-    console.log('ajaxStop');
+    if (AJAX_SPINNER.debug) {
+        console.log('ajaxStop');
+    }
     showLoadingSpinner(false);
 });

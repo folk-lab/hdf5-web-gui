@@ -483,7 +483,7 @@ function displaySorryMessage(inputUrl) {
 function displayText(inputUrl, inputText, fontColor) {
 // When a dataset is selected, display whatever text there is
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('inputUrl: ' + inputUrl);
@@ -609,8 +609,10 @@ function displayChunkedImage(targetUrl, nodeId) {
 
                     shapeDims = response.shape.dims;
 
-                    console.log(shapeDims.length);
-                    console.log(shapeDims);
+                    if (debug) {
+                        console.log(shapeDims.length);
+                        console.log(shapeDims);
+                    }
 
                 }
             }
@@ -622,8 +624,10 @@ function displayChunkedImage(targetUrl, nodeId) {
 
                         layoutDims = layout.dims;
 
-                        console.log(layoutDims.length);
-                        console.log(layoutDims);
+                        if (debug) {
+                            console.log(layoutDims.length);
+                            console.log(layoutDims);
+                        }
 
                     }
                 }
@@ -858,17 +862,19 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
     if (FILE_NAV.processSelectNodeEvent) {
 
         // Show loader thingy
-        loadingData(true);
+        // loadingData(true);
 
         // Do different things depending on what type of item has been clicked
 
         switch (data.node.data.type) {
 
         case 'folder':
+            loadingData(true, 200);
             getFolderContents(data.node.data.target, data.selected);
             break;
 
         case 'file':
+            loadingData(true, 200);
             getFileContents(data.node.data.target, data.selected);
             break;
 
@@ -880,23 +886,28 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             switch (data.node.data.dataType) {
 
             case 'chunk':
+                loadingData(true, 100);
                 displayChunkedImage(data.node.data.target, data.selected);
                 break;
 
             case 'image':
+                loadingData(true, 10);
                 displayImage(data.node.data.target, data.selected);
                 break;
 
             case 'line':
+                loadingData(true, 100);
                 displayLine(data.node.data.target, data.selected,
                     data.node.text);
                 break;
 
             case 'number':
+                loadingData(true, 100);
                 displayText(data.node.data.target, data.node.text, '#ad3a3a');
                 break;
 
             case 'text':
+                loadingData(true, 100);
                 displayText(data.node.data.target, data.node.text, '#3a74ad');
                 break;
 
