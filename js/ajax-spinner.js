@@ -5,7 +5,7 @@
 // The global variables for this applicaiton
 var AJAX_SPINNER =
     {
-        debug : false,
+        debug : true,
         loadingData : false,
         loaderVisible : true,
         ajaxLoaderTimeOut : null,
@@ -23,8 +23,6 @@ $.ajaxSetup({
 
 
 function showLoadingSpinner(showSpinner, timeDelay) {
-
-    AJAX_SPINNER.debug = false;
 
     if (timeDelay === undefined) {
         timeDelay = 100;
@@ -59,8 +57,8 @@ function showLoadingSpinner(showSpinner, timeDelay) {
         }
 
     } else {
-        if (AJAX_SPINNER.loaderVisible && !AJAX_SPINNER.loadingData) {
-        // if (!AJAX_SPINNER.loadingData) {
+        // if (AJAX_SPINNER.loaderVisible && !AJAX_SPINNER.loadingData) {
+        if (!AJAX_SPINNER.loadingData) {
 
             // Cancels if request finished before timeout set in ajaxStart()
             clearTimeout(AJAX_SPINNER.ajaxLoaderTimeOut);
@@ -85,12 +83,27 @@ function showLoadingSpinner(showSpinner, timeDelay) {
 }
 
 
-function loadingData(areWeLoadingData, timeDelay) {
+function startLoadingData(timeDelay) {
+
     if (AJAX_SPINNER.debug) {
-        console.log('loadingData: ' + areWeLoadingData);
+        console.log('loadingData');
     }
-    AJAX_SPINNER.loadingData = areWeLoadingData;
-    showLoadingSpinner(areWeLoadingData, timeDelay);
+
+    AJAX_SPINNER.loadingData = true;
+
+    showLoadingSpinner(true, timeDelay);
+}
+
+
+function doneLoadingData() {
+
+    if (AJAX_SPINNER.debug) {
+        console.log('doneLoadingData');
+    }
+
+    AJAX_SPINNER.loadingData = false;
+
+    showLoadingSpinner(false, 50);
 }
 
 
