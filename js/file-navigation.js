@@ -1,5 +1,5 @@
 /*global $, getData, enableImagePlotControls, initializeImageData, plotData,
-plotLine, drawText, readChunkedData, toggleLogPlot, loadingData,
+plotLine, drawText, readChunkedData, startLoadingData,
 purgePlotCanvas*/
 'use strict';
 
@@ -508,9 +508,6 @@ function displayText(inputUrl, inputText, fontColor) {
                     // Display the data
                     enableImagePlotControls(false);
                     drawText(inputText, value, fontColor);
-
-                    // Turn off loader thingy
-                    loadingData(false);
                 }
             );
 
@@ -639,7 +636,6 @@ function displayChunkedImage(targetUrl, nodeId) {
                     // Plotting functions from data-plot.js
                     enableImagePlotControls(true);
                     initializeImageData(completeImage);
-                    toggleLogPlot(false);
                     plotData();
                 }
             );
@@ -688,9 +684,6 @@ function getFileContents(inputUrl, selectedId) {
                             if (debug) {
                                 console.log(titleList);
                             }
-
-                            // Turn off loader thingy
-                            loadingData(false);
                         }
                     );
                 }
@@ -724,9 +717,6 @@ function getFolderContents(topLevelUrl, selectedId) {
                     if (debug) {
                         console.log(titleList);
                     }
-
-                    // Turn off loader thingy
-                    loadingData(false);
                 }
             );
         }
@@ -762,9 +752,6 @@ function getRootDirectoryContents() {
                             if (debug) {
                                 console.log(titleList);
                             }
-
-                            // Turn off loader thingy
-                            loadingData(false);
 
                             // Display welcome message
                             drawText('Welcome!', '(click stuff on the left)',
@@ -861,20 +848,15 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
     if (FILE_NAV.processSelectNodeEvent) {
 
-        // Show loader thingy
-        // loadingData(true);
-
         // Do different things depending on what type of item has been clicked
 
         switch (data.node.data.type) {
 
         case 'folder':
-            loadingData(true, 200);
             getFolderContents(data.node.data.target, data.selected);
             break;
 
         case 'file':
-            loadingData(true, 200);
             getFileContents(data.node.data.target, data.selected);
             break;
 
@@ -886,28 +868,26 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             switch (data.node.data.dataType) {
 
             case 'chunk':
-                loadingData(true, 100);
+                startLoadingData(10);
                 displayChunkedImage(data.node.data.target, data.selected);
                 break;
 
             case 'image':
-                loadingData(true, 10);
+                startLoadingData(10);
                 displayImage(data.node.data.target, data.selected);
                 break;
 
             case 'line':
-                loadingData(true, 100);
+                startLoadingData(10);
                 displayLine(data.node.data.target, data.selected,
                     data.node.text);
                 break;
 
             case 'number':
-                loadingData(true, 100);
                 displayText(data.node.data.target, data.node.text, '#ad3a3a');
                 break;
 
             case 'text':
-                loadingData(true, 100);
                 displayText(data.node.data.target, data.node.text, '#3a74ad');
                 break;
 

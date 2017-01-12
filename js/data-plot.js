@@ -1,4 +1,4 @@
-/*global $, loadingData*/
+/*global $, doneLoadingData, startLoadingData*/
 'use strict';
 
 
@@ -81,7 +81,9 @@ function drawEmptyPlot() {
     };
 
     purgePlotCanvas();
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -194,7 +196,9 @@ function drawText(itemTitle, itemValue, fontColor) {
     //      buttons.js
 
     purgePlotCanvas();
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -260,7 +264,9 @@ function drawLine(value, nodeTitle) {
 
     // Present them
     purgePlotCanvas();
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -330,7 +336,9 @@ function draw3DPlot() {
 
     // Present them
     purgePlotCanvas();
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -525,7 +533,9 @@ function draw2DPlot() {
     //      buttons.js
 
     purgePlotCanvas();
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
     // Refill the profile histograms when a zoom event occurs
     // Why isn't this done already in the plotly library?!
@@ -607,7 +617,7 @@ function plotLine(value, nodeTitle) {
 
     drawLine(value, nodeTitle);
 
-    loadingData(false);
+
 }
 
 
@@ -622,7 +632,6 @@ function plotData() {
         draw2DPlot();
     }
 
-    loadingData(false);
 }
 
 
@@ -670,6 +679,11 @@ function toggleLogPlot(useLog) {
         console.log('useLog: ' + useLog);
     }
 
+    // Clear the plot and start the laoder, as this can take some time when
+    // the plot has many points
+    purgePlotCanvas();
+    startLoadingData(10);
+
     if (useLog === undefined) {
         DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
     } else {
@@ -694,7 +708,11 @@ function toggleLogPlot(useLog) {
     //     z: [DATA_PLOT.dataValues],
     // }, [0]);
 
-    plotData();
+    setTimeout(function () {
+        plotData();
+    }, 20);
+    //
+    // plotData();
 }
 
 
@@ -852,9 +870,6 @@ $(document).ready(function () {
 
     // Calculate the plot dimensions and save them
     calculatePlotSize();
-
-    // // Display welcome message
-    // drawText('Welcome!', '(click stuff on the left)', '#3a74ad');
 
     showPlotCanvas();
 });
