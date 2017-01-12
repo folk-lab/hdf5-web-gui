@@ -47,6 +47,50 @@ function getData(dataValueUrl) {
 }
 
 
+function readImageSeries(targetUrl, nodeId, shapeDims, sliceIndex) {
+
+    var debug = true, valueUrl, chunks, matrix, numChunkRows,
+        numChunkColumns, sliceStart,  sliceEnd;
+
+
+    if (debug) {
+        console.log('shapeDims: ' + shapeDims);
+    }
+
+    // The slice
+    sliceStart = sliceIndex;
+    sliceEnd = sliceStart + 1;
+
+    // Create the url that gets the data from the server, slice and dice the
+    // data
+    valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
+        '&select=[' + sliceStart + ':' + sliceEnd + ',:,:]';
+
+    if (debug) {
+        console.log('valueUrl: ' + valueUrl);
+    }
+
+    // Get the data (from data-retrieval.js), then plot it
+    return $.when(getData(valueUrl)).then(
+        function (response) {
+
+            chunks = response.value;
+            // Each chunk should be a matrix (2D array)
+            matrix = chunks[0];
+            numChunkRows = matrix.length;
+            numChunkColumns = matrix[0].length;
+            if (debug) {
+                console.log('numChunkRows:     ' + numChunkRows);
+                console.log('numChunkColumns : ' + numChunkColumns);
+            }
+
+            return matrix;
+        }
+    );
+
+}
+
+
 function readChunkedData(targetUrl, nodeId, shapeDims) {
 
     var debug = true, valueUrl, chunks, matrix, numChunks, numChunkRows,

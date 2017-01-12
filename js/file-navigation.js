@@ -1,6 +1,5 @@
 /*global $, getData, enableImagePlotControls, initializeImageData, plotData,
-plotLine, drawText, readChunkedData, startLoadingData,
-purgePlotCanvas*/
+plotLine, drawText, readImageSeries, startLoadingData, purgePlotCanvas*/
 'use strict';
 
 
@@ -127,13 +126,7 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                     // These conditions are not correct, need to differentiate
                     // between arrays, images, and single values
                     if (response.shape.dims.length === 3) {
-                        // WTF is this data? Need to ask Zdenek, example in:
-                        //  1.5_bar_cryo_pressure_2nd_run.h5
-                        //      → entry → detector → data
-                        dataType = 'chunk';
-                        // Maybe it's eom way to store large images?:
-                        //  http://docs.h5py.org/en/latest/high/
-                        //      dataset.html#chunked-storage
+                        dataType = 'image-series';
                     }
 
                     if (response.shape.dims.length === 2) {
@@ -258,7 +251,7 @@ function addToTree(itemList, selectedId, createNewTree) {
 
                     if (itemList[keyTitle].dataType) {
                         switch (itemList[keyTitle].dataType) {
-                        case 'chunk':
+                        case 'image-series':
                             icon = 'glyphicon glyphicon-certificate';
                             break;
                         case 'image':
@@ -587,11 +580,8 @@ function displayImage(inputUrl, selectedId) {
 }
 
 
-// Deal with chunked images/data
-function displayChunkedImage(targetUrl, nodeId) {
-// Help!:
-//  https://support.hdfgroup.org/HDF5/doc/_topic/Chunking/
-//  http://docs.h5py.org/en/latest/high/dataset.html#chunked-storage
+// Deal with image series
+function displayImageSeries(targetUrl, nodeId) {
 
     var debug = false;
 
@@ -639,7 +629,7 @@ function displayChunkedImage(targetUrl, nodeId) {
                 }
             }
 
-            $.when(readChunkedData(targetUrl, nodeId, shapeDims)).then(
+            $.when(readImageSeries(targetUrl, nodeId, shapeDims, 0)).then(
                 function (completeImage) {
 
                     // Plotting functions from data-plot.js
@@ -876,9 +866,9 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             switch (data.node.data.dataType) {
 
-            case 'chunk':
+            case 'image-series':
                 startLoadingData(10);
-                displayChunkedImage(data.node.data.target, data.selected);
+                displayImageSeries(data.node.data.target, data.selected);
                 break;
 
             case 'image':
@@ -939,7 +929,7 @@ $(window).resize(function () {
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.log('document is ready');

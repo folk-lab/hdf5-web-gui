@@ -7,7 +7,7 @@ var DATA_PLOT = {
 
     plotCanvasDiv : document.getElementById('plotCanvasDiv'),
     colorScale : 'RdBu',
-    plotLogValues : true,
+    plotLogValues : false,
     plotType : 'heatmap',
     drawText : false,
     initialDataValues : [],
@@ -781,7 +781,7 @@ function enableImagePlotControls(enableControls) {
 // Calculate the plot size - needs to be improved for small screens
 function calculatePlotSize() {
 
-    var debug = false, newPlotDivHeight,
+    var debug = true, newPlotDivHeight, newPlotDivWidth,
         windowWidth = $(window).width(),
         windowHeight = $(window).height(),
         appWidth = $('#applicationContainer').width(),
@@ -792,6 +792,7 @@ function calculatePlotSize() {
         divHeight = $('#plotCanvasDiv').height();
 
     newPlotDivHeight = windowHeight - 80;
+    newPlotDivWidth = containerWidth - 40;
 
     if (debug) {
         console.log('appWidth:     ' + appWidth);
@@ -800,13 +801,14 @@ function calculatePlotSize() {
         console.log('windowHeight: ' + windowHeight);
         console.log('divWidth:     ' + divWidth);
         console.log('divHeight:    ' + divHeight);
-        console.log('containerWidth:     ' + containerWidth);
-        console.log('containerHeight:    ' + containerHeight);
+        console.log('containerWidth:   ' + containerWidth);
+        console.log('containerHeight:  ' + containerHeight);
         console.log('newPlotDivHeight: ' + newPlotDivHeight);
+        console.log('newPlotDivWidth:  ' + newPlotDivWidth);
     }
 
     $('#plotCanvasDiv').height(newPlotDivHeight);
-    DATA_PLOT.plotWidth = containerWidth;
+    DATA_PLOT.plotWidth = newPlotDivWidth;
     DATA_PLOT.plotHeight = newPlotDivHeight;
 }
 
@@ -860,7 +862,7 @@ function showPlotCanvas() {
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.log('document is ready');

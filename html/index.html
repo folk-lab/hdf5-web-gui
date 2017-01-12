@@ -124,7 +124,7 @@
                 <div
                     class="collapse navbar-collapse col-lg-8">
 
-                    <!-- Plot controls -->
+                    <!-- Image Plot Controls -->
                     <form id="plotControls" class="navbar-form navbar-left">
 
                         <div id="plotTypeButtonDiv"
@@ -139,9 +139,9 @@
 
                         <div id="logButtonDiv" class="col-xs-4
                             hidden-xs hidden-sm hidden-md hidden-lg" >
-                            <button type="button" class="btn btn-success"
+                            <button type="button" class="btn"
                                 id="logPlotButton"
-                                onclick="toggleLogPlot()" > Log Plot!
+                                onclick="toggleLogPlot()" > Log Plot?
                             </button>
                         </div>
 
@@ -164,6 +164,38 @@
                             </select>
                         </div>
 
+                    </form>
+
+                    <!-- Image Series Control -->
+                    <form id="plotControls" class="navbar-form navbar-left">
+                        <div class="center">
+                            <div class="input-group">
+
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-danger
+                                        btn-number"  data-type="minus"
+                                        data-field="quant[2]">
+                                        <span
+                                            class="glyphicon glyphicon-minus">
+                                        </span>
+                                    </button>
+                                </span>
+
+                                <input type="text" name="quant[2]"
+                                    class="form-control input-number"
+                                    value="10" min="1" max="100">
+
+                                <span class="input-group-btn">
+                                    <button type="button"
+                                        class="btn btn-success btn-number"
+                                        data-type="plus" data-field="quant[2]">
+                                        <span class="glyphicon glyphicon-plus">
+                                        </span>
+                                    </button>
+                                </span>
+
+                            </div>
+                        </div>
                     </form>
 
                 </div>
