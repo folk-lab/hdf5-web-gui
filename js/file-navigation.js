@@ -227,7 +227,7 @@ function addToTree(itemList, selectedId, createNewTree) {
 // Add new item to the file browser tree
 
     var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
-        doesNodeExist = false, needToRefresh = false;
+        doesNodeExist = false, dotFile = false, needToRefresh = false;
 
     if (createNewTree) {
         FILE_NAV.jstreeDict = [];
@@ -239,6 +239,9 @@ function addToTree(itemList, selectedId, createNewTree) {
                 console.log(keyTitle + " -> " + itemList[keyTitle].target);
                 console.log(keyTitle + " -> " + itemList[keyTitle].dataType);
             }
+
+            doesNodeExist = false;
+            dotFile = false;
 
             // Folders and datasets within HDF5 files
             if (itemList[keyTitle].id) {
@@ -284,6 +287,12 @@ function addToTree(itemList, selectedId, createNewTree) {
                 treeId = itemList[keyTitle].h5domain;
                 type = 'file';
                 icon = '../images/hdf5-16px.png';
+
+                // Check for dot-files, which are proabably the h5serv created
+                // files, and should not be served by h5serv, yet they are...
+                if (keyTitle.indexOf('.') === 0) {
+                    dotFile = true;
+                }
             }
 
             // Check if this id exists already
@@ -292,7 +301,7 @@ function addToTree(itemList, selectedId, createNewTree) {
             }
 
             // If this has not already been added to the tree, add it
-            if (!doesNodeExist) {
+            if (!doesNodeExist && !dotFile) {
                 FILE_NAV.jstreeDict.push({
 
                     // The key-value pairs needed by jstree
