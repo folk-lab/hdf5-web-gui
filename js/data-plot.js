@@ -1,4 +1,4 @@
-/*global $, doneLoadingData*/
+/*global $, doneLoadingData, startLoadingData*/
 'use strict';
 
 
@@ -679,6 +679,11 @@ function toggleLogPlot(useLog) {
         console.log('useLog: ' + useLog);
     }
 
+    // Clear the plot and start the laoder, as this can take some time when
+    // the plot has many points
+    purgePlotCanvas();
+    startLoadingData(10);
+
     if (useLog === undefined) {
         DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
     } else {
@@ -703,7 +708,11 @@ function toggleLogPlot(useLog) {
     //     z: [DATA_PLOT.dataValues],
     // }, [0]);
 
-    plotData();
+    setTimeout(function () {
+        plotData();
+    }, 20);
+    //
+    // plotData();
 }
 
 

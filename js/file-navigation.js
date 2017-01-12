@@ -1,5 +1,5 @@
 /*global $, getData, enableImagePlotControls, initializeImageData, plotData,
-plotLine, drawText, readChunkedData, toggleLogPlot, startLoadingData,
+plotLine, drawText, readChunkedData, startLoadingData,
 purgePlotCanvas*/
 'use strict';
 
@@ -636,7 +636,6 @@ function displayChunkedImage(targetUrl, nodeId) {
                     // Plotting functions from data-plot.js
                     enableImagePlotControls(true);
                     initializeImageData(completeImage);
-                    toggleLogPlot(false);
                     plotData();
                 }
             );
