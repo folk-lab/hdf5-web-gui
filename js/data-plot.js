@@ -1,5 +1,6 @@
-/*global $*/
+/*global $, doneLoadingData, startLoadingData*/
 'use strict';
+
 
 // Global variables
 var DATA_PLOT = {
@@ -20,6 +21,11 @@ var DATA_PLOT = {
 
     // External libraries
     Plotly;
+
+
+function purgePlotCanvas() {
+    Plotly.purge(DATA_PLOT.plotCanvasDiv);
+}
 
 
 function drawEmptyPlot() {
@@ -74,8 +80,10 @@ function drawEmptyPlot() {
         showTips: false,
     };
 
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    purgePlotCanvas();
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -187,8 +195,10 @@ function drawText(itemTitle, itemValue, fontColor) {
     //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
     //      buttons.js
 
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    purgePlotCanvas();
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -253,8 +263,10 @@ function drawLine(value, nodeTitle) {
     //      buttons.js
 
     // Present them
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    purgePlotCanvas();
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -323,8 +335,10 @@ function draw3DPlot() {
     //      buttons.js
 
     // Present them
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    purgePlotCanvas();
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
 }
 
@@ -518,8 +532,10 @@ function draw2DPlot() {
     //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
     //      buttons.js
 
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options);
+    purgePlotCanvas();
+    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
+        doneLoadingData()
+    );
 
     // Refill the profile histograms when a zoom event occurs
     // Why isn't this done already in the plotly library?!
@@ -600,6 +616,8 @@ function plotLine(value, nodeTitle) {
     DATA_PLOT.drawText = false;
 
     drawLine(value, nodeTitle);
+
+
 }
 
 
@@ -613,6 +631,7 @@ function plotData() {
     } else {
         draw2DPlot();
     }
+
 }
 
 
@@ -654,15 +673,19 @@ function changeColor(colorscale) {
 function toggleLogPlot(useLog) {
 // Switch between the use of log and non-log values
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('useLog: ' + useLog);
     }
 
+    // Clear the plot and start the laoder, as this can take some time when
+    // the plot has many points
+    purgePlotCanvas();
+    startLoadingData(10);
+
     if (useLog === undefined) {
         DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
-
     } else {
         DATA_PLOT.plotLogValues = useLog;
     }
@@ -685,7 +708,11 @@ function toggleLogPlot(useLog) {
     //     z: [DATA_PLOT.dataValues],
     // }, [0]);
 
-    plotData();
+    setTimeout(function () {
+        plotData();
+    }, 20);
+    //
+    // plotData();
 }
 
 
@@ -754,13 +781,17 @@ function enableImagePlotControls(enableControls) {
 // Calculate the plot size - needs to be improved for small screens
 function calculatePlotSize() {
 
-    var debug = true, newPlotDivHeight,
+    var debug = false, newPlotDivHeight,
         windowWidth = $(window).width(),
         windowHeight = $(window).height(),
         appWidth = $('#applicationContainer').width(),
         appHeight = $('#applicationContainer').height(),
+        containerWidth = $('#plotContainer').width(),
+        containerHeight = $('#plotContainer').height(),
         divWidth = $('#plotCanvasDiv').width(),
         divHeight = $('#plotCanvasDiv').height();
+
+    newPlotDivHeight = windowHeight - 80;
 
     if (debug) {
         console.log('appWidth:     ' + appWidth);
@@ -769,15 +800,13 @@ function calculatePlotSize() {
         console.log('windowHeight: ' + windowHeight);
         console.log('divWidth:     ' + divWidth);
         console.log('divHeight:    ' + divHeight);
+        console.log('containerWidth:     ' + containerWidth);
+        console.log('containerHeight:    ' + containerHeight);
+        console.log('newPlotDivHeight: ' + newPlotDivHeight);
     }
 
-    // DATA_PLOT.plotWidth = divWidth;
-    // DATA_PLOT.plotHeight = windowHeight - 95;
-
-    newPlotDivHeight = windowHeight - 80;
-    console.log('newPlotDivHeight: ' + newPlotDivHeight);
     $('#plotCanvasDiv').height(newPlotDivHeight);
-    DATA_PLOT.plotWidth = divWidth;
+    DATA_PLOT.plotWidth = containerWidth;
     DATA_PLOT.plotHeight = newPlotDivHeight;
 }
 
@@ -785,7 +814,7 @@ function calculatePlotSize() {
 // This function fires when the browser window is resized
 $(window).resize(function () {
 
-    var debug = true, plotHeight = DATA_PLOT.plotHeight;
+    var debug = false, plotHeight = DATA_PLOT.plotHeight;
 
     if (debug) {
         console.log('wait for it...');
@@ -822,6 +851,12 @@ $(window).resize(function () {
 });
 
 
+function showPlotCanvas() {
+    // console.log('showPlotCanvas');
+    document.getElementById("plotCanvasDiv").style.display = "block";
+}
+
+
 // This function fires when the page is loaded
 $(document).ready(function () {
 
@@ -836,6 +871,5 @@ $(document).ready(function () {
     // Calculate the plot dimensions and save them
     calculatePlotSize();
 
-    // Display welcome message
-    drawText('Welcome!', '(click stuff on the left)', '#3a74ad');
+    showPlotCanvas();
 });
