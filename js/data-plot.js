@@ -1,4 +1,4 @@
-/*global $, doneLoadingData, startLoadingData*/
+/*global $, doneLoadingData, startLoadingData, readImageSeries*/
 'use strict';
 
 
@@ -17,6 +17,10 @@ var DATA_PLOT = {
     plotWidth : 550,
     plotHeight : 550,
     useDarkTheme : false,
+
+    imageSeriesTargetUrl : undefined,
+    imageSeriesNodeId : undefined,
+    imageSeriesShapeDims : undefined,
 },
 
     // External libraries
@@ -308,11 +312,11 @@ function draw3DPlot() {
             xaxis: {
                 title: 'x',
             },
-            // zaxis: {
-            //     title: 'z blah',
-            //     type: 'log',
-            //     autorange: true
-            // }
+            zaxis: {
+                title: 'z blah',
+                type: 'linear',
+                autorange: true
+            }
         }
     };
 
@@ -673,7 +677,7 @@ function changeColor(colorscale) {
 function toggleLogPlot(useLog) {
 // Switch between the use of log and non-log values
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.log('useLog: ' + useLog);
@@ -681,8 +685,8 @@ function toggleLogPlot(useLog) {
 
     // Clear the plot and start the laoder, as this can take some time when
     // the plot has many points
-    purgePlotCanvas();
-    startLoadingData(10);
+    // purgePlotCanvas();
+    //startLoadingData(10);
 
     if (useLog === undefined) {
         DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
@@ -691,11 +695,17 @@ function toggleLogPlot(useLog) {
     }
 
     if (DATA_PLOT.plotLogValues) {
+        if (debug) {
+            console.log('Log Plot!');
+        }
         $("#logPlotButton").html('Log Plot!');
         $("#logPlotButton").addClass('btn-success');
 
         DATA_PLOT.dataValues = DATA_PLOT.logOfDataValues;
     } else {
+        if (debug) {
+            console.log('Log Plot?');
+        }
         $("#logPlotButton").html('Log Plot?');
         $("#logPlotButton").removeClass('btn-success');
 
@@ -704,13 +714,15 @@ function toggleLogPlot(useLog) {
 
     // I can't get this restyle command to work quite right yet with log scales
     // & colorscheme... the scale of the colorbar is all off :(
-    // Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
-    //     z: [DATA_PLOT.dataValues],
-    // }, [0]);
+    // setTimeout(function () {
+    Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
+        z: [DATA_PLOT.dataValues],
+    }, [0]);
+    //}, 20);
 
-    setTimeout(function () {
-        plotData();
-    }, 20);
+    // setTimeout(function () {
+    //     plotData();
+    // }, 20);
     //
     // plotData();
 }
@@ -775,6 +787,81 @@ function enableImagePlotControls(enableControls) {
         }
     }
 
+}
+
+
+// Handle increment click events
+$('.btn-number').click(function (e) {
+
+    var fieldName, type, input, currentVal;
+
+    e.preventDefault();
+
+    fieldName = $(this).attr('data-field');
+    type = $(this).attr('data-type');
+    input = $("input[name='" + fieldName + "']");
+    currentVal = parseInt(input.val(), 10);
+
+    if (!isNaN(currentVal)) {
+        if (type === 'minus') {
+
+            if (currentVal > input.attr('min')) {
+                input.val(currentVal - 1).change();
+            }
+            if (currentVal === input.attr('min')) {
+                $(this).attr('disabled', true);
+            }
+
+        } else if (type === 'plus') {
+
+            if (currentVal < input.attr('max')) {
+                input.val(currentVal + 1).change();
+            }
+            if (currentVal === input.attr('max')) {
+                $(this).attr('disabled', true);
+            }
+
+        }
+    } else {
+        input.val(0);
+    }
+});
+
+
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
+function imageSeriesInput(value) {
+    console.log('imageSeriesInput: ' + value);
+
+    if (isNumeric(value)) {
+        if (value >= 0 && value <= 10000000) {
+            $.when(readImageSeries(DATA_PLOT.imageSeriesTargetUrl,
+                DATA_PLOT.imageSeriesNodeId, DATA_PLOT.imageSeriesShapeDims,
+                value)).then(
+                function (completeImage) {
+                    initializeImageData(completeImage);
+                    // plotData();
+
+                    // I can't get this restyle command to work quite right yet
+                    // with log scales & colorscheme... the scale of the
+                    // colorbar is all off :(
+                    Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
+                        z: [DATA_PLOT.dataValues],
+                    }, [0]);
+                }
+            );
+        }
+    }
+}
+
+
+function saveImageSeriesInfo(targetUrl, nodeId, shapeDims) {
+    DATA_PLOT.imageSeriesTargetUrl = targetUrl;
+    DATA_PLOT.imageSeriesNodeId = nodeId;
+    DATA_PLOT.imageSeriesShapeDims = shapeDims;
 }
 
 

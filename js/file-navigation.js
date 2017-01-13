@@ -1,5 +1,6 @@
 /*global $, getData, enableImagePlotControls, initializeImageData, plotData,
-plotLine, drawText, readImageSeries, startLoadingData, purgePlotCanvas*/
+plotLine, drawText, readImageSeries, startLoadingData, purgePlotCanvas,
+saveImageSeriesInfo*/
 'use strict';
 
 
@@ -580,11 +581,12 @@ function displayImage(inputUrl, selectedId) {
 }
 
 
-// Deal with image series
+// Deal with an image series
 function displayImageSeries(targetUrl, nodeId) {
 
     var debug = false;
 
+    // Get some information about this dataset
     $.when(communicateWithServer(targetUrl)).then(
         function (response) {
 
@@ -629,6 +631,10 @@ function displayImageSeries(targetUrl, nodeId) {
                 }
             }
 
+            // Save some information about the image series
+            saveImageSeriesInfo(targetUrl, nodeId, shapeDims);
+
+            // Get the first image in the series and display it
             $.when(readImageSeries(targetUrl, nodeId, shapeDims, 0)).then(
                 function (completeImage) {
 
@@ -636,6 +642,7 @@ function displayImageSeries(targetUrl, nodeId) {
                     enableImagePlotControls(true);
                     initializeImageData(completeImage);
                     plotData();
+
                 }
             );
         }

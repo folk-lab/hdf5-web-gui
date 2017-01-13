@@ -97,7 +97,7 @@
                 <div id="treeSectionDiv" class="col-xs-12">
 
                     <div class="col-xs-12 ">
-                        <span class="glyphicon glyphicon-hdd">&nbsp;</span>
+                        <div class="glyphicon glyphicon-hdd">&nbsp;</div>
                         <b>Data Storage</b>
                     </div>
 
@@ -167,36 +167,33 @@
                     </form>
 
                     <!-- Image Series Control -->
-                    <form id="plotControls" class="navbar-form navbar-left">
-                        <div class="center">
-                            <div class="input-group">
+                    <div class="input-group col-xs-4">
 
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-danger
-                                        btn-number"  data-type="minus"
-                                        data-field="quant[2]">
-                                        <span
-                                            class="glyphicon glyphicon-minus">
-                                        </span>
-                                    </button>
-                                </span>
-
-                                <input type="text" name="quant[2]"
-                                    class="form-control input-number"
-                                    value="10" min="1" max="100">
-
-                                <span class="input-group-btn">
-                                    <button type="button"
-                                        class="btn btn-success btn-number"
-                                        data-type="plus" data-field="quant[2]">
-                                        <span class="glyphicon glyphicon-plus">
-                                        </span>
-                                    </button>
-                                </span>
-
-                            </div>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-danger
+                                btn-number"  data-type="minus"
+                                data-field="quant[2]">
+                                <div class="glyphicon glyphicon-minus">
+                                    &nbsp; </div>
+                            </button>
                         </div>
-                    </form>
+
+                        <input type="text" name="quant[2]"
+                            class="form-control input-number"
+                            value="0" min="0" max="1000000"
+                            maxlength="7" size="7"
+                            onchange="imageSeriesInput(value);">
+
+                        <div class="input-group-btn">
+                            <button type="button"
+                                class="btn btn-success btn-number"
+                                data-type="plus" data-field="quant[2]">
+                                <div class="glyphicon glyphicon-plus">
+                                    &nbsp; </div>
+                            </button>
+                        </div>
+
+                    </div>
 
                 </div>
 

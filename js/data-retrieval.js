@@ -58,8 +58,8 @@ function readImageSeries(targetUrl, nodeId, shapeDims, sliceIndex) {
     }
 
     // The slice
-    sliceStart = sliceIndex;
-    sliceEnd = sliceStart + 1;
+    sliceStart = Number(sliceIndex);
+    sliceEnd = Number(sliceStart + 1);
 
     // Create the url that gets the data from the server, slice and dice the
     // data
