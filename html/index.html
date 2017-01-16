@@ -132,8 +132,9 @@
                             hidden-md hidden-lg" >
                             <select class="form-control" id="selectPlotType"
                                 onchange="changeType(value);" >
-                                <option value="heatmap">2D Heatmap</option>
-                                <option value="surface">3D Surface</option>
+                                <option value="heatmap">2D + profiles
+                                </option>
+                                <option value="surface">3D</option>
                             </select>
                         </div>
 
@@ -166,40 +167,47 @@
 
                     </form>
 
-                    <!-- Image Series Control -->
-                    <div class="input-group col-xs-4">
+                </div>
 
-                        <div class="input-group-btn">
+                <!-- The plotting canvas will be placed here -->
+                <div id="plotCanvasDiv" class="col-xs-12 animate-bottom"
+                    style="display:none;"></div>
+
+                <div class="col-xs-12">
+                    <!-- Image Series Control -->
+                    <div class="input-group col-xs-4 col-lg-3">
+
+                        <!-- Minus button -->
+                        <div id="minusButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
                             <button type="button" class="btn btn-danger
                                 btn-number"  data-type="minus"
-                                data-field="quant[2]">
-                                <div class="glyphicon glyphicon-minus">
-                                    &nbsp; </div>
+                                data-field="quant[0]">
+                                <div class="glyphicon glyphicon-minus"> </div>
                             </button>
                         </div>
 
-                        <input type="text" name="quant[2]"
-                            class="form-control input-number"
+                        <!-- Display and enter values -->
+                        <input id="inputNumberDiv" type="text" name="quant[0]"
+                            class="form-control input-number
+                                hidden-xs hidden-sm hidden-md hidden-lg"
                             value="0" min="0" max="1000000"
                             maxlength="7" size="7"
                             onchange="imageSeriesInput(value);">
 
-                        <div class="input-group-btn">
+                        <!-- Plus button -->
+                        <div id="plusButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
                             <button type="button"
                                 class="btn btn-success btn-number"
-                                data-type="plus" data-field="quant[2]">
-                                <div class="glyphicon glyphicon-plus">
-                                    &nbsp; </div>
+                                data-type="plus" data-field="quant[0]">
+                                <div class="glyphicon glyphicon-plus"> </div>
                             </button>
                         </div>
 
                     </div>
 
                 </div>
-
-                <!-- The plotting canvas will be placed here -->
-                <div id="plotCanvasDiv" class="col-xs-12 animate-bottom"
-                    style="display:none;"></div>
 
                 <!-- Process loading icon -->
                 <div id="loader" ></div>

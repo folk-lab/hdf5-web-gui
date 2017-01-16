@@ -12,16 +12,6 @@ var AJAX_SPINNER =
     };
 
 
-// Settings used in all ajax requests
-$.ajaxSetup({
-    type:       'GET',
-    dataType:   'json',
-    async:      true,
-    cache:      false,
-    timeout:    2000
-});
-
-
 function showLoadingSpinner(showSpinner, timeout) {
 
     if (timeout === undefined) {

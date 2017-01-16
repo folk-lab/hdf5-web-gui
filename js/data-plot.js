@@ -18,8 +18,9 @@ var DATA_PLOT = {
     plotHeight : 550,
     useDarkTheme : false,
 
-    imageSeriesTargetUrl : undefined,
+    imageSeries : false,
     imageSeriesNodeId : undefined,
+    imageSeriesTargetUrl : undefined,
     imageSeriesShapeDims : undefined,
 },
 
@@ -614,6 +615,45 @@ function draw2DPlot() {
 }
 
 
+// Calculate the plot size - needs to be improved for small screens
+function calculatePlotSize() {
+
+    var debug = true, newPlotDivHeight, newPlotDivWidth,
+        windowWidth = $(window).width(),
+        windowHeight = $(window).height(),
+        appWidth = $('#applicationContainer').width(),
+        appHeight = $('#applicationContainer').height(),
+        containerWidth = $('#plotContainer').width(),
+        containerHeight = $('#plotContainer').height(),
+        divWidth = $('#plotCanvasDiv').width(),
+        divHeight = $('#plotCanvasDiv').height();
+
+    newPlotDivHeight = windowHeight - 80;
+    if (DATA_PLOT.imageSeries) {
+        newPlotDivHeight -= 35;
+    }
+    newPlotDivWidth = containerWidth - 40;
+
+    if (debug) {
+        console.log('DATA_PLOT.imageSeries: ' + DATA_PLOT.imageSeries);
+        console.log('appWidth:     ' + appWidth);
+        console.log('appHeight:    ' + appHeight);
+        console.log('windowWidth:  ' + windowWidth);
+        console.log('windowHeight: ' + windowHeight);
+        console.log('divWidth:     ' + divWidth);
+        console.log('divHeight:    ' + divHeight);
+        console.log('containerWidth:   ' + containerWidth);
+        console.log('containerHeight:  ' + containerHeight);
+        console.log('newPlotDivHeight: ' + newPlotDivHeight);
+        console.log('newPlotDivWidth:  ' + newPlotDivWidth);
+    }
+
+    $('#plotCanvasDiv').height(newPlotDivHeight);
+    DATA_PLOT.plotWidth = newPlotDivWidth;
+    DATA_PLOT.plotHeight = newPlotDivHeight;
+}
+
+
 function plotLine(value, nodeTitle) {
 // Plot the data!
 
@@ -629,6 +669,8 @@ function plotData() {
 // Plot the data!
 
     DATA_PLOT.drawText = false;
+
+    calculatePlotSize();
 
     if (DATA_PLOT.plotType === 'surface') {
         draw3DPlot();
@@ -654,8 +696,12 @@ function changeType(type) {
     ///////////////////////////////////////////////////////////////////////////
 
     if (type !== '') {
+        purgePlotCanvas();
+        startLoadingData(1);
         DATA_PLOT.plotType = type;
-        plotData();
+        setTimeout(function () {
+            plotData();
+        }, 10);
     }
 
 }
@@ -686,7 +732,7 @@ function toggleLogPlot(useLog) {
     // Clear the plot and start the laoder, as this can take some time when
     // the plot has many points
     // purgePlotCanvas();
-    //startLoadingData(10);
+    startLoadingData(1);
 
     if (useLog === undefined) {
         DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
@@ -714,11 +760,13 @@ function toggleLogPlot(useLog) {
 
     // I can't get this restyle command to work quite right yet with log scales
     // & colorscheme... the scale of the colorbar is all off :(
-    // setTimeout(function () {
-    Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
-        z: [DATA_PLOT.dataValues],
-    }, [0]);
-    //}, 20);
+    setTimeout(function () {
+        Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
+            z: [DATA_PLOT.dataValues],
+        }, [0]).then(
+            doneLoadingData()
+        );
+    }, 10);
 
     // setTimeout(function () {
     //     plotData();
@@ -773,17 +821,29 @@ function initializeImageData(value) {
 }
 
 
-function enableImagePlotControls(enableControls) {
+function enableImagePlotControls(enableControls, enableImageSeriesControls) {
 // The buttons are initially disabled when the page loads, enable them here
 
     var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
-        divNames = ['#plotTypeButtonDiv', '#logButtonDiv', '#colorButtonDiv'];
+        divNames = ['#plotTypeButtonDiv', '#logButtonDiv', '#colorButtonDiv'],
+        seriesControls = ['#inputNumberDiv', '#plusButtonDiv',
+            '#minusButtonDiv'];
 
+    // General plotting controls
     for (i = 0; i < divNames.length; i += 1) {
         if (enableControls) {
             $(divNames[i]).removeClass(classNames);
         } else {
             $(divNames[i]).addClass(classNames);
+        }
+    }
+
+    // Image series controls
+    for (i = 0; i < seriesControls.length; i += 1) {
+        if (enableImageSeriesControls) {
+            $(seriesControls[i]).removeClass(classNames);
+        } else {
+            $(seriesControls[i]).addClass(classNames);
         }
     }
 
@@ -836,6 +896,8 @@ function isNumeric(n) {
 function imageSeriesInput(value) {
     console.log('imageSeriesInput: ' + value);
 
+    startLoadingData(100);
+
     if (isNumeric(value)) {
         if (value >= 0 && value <= 10000000) {
             $.when(readImageSeries(DATA_PLOT.imageSeriesTargetUrl,
@@ -850,7 +912,9 @@ function imageSeriesInput(value) {
                     // colorbar is all off :(
                     Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
                         z: [DATA_PLOT.dataValues],
-                    }, [0]);
+                    }, [0]).then(
+                        doneLoadingData()
+                    );
                 }
             );
         }
@@ -858,45 +922,15 @@ function imageSeriesInput(value) {
 }
 
 
-function saveImageSeriesInfo(targetUrl, nodeId, shapeDims) {
-    DATA_PLOT.imageSeriesTargetUrl = targetUrl;
-    DATA_PLOT.imageSeriesNodeId = nodeId;
-    DATA_PLOT.imageSeriesShapeDims = shapeDims;
+function displayingImageSeries(trueOrFalse) {
+    DATA_PLOT.imageSeries = trueOrFalse;
 }
 
 
-// Calculate the plot size - needs to be improved for small screens
-function calculatePlotSize() {
-
-    var debug = true, newPlotDivHeight, newPlotDivWidth,
-        windowWidth = $(window).width(),
-        windowHeight = $(window).height(),
-        appWidth = $('#applicationContainer').width(),
-        appHeight = $('#applicationContainer').height(),
-        containerWidth = $('#plotContainer').width(),
-        containerHeight = $('#plotContainer').height(),
-        divWidth = $('#plotCanvasDiv').width(),
-        divHeight = $('#plotCanvasDiv').height();
-
-    newPlotDivHeight = windowHeight - 80;
-    newPlotDivWidth = containerWidth - 40;
-
-    if (debug) {
-        console.log('appWidth:     ' + appWidth);
-        console.log('appHeight:    ' + appHeight);
-        console.log('windowWidth:  ' + windowWidth);
-        console.log('windowHeight: ' + windowHeight);
-        console.log('divWidth:     ' + divWidth);
-        console.log('divHeight:    ' + divHeight);
-        console.log('containerWidth:   ' + containerWidth);
-        console.log('containerHeight:  ' + containerHeight);
-        console.log('newPlotDivHeight: ' + newPlotDivHeight);
-        console.log('newPlotDivWidth:  ' + newPlotDivWidth);
-    }
-
-    $('#plotCanvasDiv').height(newPlotDivHeight);
-    DATA_PLOT.plotWidth = newPlotDivWidth;
-    DATA_PLOT.plotHeight = newPlotDivHeight;
+function saveImageSeriesInfo(targetUrl, nodeId, shapeDims) {
+    DATA_PLOT.imageSeriesNodeId = nodeId;
+    DATA_PLOT.imageSeriesTargetUrl = targetUrl;
+    DATA_PLOT.imageSeriesShapeDims = shapeDims;
 }
 
 
@@ -949,7 +983,7 @@ function showPlotCanvas() {
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('document is ready');

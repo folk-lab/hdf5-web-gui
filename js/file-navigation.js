@@ -1,6 +1,6 @@
 /*global $, getData, enableImagePlotControls, initializeImageData, plotData,
-plotLine, drawText, readImageSeries, startLoadingData, purgePlotCanvas,
-saveImageSeriesInfo*/
+displayingImageSeries, plotLine, drawText, readImageSeries, startLoadingData,
+purgePlotCanvas, saveImageSeriesInfo*/
 'use strict';
 
 
@@ -16,16 +16,6 @@ var FILE_NAV =
         data : null,
         useDarkTheme : false,
     };
-
-
-// Settings used in all ajax requests
-$.ajaxSetup({
-    type : 'GET',
-    dataType : 'json',
-    async : true,
-    cache : false,
-    timeout : 10000
-});
 
 
 // Send a request to the HDF5 REST server
@@ -475,7 +465,8 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
 
 
 function displaySorryMessage(inputUrl) {
-    enableImagePlotControls(false);
+    displayingImageSeries(false);
+    enableImagePlotControls(false, false);
     drawText('I don\'t know how to handle this yet!',
         'Sorry for the inconvenience :(',
         '#ad3a74');
@@ -509,7 +500,8 @@ function displayText(inputUrl, inputText, fontColor) {
                     }
 
                     // Display the data
-                    enableImagePlotControls(false);
+                    displayingImageSeries(false);
+                    enableImagePlotControls(false, false);
                     drawText(inputText, value, fontColor);
                 }
             );
@@ -542,7 +534,8 @@ function displayLine(inputUrl, selectedId, nodeTitle) {
             }
 
             // Plotting functions from data-plot.js
-            enableImagePlotControls(false);
+            displayingImageSeries(false);
+            enableImagePlotControls(false, false);
             plotLine(response.value, nodeTitle);
         }
     );
@@ -573,7 +566,8 @@ function displayImage(inputUrl, selectedId) {
         function (response) {
 
             // Plotting functions from data-plot.js
-            enableImagePlotControls(true);
+            displayingImageSeries(false);
+            enableImagePlotControls(true, false);
             initializeImageData(response.value);
             plotData();
         }
@@ -639,7 +633,8 @@ function displayImageSeries(targetUrl, nodeId) {
                 function (completeImage) {
 
                     // Plotting functions from data-plot.js
-                    enableImagePlotControls(true);
+                    displayingImageSeries(true);
+                    enableImagePlotControls(true, true);
                     initializeImageData(completeImage);
                     plotData();
 
@@ -651,7 +646,8 @@ function displayImageSeries(targetUrl, nodeId) {
 
 
 function displaySorryMessage(inputUrl) {
-    enableImagePlotControls(false);
+    displayingImageSeries(false);
+    enableImagePlotControls(false, false);
     drawText('I don\'t know how to handle this yet!',
         'Sorry for the inconvenience :(',
         '#ad3a74');
@@ -936,7 +932,7 @@ $(window).resize(function () {
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('document is ready');
