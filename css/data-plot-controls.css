@@ -92,3 +92,9 @@ body{
     from{ bottom:-100px; opacity:0 }
     to{ bottom:0; opacity:1 }
 }
+
+/* input range */
+
+#ex1Slider .slider-selection {
+    background: #BABABA;
+}

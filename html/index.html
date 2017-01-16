@@ -35,6 +35,8 @@
             href="../css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
         <link rel="stylesheet"
             href="../css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css?v=201701010000">
+        <link rel="stylesheet"
+            href="../css/bootstrap-slider/9.7.0/bootstrap-slider.min.css?v=201701010000">
 
         <!-- Load external javascript -->
         <script type="text/javascript"
@@ -49,6 +51,9 @@
         </script>
         <script type="text/javascript" defer
             src="../js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js?v=201701010000"></script>
+        <script type="text/javascript" defer
+            src="../js/bootstrap-slider/9.7.0/bootstrap-slider.min.js?v=201701010000">
+        </script>
 
         <!-- Load css for this page -->
         <link rel="stylesheet"
@@ -132,8 +137,9 @@
                             hidden-md hidden-lg" >
                             <select class="form-control" id="selectPlotType"
                                 onchange="changeType(value);" >
-                                <option value="heatmap">2D + profiles
-                                </option>
+                                <option value="" disabled>Plot Type</option>
+                                <option value="heatmap" selected>
+                                    2D + profiles </option>
                                 <option value="surface">3D</option>
                             </select>
                         </div>
@@ -142,7 +148,7 @@
                             hidden-xs hidden-sm hidden-md hidden-lg" >
                             <button type="button" class="btn"
                                 id="logPlotButton"
-                                onclick="toggleLogPlot()" > Log Plot?
+                                onclick='toggleLogPlot()' > Log Plot?
                             </button>
                         </div>
 
@@ -151,17 +157,18 @@
                             <select id="selectColorScheme"
                                 class="form-control"
                                 onchange="changeColor(value);" >
-                                <option value="RdBu"     >RdBu    </option>
-                                <option value="Greys"    >Greys   </option>
-                                <option value="Greens"   >Greens  </option>
-                                <option value="Bluered"  >Bluered </option>
-                                <option value="Hot"      >Hot     </option>
-                                <option value="Picnic"   >Picnic  </option>
-                                <option value="Portland" >Portland</option>
-                                <option value="Jet"      >Jet     </option>
+                                <option value="" disabled>Color Scale </option>
                                 <option value="Blackbody">Blackbod</option>
+                                <option value="Bluered"  >Bluered </option>
                                 <option value="Earth"    >Earth   </option>
                                 <option value="Electric" >Electric</option>
+                                <option value="Greens"   >Greens  </option>
+                                <option value="Greys"    >Greys   </option>
+                                <option value="Hot"      >Hot     </option>
+                                <option value="Jet" selected> Jet </option>
+                                <option value="Picnic"   >Picnic  </option>
+                                <option value="Portland" >Portland</option>
+                                <option value="RdBu"     >RdBu    </option>
                             </select>
                         </div>
 
@@ -175,15 +182,27 @@
 
                 <div class="col-xs-12">
                     <!-- Image Series Control -->
-                    <div class="input-group col-xs-4 col-lg-3">
+                    <div class="input-group col-xs-12">
+
+                        <!-- Beginning button -->
+                        <div id="beginButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
+                            <button type="button" class="btn btn-primary
+                                btn-number"  data-type="minus"
+                                onclick='imageSeriesInput(-1);'>
+                                <div class="glyphicon glyphicon-step-backward">
+                                </div>
+                            </button>
+                        </div>
 
                         <!-- Minus button -->
                         <div id="minusButtonDiv" class="input-group-btn
                             hidden-xs hidden-sm hidden-md hidden-lg">
-                            <button type="button" class="btn btn-danger
+                            <button type="button" class="btn btn-info
                                 btn-number"  data-type="minus"
                                 data-field="quant[0]">
-                                <div class="glyphicon glyphicon-minus"> </div>
+                                <div class="glyphicon glyphicon-triangle-left">
+                                </div>
                             </button>
                         </div>
 
@@ -191,20 +210,36 @@
                         <input id="inputNumberDiv" type="text" name="quant[0]"
                             class="form-control input-number
                                 hidden-xs hidden-sm hidden-md hidden-lg"
-                            value="0" min="0" max="1000000"
-                            maxlength="7" size="7"
-                            onchange="imageSeriesInput(value);">
+                            value="0" min="0" max="10000000" maxlength="7"
+                            size="7"
+                            onchange='imageSeriesInput(value);'>
 
                         <!-- Plus button -->
                         <div id="plusButtonDiv" class="input-group-btn
                             hidden-xs hidden-sm hidden-md hidden-lg">
                             <button type="button"
-                                class="btn btn-success btn-number"
+                                class="btn btn-info btn-number"
                                 data-type="plus" data-field="quant[0]">
-                                <div class="glyphicon glyphicon-plus"> </div>
+                                <div class="glyphicon glyphicon-triangle-right">
+                                </div>
                             </button>
                         </div>
 
+                        <!-- End button -->
+                        <div id="endButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
+                            <button type="button"
+                                class="btn btn-primary btn-number"
+                                data-type="plus"
+                                onclick='imageSeriesInput(10000000);'>
+                                <div class="glyphicon glyphicon-step-forward">
+                                </div>
+                            </button>
+                        </div>
+
+                        <input id="ex1" data-slider-id='ex1Slider' type="text"
+                            data-slider-min="0" data-slider-max="20"
+                            data-slider-step="1" data-slider-value="14"/>
                     </div>
 
                 </div>

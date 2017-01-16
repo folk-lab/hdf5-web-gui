@@ -6,7 +6,7 @@
 var DATA_PLOT = {
 
     plotCanvasDiv : document.getElementById('plotCanvasDiv'),
-    colorScale : 'RdBu',
+    colorScale : 'Jet',
     plotLogValues : false,
     plotType : 'heatmap',
     drawText : false,
@@ -209,7 +209,6 @@ function drawText(itemTitle, itemValue, fontColor) {
 
 
 function drawLine(value, nodeTitle) {
-// Draw a 3D surface plot of the data
 
     var data, layout, options;
 
@@ -277,7 +276,6 @@ function drawLine(value, nodeTitle) {
 
 
 function draw3DPlot() {
-// Draw a 3D surface plot of the data
 
     var data, layout, options;
 
@@ -287,6 +285,23 @@ function draw3DPlot() {
             z: DATA_PLOT.dataValues,
             type: DATA_PLOT.plotType,
             colorscale: DATA_PLOT.colorScale,
+
+            // opacity: 0.999,
+            // autocolorscale : false,
+            // colorscale : [[0, 'rgb(0,0,255)', 1, 'rgb(255,0,0)']],
+            // cauto: false,
+            // contours : {
+            //     x : {
+            //         show : true,
+            //     },
+            //     y : {
+            //         show : true,
+            //     },
+            //     z : {
+            //         show : true,
+            //     },
+            // },
+
         }
     ];
 
@@ -672,10 +687,10 @@ function plotData() {
 
     calculatePlotSize();
 
-    if (DATA_PLOT.plotType === 'surface') {
-        draw3DPlot();
-    } else {
+    if (DATA_PLOT.plotType === 'heatmap') {
         draw2DPlot();
+    } else {
+        draw3DPlot();
     }
 
 }
@@ -768,11 +783,6 @@ function toggleLogPlot(useLog) {
         );
     }, 10);
 
-    // setTimeout(function () {
-    //     plotData();
-    // }, 20);
-    //
-    // plotData();
 }
 
 
@@ -826,8 +836,8 @@ function enableImagePlotControls(enableControls, enableImageSeriesControls) {
 
     var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
         divNames = ['#plotTypeButtonDiv', '#logButtonDiv', '#colorButtonDiv'],
-        seriesControls = ['#inputNumberDiv', '#plusButtonDiv',
-            '#minusButtonDiv'];
+        seriesControls = ['#inputNumberDiv', '#beginButtonDiv',
+            '#plusButtonDiv', '#endButtonDiv', '#minusButtonDiv'];
 
     // General plotting controls
     for (i = 0; i < divNames.length; i += 1) {
@@ -847,6 +857,11 @@ function enableImagePlotControls(enableControls, enableImageSeriesControls) {
         }
     }
 
+    $('#ex1').slider({
+        formatter: function (value) {
+            return 'Current value: ' + value;
+        }
+    });
 }
 
 
@@ -894,22 +909,37 @@ function isNumeric(n) {
 
 
 function imageSeriesInput(value) {
-    console.log('imageSeriesInput: ' + value);
+
+    var debug = true, min = 0, max = DATA_PLOT.imageSeriesShapeDims[0] - 1;
+
+    if (debug) {
+        console.log('imageSeriesInput: ' + value);
+        console.log('min: ' + min);
+        console.log('max: ' + max);
+    }
 
     startLoadingData(100);
 
     if (isNumeric(value)) {
-        if (value >= 0 && value <= 10000000) {
+
+        if (value < min) {
+            value = min;
+            document.getElementById("inputNumberDiv").value = min;
+        }
+
+        if (value >= max) {
+            value = max;
+            document.getElementById("inputNumberDiv").value = max;
+        }
+
+        if (value >= min && value <= max) {
             $.when(readImageSeries(DATA_PLOT.imageSeriesTargetUrl,
                 DATA_PLOT.imageSeriesNodeId, DATA_PLOT.imageSeriesShapeDims,
                 value)).then(
                 function (completeImage) {
                     initializeImageData(completeImage);
-                    // plotData();
 
-                    // I can't get this restyle command to work quite right yet
-                    // with log scales & colorscheme... the scale of the
-                    // colorbar is all off :(
+                    // Change to the data used in the plot
                     Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
                         z: [DATA_PLOT.dataValues],
                     }, [0]).then(
@@ -924,6 +954,7 @@ function imageSeriesInput(value) {
 
 function displayingImageSeries(trueOrFalse) {
     DATA_PLOT.imageSeries = trueOrFalse;
+    document.getElementById("inputNumberDiv").value = 0;
 }
 
 
