@@ -94,7 +94,12 @@ body{
 }
 
 /* input range */
-
-#ex1Slider .slider-selection {
+#imageSeriesSlider .slider-selection {
     background: #BABABA;
+}
+#slider .slider-selection {
+    background: #8283FF;
+}
+#imageSeriesSlider {
+    width: 300px;
 }

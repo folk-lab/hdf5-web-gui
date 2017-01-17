@@ -857,11 +857,6 @@ function enableImagePlotControls(enableControls, enableImageSeriesControls) {
         }
     }
 
-    $('#ex1').slider({
-        formatter: function (value) {
-            return 'Current value: ' + value;
-        }
-    });
 }
 
 
@@ -1005,9 +1000,22 @@ $(window).resize(function () {
 });
 
 
+
+
 function showPlotCanvas() {
     // console.log('showPlotCanvas');
     document.getElementById("plotCanvasDiv").style.display = "block";
+
+    $('#slider').slider({
+        formatter: function (value) {
+            return 'Current value: ' + value;
+        }
+    });
+    $('#slider').slider().on('slide', function (slideEvt) {
+        document.getElementById("inputNumberDiv").value = slideEvt.value;
+        imageSeriesInput(slideEvt.value);
+    });
+
 }
 
 
