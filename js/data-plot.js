@@ -331,6 +331,7 @@ function draw3DPlot() {
             zaxis: {
                 title: 'z blah',
                 type: 'linear',
+                // type: 'log',
                 autorange: true
             }
         }
@@ -738,7 +739,7 @@ function changeColor(colorscale) {
 function toggleLogPlot(useLog) {
 // Switch between the use of log and non-log values
 
-    var debug = true;
+    var debug = true, useRestyle = false, type = 'linear';
 
     if (debug) {
         console.log('useLog: ' + useLog);
@@ -746,7 +747,9 @@ function toggleLogPlot(useLog) {
 
     // Clear the plot and start the laoder, as this can take some time when
     // the plot has many points
-    // purgePlotCanvas();
+    if (!useRestyle) {
+        purgePlotCanvas();
+    }
     startLoadingData(1);
 
     if (useLog === undefined) {
@@ -762,7 +765,11 @@ function toggleLogPlot(useLog) {
         $("#logPlotButton").html('Log Plot!');
         $("#logPlotButton").addClass('btn-success');
 
-        DATA_PLOT.dataValues = DATA_PLOT.logOfDataValues;
+        if (useRestyle) {
+            type = 'log';
+        } else {
+            DATA_PLOT.dataValues = DATA_PLOT.logOfDataValues;
+        }
     } else {
         if (debug) {
             console.log('Log Plot?');
@@ -770,17 +777,35 @@ function toggleLogPlot(useLog) {
         $("#logPlotButton").html('Log Plot?');
         $("#logPlotButton").removeClass('btn-success');
 
-        DATA_PLOT.dataValues = DATA_PLOT.initialDataValues;
+        if (useRestyle) {
+            type = 'linear';
+        } else {
+            DATA_PLOT.dataValues = DATA_PLOT.initialDataValues;
+        }
     }
 
     // I can't get this restyle command to work quite right yet with log scales
     // & colorscheme... the scale of the colorbar is all off :(
     setTimeout(function () {
-        Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
-            z: [DATA_PLOT.dataValues],
-        }, [0]).then(
-            doneLoadingData()
-        );
+
+        if (useRestyle) {
+            // Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
+            //     z: [DATA_PLOT.dataValues],
+            // }, [0]).then(
+            //     doneLoadingData()
+            // );
+            Plotly.relayout(DATA_PLOT.plotCanvasDiv, {
+                scene: {
+                    zaxis: {
+                        type: type
+                    }
+                }
+            }, [0]).then(
+                doneLoadingData()
+            );
+        } else {
+            plotData();
+        }
     }, 10);
 
 }
@@ -837,7 +862,8 @@ function enableImagePlotControls(enableControls, enableImageSeriesControls) {
     var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
         divNames = ['#plotTypeButtonDiv', '#logButtonDiv', '#colorButtonDiv'],
         seriesControls = ['#inputNumberDiv', '#beginButtonDiv',
-            '#plusButtonDiv', '#endButtonDiv', '#minusButtonDiv'];
+            '#plusButtonDiv', '#endButtonDiv', '#minusButtonDiv',
+            '#sliderDiv'];
 
     // General plotting controls
     for (i = 0; i < divNames.length; i += 1) {
@@ -1006,6 +1032,10 @@ function showPlotCanvas() {
     // console.log('showPlotCanvas');
     document.getElementById("plotCanvasDiv").style.display = "block";
 
+
+    // Look at :
+    //  http://seiyria.com/bootstrap-slider/
+    //  https://github.com/seiyria/bootstrap-slider
     $('#slider').slider({
         formatter: function (value) {
             return 'Current value: ' + value;
