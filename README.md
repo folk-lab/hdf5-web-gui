@@ -23,9 +23,14 @@ Hopefully the server is running and data is actually being displayed...
 3-dimensional, rotatable, zoomable plots of data can be made. Here's a
 screenshot:
 
-![3D surface plot](screenshots/3d-surface-plot.png)
+![3D surface plot](screenshots/screenshot-3d-plot.png)
 
-Here's a screenshot of a 2-dimensional zoomable contour plot of the same data,
-with x and y profile histograms that match the zoomed-in area:
+Here's a screenshot of a 2-dimensional zoomable contour plotfrom a series of
+images,  with x and y profile histograms that match the zoomed-in area:
 
-![2D density plot](screenshots/2d-density-plot.png)
+![2D density plot](screenshots/screenshot-image-stack.png)
+
+And here is a view the application when displayed on a mobile device, the hidden
+menu has been clicked, which can then be hidden to just display the plot:
+
+![Mobile view](screenshots/screenshot-mobile-view.png)
