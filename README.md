@@ -7,12 +7,14 @@ This is a web GUI for viewing HDF5 files.
 The HDF5 Group  [made their own web ui](http://data.hdfgroup.org/),
 but they don't want to share :(
 
-They do however want to share their HDF5 file server backend, so we have that
-going for us, which is nice.
+They do however want to share their very nice HDF5 file server backend, so we
+have that going for us, which is nice.
 
 This web GUI is written in javascript and make use of the
 [plotly](https://plot.ly/javascript/) graphing libraries.
 
+This GUI and the REST server backend both have some ~~bugs~~ issues at this
+point, hopefully they will be fixed soon :)
 
 ## SCREENSHOTS
 3-dimensional, rotatable, zoomable plots of data can be made. Here's a
