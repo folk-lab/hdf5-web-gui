@@ -13,11 +13,6 @@ going for us, which is nice.
 This web GUI is written in javascript and make use of the
 [plotly](https://plot.ly/javascript/) graphing libraries.
 
-## INSTALLATIONS
-For testing purposes, it has been installed on the
-[scilab machine](http://w-v-scilab-cc-0/hdf5-web-gui/html/)
-
-Hopefully the server is running and data is actually being displayed...
 
 ## SCREENSHOTS
 3-dimensional, rotatable, zoomable plots of data can be made. Here's a
