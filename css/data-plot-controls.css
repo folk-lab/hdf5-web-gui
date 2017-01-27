@@ -92,3 +92,14 @@ body{
     from{ bottom:-100px; opacity:0 }
     to{ bottom:0; opacity:1 }
 }
+
+/* input range */
+#imageSeriesSlider .slider-selection {
+    background: #BABABA;
+}
+#slider .slider-selection {
+    background: #8283FF;
+}
+#imageSeriesSlider {
+    width: 300px;
+}
