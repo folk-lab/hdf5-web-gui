@@ -20,7 +20,7 @@ screenshot:
 
 ![3D surface plot](screenshots/screenshot-3d-plot.png)
 
-Here's a screenshot of a 2-dimensional zoomable contour plotfrom a series of
+Here's a screenshot of a 2-dimensional zoomable contour plot from a series of
 images,  with x and y profile histograms that match the zoomed-in area:
 
 ![2D density plot](screenshots/screenshot-image-stack.png)
