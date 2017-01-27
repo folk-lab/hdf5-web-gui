@@ -1,6 +1,6 @@
 /*global $, getData, enableImagePlotControls, initializeImageData, plotData,
-plotLine, drawText, readChunkedData, startLoadingData,
-purgePlotCanvas*/
+displayingImageSeries, plotLine, drawText, readImageSeries, startLoadingData,
+purgePlotCanvas, saveImageSeriesInfo*/
 'use strict';
 
 
@@ -16,16 +16,6 @@ var FILE_NAV =
         data : null,
         useDarkTheme : false,
     };
-
-
-// Settings used in all ajax requests
-$.ajaxSetup({
-    type : 'GET',
-    dataType : 'json',
-    async : true,
-    cache : false,
-    timeout : 10000
-});
 
 
 // Send a request to the HDF5 REST server
@@ -127,13 +117,7 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                     // These conditions are not correct, need to differentiate
                     // between arrays, images, and single values
                     if (response.shape.dims.length === 3) {
-                        // WTF is this data? Need to ask Zdenek, example in:
-                        //  1.5_bar_cryo_pressure_2nd_run.h5
-                        //      → entry → detector → data
-                        dataType = 'chunk';
-                        // Maybe it's eom way to store large images?:
-                        //  http://docs.h5py.org/en/latest/high/
-                        //      dataset.html#chunked-storage
+                        dataType = 'image-series';
                     }
 
                     if (response.shape.dims.length === 2) {
@@ -258,7 +242,7 @@ function addToTree(itemList, selectedId, createNewTree) {
 
                     if (itemList[keyTitle].dataType) {
                         switch (itemList[keyTitle].dataType) {
-                        case 'chunk':
+                        case 'image-series':
                             icon = 'glyphicon glyphicon-certificate';
                             break;
                         case 'image':
@@ -481,7 +465,8 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
 
 
 function displaySorryMessage(inputUrl) {
-    enableImagePlotControls(false);
+    displayingImageSeries(false);
+    enableImagePlotControls(false, false);
     drawText('I don\'t know how to handle this yet!',
         'Sorry for the inconvenience :(',
         '#ad3a74');
@@ -515,7 +500,8 @@ function displayText(inputUrl, inputText, fontColor) {
                     }
 
                     // Display the data
-                    enableImagePlotControls(false);
+                    displayingImageSeries(false);
+                    enableImagePlotControls(false, false);
                     drawText(inputText, value, fontColor);
                 }
             );
@@ -548,7 +534,8 @@ function displayLine(inputUrl, selectedId, nodeTitle) {
             }
 
             // Plotting functions from data-plot.js
-            enableImagePlotControls(false);
+            displayingImageSeries(false);
+            enableImagePlotControls(false, false);
             plotLine(response.value, nodeTitle);
         }
     );
@@ -579,7 +566,8 @@ function displayImage(inputUrl, selectedId) {
         function (response) {
 
             // Plotting functions from data-plot.js
-            enableImagePlotControls(true);
+            displayingImageSeries(false);
+            enableImagePlotControls(true, false);
             initializeImageData(response.value);
             plotData();
         }
@@ -587,14 +575,12 @@ function displayImage(inputUrl, selectedId) {
 }
 
 
-// Deal with chunked images/data
-function displayChunkedImage(targetUrl, nodeId) {
-// Help!:
-//  https://support.hdfgroup.org/HDF5/doc/_topic/Chunking/
-//  http://docs.h5py.org/en/latest/high/dataset.html#chunked-storage
+// Deal with an image series
+function displayImageSeries(targetUrl, nodeId) {
 
     var debug = false;
 
+    // Get some information about this dataset
     $.when(communicateWithServer(targetUrl)).then(
         function (response) {
 
@@ -639,13 +625,19 @@ function displayChunkedImage(targetUrl, nodeId) {
                 }
             }
 
-            $.when(readChunkedData(targetUrl, nodeId, shapeDims)).then(
+            // Save some information about the image series
+            saveImageSeriesInfo(targetUrl, nodeId, shapeDims);
+
+            // Get the first image in the series and display it
+            $.when(readImageSeries(targetUrl, nodeId, shapeDims, 0)).then(
                 function (completeImage) {
 
                     // Plotting functions from data-plot.js
-                    enableImagePlotControls(true);
+                    displayingImageSeries(true);
+                    enableImagePlotControls(true, true);
                     initializeImageData(completeImage);
                     plotData();
+
                 }
             );
         }
@@ -654,7 +646,8 @@ function displayChunkedImage(targetUrl, nodeId) {
 
 
 function displaySorryMessage(inputUrl) {
-    enableImagePlotControls(false);
+    displayingImageSeries(false);
+    enableImagePlotControls(false, false);
     drawText('I don\'t know how to handle this yet!',
         'Sorry for the inconvenience :(',
         '#ad3a74');
@@ -876,9 +869,9 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             switch (data.node.data.dataType) {
 
-            case 'chunk':
+            case 'image-series':
                 startLoadingData(10);
-                displayChunkedImage(data.node.data.target, data.selected);
+                displayImageSeries(data.node.data.target, data.selected);
                 break;
 
             case 'image':

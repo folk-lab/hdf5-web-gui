@@ -35,6 +35,8 @@
             href="../css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
         <link rel="stylesheet"
             href="../css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css?v=201701010000">
+        <link rel="stylesheet"
+            href="../css/bootstrap-slider/9.7.0/bootstrap-slider.min.css?v=201701010000">
 
         <!-- Load external javascript -->
         <script type="text/javascript"
@@ -49,22 +51,25 @@
         </script>
         <script type="text/javascript" defer
             src="../js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js?v=201701010000"></script>
+        <script type="text/javascript" defer
+            src="../js/bootstrap-slider/9.7.0/bootstrap-slider.min.js?v=201701010000">
+        </script>
 
         <!-- Load css for this page -->
         <link rel="stylesheet"
-            href="../css/data-plot-controls.css?v=201701101201"/>
+            href="../css/data-plot-controls.css?v=201701261435"/>
         <link rel="stylesheet"
-            href="../css/navmenu.css?v=201701101201">
+            href="../css/navmenu.css?v=201701261435">
 
         <!-- Load javascript for this page -->
         <script type="text/javascript"
-            src="../js/ajax-spinner.js?v=201701101201"></script>
+            src="../js/ajax-spinner.js?v=201701261435"></script>
         <script type="text/javascript" defer
-            src="../js/data-plot.js?v=201701101201"></script>
+            src="../js/data-plot.js?v=201701261435"></script>
         <script type="text/javascript" defer
-            src="../js/data-retrieval.js?v=201701101201"></script>
+            src="../js/data-retrieval.js?v=201701261435"></script>
         <script type="text/javascript" defer
-            src="../js/file-navigation.js?v=201701101201"></script>
+            src="../js/file-navigation.js?v=201701261435"></script>
 
     </head>
 
@@ -97,7 +102,7 @@
                 <div id="treeSectionDiv" class="col-xs-12">
 
                     <div class="col-xs-12 ">
-                        <span class="glyphicon glyphicon-hdd">&nbsp;</span>
+                        <div class="glyphicon glyphicon-hdd">&nbsp;</div>
                         <b>Data Storage</b>
                     </div>
 
@@ -124,7 +129,7 @@
                 <div
                     class="collapse navbar-collapse col-lg-8">
 
-                    <!-- Plot controls -->
+                    <!-- Image Plot Controls -->
                     <form id="plotControls" class="navbar-form navbar-left">
 
                         <div id="plotTypeButtonDiv"
@@ -132,16 +137,18 @@
                             hidden-md hidden-lg" >
                             <select class="form-control" id="selectPlotType"
                                 onchange="changeType(value);" >
-                                <option value="heatmap">2D Heatmap</option>
-                                <option value="surface">3D Surface</option>
+                                <option value="" disabled>Plot Type</option>
+                                <option value="heatmap" selected>
+                                    2D + profiles </option>
+                                <option value="surface">3D</option>
                             </select>
                         </div>
 
                         <div id="logButtonDiv" class="col-xs-4
                             hidden-xs hidden-sm hidden-md hidden-lg" >
-                            <button type="button" class="btn btn-success"
+                            <button type="button" class="btn"
                                 id="logPlotButton"
-                                onclick="toggleLogPlot()" > Log Plot!
+                                onclick='toggleLogPlot()' > Log Plot?
                             </button>
                         </div>
 
@@ -150,17 +157,18 @@
                             <select id="selectColorScheme"
                                 class="form-control"
                                 onchange="changeColor(value);" >
-                                <option value="RdBu"     >RdBu    </option>
-                                <option value="Greys"    >Greys   </option>
-                                <option value="Greens"   >Greens  </option>
-                                <option value="Bluered"  >Bluered </option>
-                                <option value="Hot"      >Hot     </option>
-                                <option value="Picnic"   >Picnic  </option>
-                                <option value="Portland" >Portland</option>
-                                <option value="Jet"      >Jet     </option>
+                                <option value="" disabled>Color Scale </option>
                                 <option value="Blackbody">Blackbod</option>
+                                <option value="Bluered"  >Bluered </option>
                                 <option value="Earth"    >Earth   </option>
                                 <option value="Electric" >Electric</option>
+                                <option value="Greens"   >Greens  </option>
+                                <option value="Greys"    >Greys   </option>
+                                <option value="Hot"      >Hot     </option>
+                                <option value="Jet" selected> Jet </option>
+                                <option value="Picnic"   >Picnic  </option>
+                                <option value="Portland" >Portland</option>
+                                <option value="RdBu"     >RdBu    </option>
                             </select>
                         </div>
 
@@ -171,6 +179,77 @@
                 <!-- The plotting canvas will be placed here -->
                 <div id="plotCanvasDiv" class="col-xs-12 animate-bottom"
                     style="display:none;"></div>
+
+                <div class="col-xs-12">
+                    <!-- Image Series Control -->
+                    <div class="input-group col-xs-12">
+
+                        <!-- Beginning button -->
+                        <div id="beginButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
+                            <button type="button" class="btn btn-primary
+                                btn-number"  data-type="minus"
+                                onclick='imageSeriesInput(-1);'>
+                                <div class="glyphicon glyphicon-step-backward">
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Minus button -->
+                        <div id="minusButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
+                            <button type="button" class="btn btn-info
+                                btn-number"  data-type="minus"
+                                data-field="quant[0]">
+                                <div class="glyphicon glyphicon-triangle-left">
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Display and enter values -->
+                        <input id="inputNumberDiv" type="text" name="quant[0]"
+                            class="form-control input-number
+                                hidden-xs hidden-sm hidden-md hidden-lg"
+                            value="0" min="0" max="10000000" maxlength="7"
+                            size="7"
+                            onchange='imageSeriesInput(value);'>
+
+                        <!-- Plus button -->
+                        <div id="plusButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
+                            <button type="button"
+                                class="btn btn-info btn-number"
+                                data-type="plus" data-field="quant[0]">
+                                <div class="glyphicon glyphicon-triangle-right">
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- End button -->
+                        <div id="endButtonDiv" class="input-group-btn
+                            hidden-xs hidden-sm hidden-md hidden-lg">
+                            <button type="button"
+                                class="btn btn-primary btn-number"
+                                data-type="plus"
+                                onclick='imageSeriesInput(10000000);'>
+                                <div class="glyphicon glyphicon-step-forward">
+                                </div>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div id="sliderDiv" class="input-group col-xs-12
+                        hidden-xs hidden-sm hidden-md hidden-lg">
+                        <input id="slider" data-slider-id='imageSeriesSlider'
+                            data-slider-tooltip="hide"
+                            type="text" data-slider-handle="square"
+                            data-slider-min="0" data-slider-max="27440"
+                            data-slider-step="1" data-slider-value="0"
+                            value=""/>
+                    </div>
+
+                </div>
 
                 <!-- Process loading icon -->
                 <div id="loader" ></div>
