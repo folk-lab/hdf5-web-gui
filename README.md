@@ -5,9 +5,9 @@
 This is a web GUI for viewing HDF5 files.
 
 The HDF5 Group  [made their own web ui](http://data.hdfgroup.org/),
-but it is apparently closed source for now, and I wanted to use different tools
-for the interface than what they had chosen.
-
+but it is apparently closed source for now, and anyways, I wanted to use
+different tools for the interface than what they had chosen, namely to make
+something responsive and to use a different plotting library.
 
 They do however want to share their very nice HDF5 file server backend, so we
 have that going for us, which is nice.
