@@ -4,16 +4,18 @@
 
 This is a web GUI for viewing HDF5 files.
 
-The HDF5 Group  [made their own web ui](http://data.hdfgroup.org/),
-but it is apparently closed source for now, and anyways, I wanted to use
-different tools for the interface than what they had chosen, namely to make
-something responsive and to use a different plotting library.
+The HDF Group  [made their own web ui](http://data.hdfgroup.org/),
+but it is apparently closed source for now. Inm the end, this was probably for
+the best, as I wanted to use different tools for the interface than what they
+had chosen, namely to make something responsive and to use a different plotting
+library.
 
-They do however want to share their very nice HDF5 file server backend, so we
-have that going for us, which is nice.
+The HDF Group does however want to share their very nice
+[HDF5 file server](https://github.com/HDFGroup/h5serv) backend, so we have that
+going for us, which is nice.
 
-This web GUI is written in javascript and makes use of the
-[plotly](https://plot.ly/javascript/) graphing libraries.
+This web GUI is written in javascript, sprinkled with a bit of jquery, and
+makes use of the [plotly](https://plot.ly/javascript/) graphing libraries.
 
 This GUI and the REST server backend both have some ~~bugs~~ issues at this
 point, hopefully they will be fixed soon :)
