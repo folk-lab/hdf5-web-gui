@@ -1,11 +1,11 @@
-/*global $*/
+/*global $, doneLoadingData, displaySorryMessage*/
 'use strict';
 
 
 // The gloabl variables for this applicaiton
 var DATA_RET =
     {
-        // h5serv has an issue with full hostnames
+        // h5serv has an issue with full hostnames - dumb fix
         hdf5DataServer: window.location.protocol + '//' +
                         window.location.hostname.replace('.maxiv.lu.se', '') +
                         ':5000',
@@ -22,6 +22,7 @@ $.ajaxSetup({
 });
 
 
+// Perform an ajax request
 function getData(dataValueUrl) {
 
     // Get the data
@@ -39,7 +40,20 @@ function getData(dataValueUrl) {
         },
 
         error: function (response) {
+            var debug = true, key;
+
+            doneLoadingData();
+            displaySorryMessage(dataValueUrl);
+
             console.log('AJAX ' + dataValueUrl + ' error: ' + response);
+
+            if (debug) {
+                for (key in response) {
+                    if (response.hasOwnProperty(key)) {
+                        console.log("** " + key + " -> " + response[key]);
+                    }
+                }
+            }
         }
 
     });
@@ -47,6 +61,8 @@ function getData(dataValueUrl) {
 }
 
 
+// Get a single image from a stack of images, which are typically saved
+// as 3 dimensional arrays, with the first dimension being the image number
 function readImageSeries(targetUrl, nodeId, shapeDims, sliceIndex) {
 
     var debug = true, valueUrl, chunks, matrix, numChunkRows,

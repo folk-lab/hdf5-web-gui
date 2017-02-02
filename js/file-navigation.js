@@ -645,16 +645,6 @@ function displayImageSeries(targetUrl, nodeId) {
 }
 
 
-function displaySorryMessage(inputUrl) {
-    displayingImageSeries(false);
-    enableImagePlotControls(false, false);
-    drawText('I don\'t know how to handle this yet!',
-        'Sorry for the inconvenience :(',
-        '#ad3a74');
-    console.log('inputUrl: ' + inputUrl);
-}
-
-
 function getFileContents(inputUrl, selectedId) {
 // Get a list of items in a folder, then update the jstree object
 
