@@ -63,24 +63,57 @@ function getData(dataValueUrl) {
 
 // Get a single image from a stack of images, which are typically saved
 // as 3 dimensional arrays, with the first dimension being the image number
-function readImageSeries(targetUrl, nodeId, shapeDims, sliceIndex) {
+function readImageSeries(targetUrl, nodeId, shapeDims, imageIndex) {
 
     var debug = true, valueUrl, chunks, matrix, numChunkRows,
-        numChunkColumns, sliceStart,  sliceEnd;
-
+        numChunkColumns, imageIndexStart, imageIndexStop, imageXDim, imageYDim,
+        isBigImage = false, imageSliceParameters = '',
+        sliceX = [], sliceY = [], stepX = 1, stepY = 1;
 
     if (debug) {
         console.log('shapeDims: ' + shapeDims);
     }
 
-    // The slice
-    sliceStart = Number(sliceIndex);
-    sliceEnd = Number(sliceStart + 1);
+    imageXDim = shapeDims[1];
+    imageYDim = shapeDims[2];
+
+    if (imageXDim * imageYDim > 1.0e6) {
+        isBigImage = true;
+    }
+
+    if (debug) {
+        console.log('imageXDim:  ' + imageXDim);
+        console.log('imageYDim:  ' + imageYDim);
+        console.log('isBigImage: ' + isBigImage);
+    }
+
+
+    // The selected image in the stack is just a single slice of a python array
+    imageIndexStart = Number(imageIndex);
+    imageIndexStop = Number(imageIndexStart + 1);
+
+    // If it's a big image, do something - not what is done here, something
+    // better!
+    if (isBigImage) {
+        sliceX[0] = Math.floor(imageXDim / 2) - 250;
+        sliceX[1] = Math.floor(imageXDim / 2) + 250;
+        sliceY[0] = Math.floor(imageYDim / 2) - 250;
+        sliceY[1] = Math.floor(imageYDim / 2) + 250;
+        stepX = Math.floor(imageXDim / 400);
+        stepY = Math.floor(imageYDim / 400);
+        // imageSliceParameters = sliceX[0] + ':' + sliceX[1] + ':' + stepX +
+        // ',' + sliceY[0] + ':' + sliceY[1] + ':' + stepY;
+        imageSliceParameters = '::' + stepX + ',::' + stepY;
+        // imageSliceParameters = '0:500,0:500';
+    } else {
+        imageSliceParameters = ':,:';
+    }
 
     // Create the url that gets the data from the server, slice and dice the
     // data
     valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
-        '&select=[' + sliceStart + ':' + sliceEnd + ',:,:]';
+        '&select=[' + imageIndexStart + ':' + imageIndexStop + ',' +
+        imageSliceParameters  + ']';
 
     if (debug) {
         console.log('valueUrl: ' + valueUrl);

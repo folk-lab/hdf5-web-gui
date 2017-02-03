@@ -87,7 +87,7 @@ function getDataValue(dataUrl, getItem) {
 // it's an array, matrix, number, string, or somthing else
 function getDatasetInfo(title, nodeId, targetUrl, responses) {
 
-    var debug = false, dataType = 'none';
+    var debug = true, dataType = 'none';
 
     return $.when(communicateWithServer(targetUrl)).then(
         function (response) {
@@ -130,6 +130,9 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
                         }
                     }
 
+                    if (debug) {
+                        console.log('dataType: ' + dataType);
+                    }
                 }
             }
 
