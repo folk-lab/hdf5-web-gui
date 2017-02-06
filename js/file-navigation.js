@@ -1,6 +1,6 @@
-/*global $, getData, enableImagePlotControls, initializeImageData, plotData,
-displayingImageSeries, plotLine, drawText, readImageSeries, startLoadingData,
-purgePlotCanvas, saveImageSeriesInfo*/
+/*global $, getData, initializeImageData, plotData,
+displayingImageSeries, plotLine,
+saveImageSeriesInfo*/
 'use strict';
 
 
@@ -15,43 +15,9 @@ var FILE_NAV =
         processSelectNodeEvent : true,
         data : null,
         useDarkTheme : false,
-    };
+    },
 
-
-// Send a request to the HDF5 REST server
-function communicateWithServer(url) {
-
-    var debug = false;
-
-    // Get the data - the return value is the response
-    return $.ajax({
-        url: url,
-
-        success: function (response) {
-
-            var key = '';
-
-            if (debug) {
-                console.log("AJAX " + url + " request success: " +
-                    response);
-                console.log('response.length: ' + response.length);
-
-                for (key in response) {
-                    if (response.hasOwnProperty(key)) {
-                        console.log(key + " -> " + response[key]);
-                    }
-                }
-            }
-
-        },
-
-        error: function (response) {
-            console.log('AJAX ' + url + ' error: ' + response);
-        }
-
-    });
-
-}
+    SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT;
 
 
 // Get some information about a 'datasets' object
@@ -59,7 +25,7 @@ function getDataValue(dataUrl, getItem) {
 
     var debug = false, returnValue = '';
 
-    return $.when(communicateWithServer(dataUrl)).then(
+    return $.when(SERVER_COMMUNICATION.ajaxRequest(dataUrl)).then(
         function (response) {
 
             var key = '';
@@ -89,7 +55,7 @@ function getDatasetInfo(title, nodeId, targetUrl, responses) {
 
     var debug = true, dataType = 'none';
 
-    return $.when(communicateWithServer(targetUrl)).then(
+    return $.when(SERVER_COMMUNICATION.ajaxRequest(targetUrl)).then(
         function (response) {
 
             var key = '';
@@ -170,7 +136,7 @@ function getTopLevelUrl(initialUrl, firstLevelKey, relValue) {
 
     var debug = false, topLevelUrl = '';
 
-    return $.when(communicateWithServer(initialUrl)).then(
+    return $.when(SERVER_COMMUNICATION.ajaxRequest(initialUrl)).then(
         function (response) {
 
             var key = '';
@@ -359,7 +325,7 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
 
     var debug = false;
 
-    return $.when(communicateWithServer(linksUrl)).then(
+    return $.when(SERVER_COMMUNICATION.ajaxRequest(linksUrl)).then(
         function (response) {
 
             var i, key = '', titleList = {}, linkItem, promises = [],
@@ -467,18 +433,8 @@ function getListOfLinks(linksUrl, selectedId, createNewTree) {
 }
 
 
-function displaySorryMessage(inputUrl) {
-    displayingImageSeries(false);
-    enableImagePlotControls(false, false);
-    drawText('I don\'t know how to handle this yet!',
-        'Sorry for the inconvenience :(',
-        '#ad3a74');
-    console.log('inputUrl: ' + inputUrl);
-}
-
-
-function displayText(inputUrl, inputText, fontColor) {
 // When a dataset is selected, display whatever text there is
+function displayText(inputUrl, inputText, fontColor) {
 
     var debug = false;
 
@@ -503,9 +459,9 @@ function displayText(inputUrl, inputText, fontColor) {
                     }
 
                     // Display the data
-                    displayingImageSeries(false);
-                    enableImagePlotControls(false, false);
-                    drawText(inputText, value, fontColor);
+                    DATA_PLOT.displayingImageSeries(false);
+                    DATA_PLOT.enableImagePlotControls(false, false);
+                    DATA_PLOT.drawText(inputText, value, fontColor);
                 }
             );
 
@@ -529,7 +485,7 @@ function displayLine(inputUrl, selectedId, nodeTitle) {
     }
 
     // Get the data (from data-retrieval.js), then plot it
-    $.when(getData(valueUrl)).then(
+    $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
         function (response) {
 
             if (debug) {
@@ -537,114 +493,12 @@ function displayLine(inputUrl, selectedId, nodeTitle) {
             }
 
             // Plotting functions from data-plot.js
-            displayingImageSeries(false);
-            enableImagePlotControls(false, false);
+            DATA_PLOT.displayingImageSeries(false);
+            DATA_PLOT.enableImagePlotControls(false, false);
             plotLine(response.value, nodeTitle);
         }
     );
 
-}
-
-
-
-// When a dataset is selected, plot the data
-function displayImage(inputUrl, selectedId) {
-
-    var debug = false, valueUrl;
-
-    if (debug) {
-        console.log('inputUrl: ' + inputUrl);
-    }
-
-    // Create the url that gets the data from the server
-    valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
-
-    if (debug) {
-        console.log('valueUrl: ' + valueUrl);
-    }
-
-
-    // Get the data (from data-retrieval.js), then plot it
-    $.when(getData(valueUrl)).then(
-        function (response) {
-
-            // Plotting functions from data-plot.js
-            displayingImageSeries(false);
-            enableImagePlotControls(true, false);
-            initializeImageData(response.value);
-            plotData();
-        }
-    );
-}
-
-
-// Deal with an image series
-function displayImageSeries(targetUrl, nodeId) {
-
-    var debug = false;
-
-    // Get some information about this dataset
-    $.when(communicateWithServer(targetUrl)).then(
-        function (response) {
-
-            var key = '', shapeDims, layout, layoutDims;
-
-            if (debug) {
-                console.log('nodeId: ' + nodeId);
-
-                for (key in response) {
-                    if (response.hasOwnProperty(key)) {
-                        console.log(key + " -> " + response[key]);
-                    }
-                }
-            }
-
-            if (response.hasOwnProperty('shape')) {
-                if (response.shape.hasOwnProperty('dims')) {
-
-                    shapeDims = response.shape.dims;
-
-                    if (debug) {
-                        console.log(shapeDims.length);
-                        console.log(shapeDims);
-                    }
-
-                }
-            }
-
-            if (response.hasOwnProperty('creationProperties')) {
-                if (response.creationProperties.hasOwnProperty('layout')) {
-                    layout = response.creationProperties.layout;
-                    if (layout.hasOwnProperty('dims')) {
-
-                        layoutDims = layout.dims;
-
-                        if (debug) {
-                            console.log(layoutDims.length);
-                            console.log(layoutDims);
-                        }
-
-                    }
-                }
-            }
-
-            // Save some information about the image series
-            saveImageSeriesInfo(targetUrl, nodeId, shapeDims);
-
-            // Get the first image in the series and display it
-            $.when(readImageSeries(targetUrl, nodeId, shapeDims, 0)).then(
-                function (completeImage) {
-
-                    // Plotting functions from data-plot.js
-                    displayingImageSeries(true);
-                    enableImagePlotControls(true, true);
-                    initializeImageData(completeImage);
-                    plotData();
-
-                }
-            );
-        }
-    );
 }
 
 
@@ -673,7 +527,9 @@ function getFileContents(inputUrl, selectedId) {
                         console.log('linksUrl:  ' + linksUrl);
                     }
 
-                    // From each link, get its title and target url
+                    // From each link, get its title and target url, the first
+                    // level of the directory tree will be filled with this
+                    // information
                     $.when(getListOfLinks(linksUrl, selectedId, false)).then(
                         function (titleList) {
                             if (debug) {
@@ -749,7 +605,8 @@ function getRootDirectoryContents() {
                             }
 
                             // Display welcome message
-                            drawText('Welcome!', '(click stuff on the left)',
+                            DATA_PLOT.drawText('Welcome!',
+                                '(click stuff on the left)',
                                 '#3a74ad');
                         }
                     );
@@ -858,22 +715,24 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
         case 'datasets':
 
             // Empty the plot canvas, get ready for some new stuff
-            purgePlotCanvas();
+            DATA_PLOT.purgePlotCanvas();
 
             switch (data.node.data.dataType) {
 
             case 'image-series':
-                startLoadingData(10);
-                displayImageSeries(data.node.data.target, data.selected);
+                AJAX_SPINNER.startLoadingData(10);
+                HANDLE_DATASET.setupImageSeries(data.node.data.target,
+                    data.selected);
                 break;
 
             case 'image':
-                startLoadingData(10);
-                displayImage(data.node.data.target, data.selected);
+                AJAX_SPINNER.startLoadingData(10);
+                HANDLE_DATASET.displayImage(data.node.data.target,
+                    data.selected);
                 break;
 
             case 'line':
-                startLoadingData(10);
+                AJAX_SPINNER.startLoadingData(10);
                 displayLine(data.node.data.target, data.selected,
                     data.node.text);
                 break;
@@ -888,14 +747,14 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             default:
                 console.log('Is this a fucking dataset? Me thinks not matey!');
-                displaySorryMessage(data.node.data.target);
+                DATA_PLOT.displayErrorMessage(data.node.data.target);
             }
 
             break;
 
         default:
             console.log('What the fuck do you want me to do with this shit?');
-            displaySorryMessage(data.node.data.target);
+            DATA_PLOT.displayErrorMessage(data.node.data.target);
         }
 
     } else {

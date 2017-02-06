@@ -1,211 +1,196 @@
-/*global $, doneLoadingData, startLoadingData, readImageSeries*/
+/*global $*/
 'use strict';
 
 
-// Global variables
-var DATA_PLOT = {
+// External libraries
+var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
-    plotCanvasDiv : document.getElementById('plotCanvasDiv'),
-    colorScale : 'Jet',
-    plotLogValues : false,
-    plotType : 'heatmap',
-    drawText : false,
-    initialDataValues : [],
-    logOfDataValues : [],
-    dataValues : [],
-    resizeTimer : undefined,
-    plotWidth : 550,
-    plotHeight : 550,
-    useDarkTheme : false,
+    // Global variables
+    DATA_PLOT = {
 
-    imageSeries : false,
-    imageSeriesNodeId : undefined,
-    imageSeriesTargetUrl : undefined,
-    imageSeriesShapeDims : undefined,
-},
+        plotCanvasDiv : document.getElementById('plotCanvasDiv'),
+        colorScale : 'Jet',
+        plotLogValues : false,
+        plotType : 'heatmap',
+        displayType : '',
+        initialDataValues : [],
+        logOfDataValues : [],
+        dataValues : [],
+        resizeTimer : undefined,
+        plotWidth : 550,
+        plotHeight : 550,
+        useDarkTheme : false,
 
-    // External libraries
-    Plotly;
+        imageSeries : false,
+        imageSeriesNodeId : undefined,
+        imageSeriesTargetUrl : undefined,
+        imageSeriesShapeDims : undefined,
 
-
-function purgePlotCanvas() {
-    Plotly.purge(DATA_PLOT.plotCanvasDiv);
-}
-
-
-function drawEmptyPlot() {
-// Draw an empty plot when there is no data yet selected
-
-    var data, layout, options, mainDataPlot;
-
-    mainDataPlot = {
-        z: [],
-        type: 'heatmap',
-        colorscale: DATA_PLOT.colorScale,
-    };
-
-    // All the data that is to be plotted
-    data = [mainDataPlot];
-
-    // The layout of the plotting canvas and axes.
-    layout = {
-        title: '',
-        showlegend: false,
-        autosize: false,
-        width: DATA_PLOT.plotWidth,
-        height: DATA_PLOT.plotHeight,
-        paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
-                '#333333' : '#ffffff'),
-        plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
-                '#333333' : '#ffffff'),
-
-        xaxis: {
-            title: 'x',
-            showgrid: false,
-            zeroline: false
+        // Clear the plotting canvas along with whatever objects were there
+        purgePlotCanvas : function () {
+            Plotly.purge(DATA_PLOT.plotCanvasDiv);
         },
 
-        yaxis: {
-            title: 'y',
-            showgrid: false,
-            zeroline: false
-        },
 
-    };
+        // Draw an empty plot when there is no data yet selected
+        drawText : function (itemTitle, itemValue, fontColor) {
 
-    options = {
-        staticPlot: true,
-        showLink: false,
-        displaylogo: false,
-        modeBarButtonsToRemove: [
-            'sendDataToCloud', 'hoverCompareCartesian',
-            'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
-            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
-        displayModeBar: false,
-        showTips: false,
-    };
+            var debug = false, data, layout, options, mainDataPlot, string1,
+                string2;
 
-    purgePlotCanvas();
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
-        doneLoadingData()
-    );
+            DATA_PLOT.displayType = 'text';
 
-}
+            // Convert to strings, remove bad, bad things
+            string1 = String(itemTitle);
+            string2 = String(itemValue);
+            string1 = string1.replace(/\$/g, '');
+            string2 = string2.replace(/\$/g, '');
 
-
-function drawText(itemTitle, itemValue, fontColor) {
-// Draw an empty plot when there is no data yet selected
-
-    var debug = false, data, layout, options, mainDataPlot, string1, string2;
-
-    DATA_PLOT.drawText = true;
-
-    // Convert to strings, remove bad, bad things
-    string1 = String(itemTitle);
-    string2 = String(itemValue);
-    string1 = string1.replace(/\$/g, '');
-    string2 = string2.replace(/\$/g, '');
-
-    // Check for empty values
-    if (string2 === '') {
-        string2 = '<empty value>';
-    }
-
-    if (debug) {
-        console.log(itemTitle + ' --> ' + itemValue);
-        console.log(string1 + ' --> ' + string2);
-    }
-
-    // Check for color choice
-    fontColor = (fontColor === false ? '#ad3a3a' : fontColor);
-
-    // Setup the empty data
-    mainDataPlot = {
-        z: [],
-        type: 'heatmap',
-        colorscale: DATA_PLOT.colorScale,
-    };
-
-    // All the data that is to be plotted
-    data = [mainDataPlot];
-
-    // The layout of the plotting canvas and axes.
-    layout = {
-        title: '',
-        showlegend: false,
-        autosize: false,
-        width: DATA_PLOT.plotWidth,
-        height: 300,
-        paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
-                '#333333' : '#ffffff'),
-        plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
-                '#333333' : '#ffffff'),
-
-        xaxis: {
-            title: '',
-            showgrid: false,
-            zeroline: false,
-            showticklabels : false,
-            ticks : '',
-        },
-
-        yaxis: {
-            title: '',
-            showgrid: false,
-            zeroline: false,
-            showticklabels : false,
-            ticks : '',
-        },
-
-        // More annotation examples here:
-        //  https://plot.ly/javascript/text-and-annotations/
-        annotations: [
-            {
-                x: 0,
-                y: 0,
-                xref: 'x',
-                yref: 'y',
-                text: '<b>' + string1 + '</b>' + '<br>' + string2,
-                showarrow: false,
-                font: {
-                    family: 'Courier New, monospace',
-                    size: 16,
-                    color: fontColor,
-                },
-                align: 'center',
-                bordercolor: fontColor,
-                borderwidth: 3,
-                borderpad: 4,
-                bgcolor: 'rgba(255, 255, 255, 0.9)',
-                opacity: 0.8
+            // Check for empty values
+            if (string2 === '') {
+                string2 = '<empty value>';
             }
-        ],
+
+            if (debug) {
+                console.log(itemTitle + ' --> ' + itemValue);
+                console.log(string1 + ' --> ' + string2);
+            }
+
+            // Check for color choice
+            fontColor = (fontColor === false ? '#ad3a3a' : fontColor);
+
+            // Setup the empty data
+            mainDataPlot = {
+                z: [],
+                type: 'heatmap',
+                colorscale: DATA_PLOT.colorScale,
+            };
+
+            // All the data that is to be plotted
+            data = [mainDataPlot];
+
+            // The layout of the plotting canvas and axes.
+            layout = {
+                title: '',
+                showlegend: false,
+                autosize: false,
+                width: DATA_PLOT.plotWidth,
+                height: 300,
+                paper_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                        '#333333' : '#ffffff'),
+                plot_bgcolor : (DATA_PLOT.useDarkTheme === true ?
+                        '#333333' : '#ffffff'),
+
+                xaxis: {
+                    title: '',
+                    showgrid: false,
+                    zeroline: false,
+                    showticklabels : false,
+                    ticks : '',
+                },
+
+                yaxis: {
+                    title: '',
+                    showgrid: false,
+                    zeroline: false,
+                    showticklabels : false,
+                    ticks : '',
+                },
+
+                // More annotation examples here:
+                //  https://plot.ly/javascript/text-and-annotations/
+                annotations: [
+                    {
+                        x: 0,
+                        y: 0,
+                        xref: 'x',
+                        yref: 'y',
+                        text: '<b>' + string1 + '</b>' + '<br>' + string2,
+                        showarrow: false,
+                        font: {
+                            family: 'Courier New, monospace',
+                            size: 16,
+                            color: fontColor,
+                        },
+                        align: 'center',
+                        bordercolor: fontColor,
+                        borderwidth: 3,
+                        borderpad: 4,
+                        bgcolor: 'rgba(255, 255, 255, 0.9)',
+                        opacity: 0.8
+                    }
+                ],
+            };
+
+            options = {
+                staticPlot: true,
+                showLink: false,
+                displaylogo: false,
+                modeBarButtonsToRemove: [
+                    'sendDataToCloud', 'hoverCompareCartesian',
+                    'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
+                    'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d',
+                    'zoomOut2d'],
+                displayModeBar: false,
+                showTips: false,
+            };
+
+            DATA_PLOT.purgePlotCanvas();
+            Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options
+                ).then(
+                AJAX_SPINNER.doneLoadingData()
+            );
+
+        },
+
+        displayingImageSeries : function (trueOrFalse) {
+            DATA_PLOT.imageSeries = trueOrFalse;
+            document.getElementById("inputNumberDiv").value = 0;
+        },
+
+        enableImagePlotControls : function (enableControls,
+            enableImageSeriesControls) {
+        // The buttons are initially disabled when the page loads, enable them
+        // here
+
+            var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
+                divNames = ['#plotTypeButtonDiv', '#logButtonDiv',
+                    '#colorButtonDiv'],
+                seriesControls = ['#inputNumberDiv', '#beginButtonDiv',
+                    '#plusButtonDiv', '#endButtonDiv', '#minusButtonDiv',
+                    '#sliderDiv'];
+
+            // General plotting controls
+            for (i = 0; i < divNames.length; i += 1) {
+                if (enableControls) {
+                    $(divNames[i]).removeClass(classNames);
+                } else {
+                    $(divNames[i]).addClass(classNames);
+                }
+            }
+
+            // Image series controls
+            for (i = 0; i < seriesControls.length; i += 1) {
+                if (enableImageSeriesControls) {
+                    $(seriesControls[i]).removeClass(classNames);
+                } else {
+                    $(seriesControls[i]).addClass(classNames);
+                }
+            }
+
+        },
+
+
+        displayErrorMessage : function (inputUrl) {
+            DATA_PLOT.displayingImageSeries(false);
+            DATA_PLOT.enableImagePlotControls(false, false);
+            DATA_PLOT.drawText('I don\'t know how to handle this yet!',
+                'Sorry for the inconvenience :(',
+                '#ad3a74');
+            console.log('inputUrl: ' + inputUrl);
+        },
+
     };
-
-    options = {
-        staticPlot: true,
-        showLink: false,
-        displaylogo: false,
-        modeBarButtonsToRemove: [
-            'sendDataToCloud', 'hoverCompareCartesian',
-            'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
-            'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d', 'zoomOut2d'],
-        displayModeBar: false,
-        showTips: false,
-        // scrollZoom: true,
-    };
-    // All options are here:
-    //  https://github.com/plotly/plotly.js/blob/master/src/plot_api/
-    //      plot_config.js
-    //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
-    //      buttons.js
-
-    purgePlotCanvas();
-    Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
-        doneLoadingData()
-    );
-
-}
 
 
 function drawLine(value, nodeTitle) {
@@ -267,9 +252,9 @@ function drawLine(value, nodeTitle) {
     //      buttons.js
 
     // Present them
-    purgePlotCanvas();
+    DATA_PLOT.purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
-        doneLoadingData()
+        AJAX_SPINNER.doneLoadingData()
     );
 
 }
@@ -356,9 +341,9 @@ function draw3DPlot() {
     //      buttons.js
 
     // Present them
-    purgePlotCanvas();
+    DATA_PLOT.purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
-        doneLoadingData()
+        AJAX_SPINNER.doneLoadingData()
     );
 
 }
@@ -456,8 +441,8 @@ function draw2DPlot() {
     // plot me thinks
     mainDataPlot = {
         z: DATA_PLOT.dataValues,
-        // zmin: 2,
-        // zmax: 4,
+        // zmin: 0,
+        // zmax: 6,
         zsmooth: false,
         // zsmooth: 'best',
         type: DATA_PLOT.plotType,
@@ -553,9 +538,9 @@ function draw2DPlot() {
     //  https://github.com/plotly/plotly.js/blob/master/src/components/modebar/
     //      buttons.js
 
-    purgePlotCanvas();
+    DATA_PLOT.purgePlotCanvas();
     Plotly.newPlot(DATA_PLOT.plotCanvasDiv, data, layout, options).then(
-        doneLoadingData()
+        AJAX_SPINNER.doneLoadingData()
     );
 
     // Refill the profile histograms when a zoom event occurs
@@ -670,21 +655,22 @@ function calculatePlotSize() {
 }
 
 
-function plotLine(value, nodeTitle) {
 // Plot the data!
+function plotLine(value, nodeTitle) {
 
-    DATA_PLOT.drawText = false;
+    DATA_PLOT.displayType = 'line';
+
+    calculatePlotSize();
 
     drawLine(value, nodeTitle);
-
 
 }
 
 
-function plotData() {
 // Plot the data!
+function plotData() {
 
-    DATA_PLOT.drawText = false;
+    DATA_PLOT.displayType = 'image';
 
     calculatePlotSize();
 
@@ -697,9 +683,9 @@ function plotData() {
 }
 
 
+// Change the plot type - not all work well for large numbers of points, I
+// think that 'surface' and 'heatmap' seem to work best and are useful
 function changeType(type) {
-// Change the plot type - not all work well for our large numbers of points,
-// I think that 'surface' and 'heatmap' seem to work best and are useful
 
     ///////////////////////////////////////////////////////////////////////////
     // Should use restyle instead of redrawing the entire plot:
@@ -712,8 +698,8 @@ function changeType(type) {
     ///////////////////////////////////////////////////////////////////////////
 
     if (type !== '') {
-        purgePlotCanvas();
-        startLoadingData(1);
+        DATA_PLOT.purgePlotCanvas();
+        AJAX_SPINNER.startLoadingData(1);
         DATA_PLOT.plotType = type;
         setTimeout(function () {
             plotData();
@@ -723,10 +709,11 @@ function changeType(type) {
 }
 
 
-function changeColor(colorscale) {
 // Change the color map
+function changeColor(colorscale) {
 
     if (colorscale !== '') {
+
         DATA_PLOT.colorScale = colorscale;
 
         Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
@@ -736,8 +723,8 @@ function changeColor(colorscale) {
 }
 
 
-function toggleLogPlot(useLog) {
 // Switch between the use of log and non-log values
+function toggleLogPlot(useLog) {
 
     var debug = true, useRestyle = false, type = 'linear';
 
@@ -748,9 +735,9 @@ function toggleLogPlot(useLog) {
     // Clear the plot and start the laoder, as this can take some time when
     // the plot has many points
     if (!useRestyle) {
-        purgePlotCanvas();
+        DATA_PLOT.purgePlotCanvas();
     }
-    startLoadingData(1);
+    AJAX_SPINNER.startLoadingData(1);
 
     if (useLog === undefined) {
         DATA_PLOT.plotLogValues = !DATA_PLOT.plotLogValues;
@@ -792,7 +779,7 @@ function toggleLogPlot(useLog) {
             // Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
             //     z: [DATA_PLOT.dataValues],
             // }, [0]).then(
-            //     doneLoadingData()
+            //     AJAX_SPINNER.doneLoadingData()
             // );
             Plotly.relayout(DATA_PLOT.plotCanvasDiv, {
                 scene: {
@@ -801,7 +788,7 @@ function toggleLogPlot(useLog) {
                     }
                 }
             }, [0]).then(
-                doneLoadingData()
+                AJAX_SPINNER.doneLoadingData()
             );
         } else {
             plotData();
@@ -851,36 +838,6 @@ function initializeImageData(value) {
         DATA_PLOT.dataValues = DATA_PLOT.logOfDataValues;
     } else {
         DATA_PLOT.dataValues = DATA_PLOT.initialDataValues;
-    }
-
-}
-
-
-function enableImagePlotControls(enableControls, enableImageSeriesControls) {
-// The buttons are initially disabled when the page loads, enable them here
-
-    var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
-        divNames = ['#plotTypeButtonDiv', '#logButtonDiv', '#colorButtonDiv'],
-        seriesControls = ['#inputNumberDiv', '#beginButtonDiv',
-            '#plusButtonDiv', '#endButtonDiv', '#minusButtonDiv',
-            '#sliderDiv'];
-
-    // General plotting controls
-    for (i = 0; i < divNames.length; i += 1) {
-        if (enableControls) {
-            $(divNames[i]).removeClass(classNames);
-        } else {
-            $(divNames[i]).addClass(classNames);
-        }
-    }
-
-    // Image series controls
-    for (i = 0; i < seriesControls.length; i += 1) {
-        if (enableImageSeriesControls) {
-            $(seriesControls[i]).removeClass(classNames);
-        } else {
-            $(seriesControls[i]).addClass(classNames);
-        }
     }
 
 }
@@ -939,7 +896,7 @@ function imageSeriesInput(value) {
         console.log('max: ' + max);
     }
 
-    startLoadingData(100);
+    AJAX_SPINNER.startLoadingData(100);
 
     if (isNumeric(value)) {
 
@@ -954,28 +911,29 @@ function imageSeriesInput(value) {
         }
 
         if (value >= min && value <= max) {
-            $.when(readImageSeries(DATA_PLOT.imageSeriesTargetUrl,
-                DATA_PLOT.imageSeriesNodeId, DATA_PLOT.imageSeriesShapeDims,
-                value)).then(
-                function (completeImage) {
-                    initializeImageData(completeImage);
+            $.when(
+                HANDLE_DATASET.readImageSeries(
+                    DATA_PLOT.imageSeriesTargetUrl,
+                    DATA_PLOT.imageSeriesNodeId,
+                    DATA_PLOT.imageSeriesShapeDims,
+                    value
+                )
+            ).then(
 
-                    // Change to the data used in the plot
+                function (image) {
+                    initializeImageData(image);
+
+                    // Change the data used in the plot
                     Plotly.restyle(DATA_PLOT.plotCanvasDiv, {
                         z: [DATA_PLOT.dataValues],
                     }, [0]).then(
-                        doneLoadingData()
+                        AJAX_SPINNER.doneLoadingData()
                     );
                 }
+
             );
         }
     }
-}
-
-
-function displayingImageSeries(trueOrFalse) {
-    DATA_PLOT.imageSeries = trueOrFalse;
-    document.getElementById("inputNumberDiv").value = 0;
 }
 
 
@@ -1011,7 +969,7 @@ $(window).resize(function () {
         calculatePlotSize();
 
         // Use smaller canvas when displaying text instead of images
-        if (DATA_PLOT.drawText) {
+        if (DATA_PLOT.displayType === 'text') {
             plotHeight = 300;
         } else {
             plotHeight = DATA_PLOT.plotHeight;
