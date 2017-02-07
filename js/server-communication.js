@@ -3,7 +3,7 @@
 
 
 // External libraries
-var AJAX_SPINNER, DATA_PLOT,
+var AJAX_SPINNER, DATA_DISPLAY,
 
     // The global variables for this applicaiton
     SERVER_COMMUNICATION =
@@ -44,7 +44,7 @@ var AJAX_SPINNER, DATA_PLOT,
                     var debug = true, key = '';
 
                     AJAX_SPINNER.doneLoadingData();
-                    DATA_PLOT.displayErrorMessage(url);
+                    DATA_DISPLAY.displayErrorMessage(url);
 
                     console.log('AJAX ' + url + ' error: ' + response);
 

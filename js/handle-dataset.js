@@ -2,7 +2,7 @@
 'use strict';
 
 // External libraries
-var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
+var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
     // The gloabl variables for this applicaiton
     HANDLE_DATASET =
@@ -14,16 +14,39 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
 
 
         // When a dataset is selected, plot the data
-        displayImage : function (inputUrl, selectedId) {
+        displayImage : function (inputUrl, selectedId, shapeDims) {
 
-            var debug = false, valueUrl;
+            var debug = true, valueUrl, isBigImage = false,
+                imageSliceParameters = '', stepX = 1, stepY = 1;
 
             if (debug) {
                 console.log('inputUrl: ' + inputUrl);
+                console.log('shapeDims: ' + shapeDims);
+            }
+
+            if (shapeDims[0] * shapeDims[1] > 1.0e6) {
+                isBigImage = true;
+            }
+
+            if (debug) {
+                console.log('shapeDims[0]:  ' + shapeDims[0]);
+                console.log('shapeDims[1]:  ' + shapeDims[1]);
+                console.log('isBigImage: ' + isBigImage);
+            }
+
+            // If it's a big image, do something - not what is done here,
+            // do something smart!
+            if (isBigImage) {
+                stepX = Math.floor(shapeDims[0] / 600);
+                stepY = Math.floor(shapeDims[1] / 600);
+                imageSliceParameters = '::' + stepX + ',::' + stepY;
+            } else {
+                imageSliceParameters = ':,:';
             }
 
             // Create the url that gets the data from the server
-            valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+            valueUrl = inputUrl.replace(selectedId, selectedId + '/value') +
+                '&select=[' + imageSliceParameters + ']';
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
@@ -35,12 +58,11 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                 function (response) {
 
                     // Enable some plot controls
-                    DATA_PLOT.displayingImageSeries(false);
-                    DATA_PLOT.enableImagePlotControls(true, false);
+                    DATA_DISPLAY.enableImagePlotControls(true, false);
 
                     // Plot the data
-                    DATA_PLOT.initializeImageData(response.value);
-                    DATA_PLOT.plotData();
+                    DATA_DISPLAY.initializeImageData(response.value);
+                    DATA_DISPLAY.plotData();
                 }
             );
         },
@@ -56,7 +78,7 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                 numChunkColumns, imageIndexStart, imageIndexStop,
                 imageXDim, imageYDim, isBigImage = false,
                 imageSliceParameters = '',
-                sliceX = [], sliceY = [], stepX = 1, stepY = 1;
+                stepX = 1, stepY = 1;
 
             if (debug) {
                 console.log('shapeDims: ' + shapeDims);
@@ -75,21 +97,16 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                 console.log('isBigImage: ' + isBigImage);
             }
 
-
             // The selected image in the stack is just a single slice of a
             // python array
             imageIndexStart = Number(imageIndex);
             imageIndexStop = Number(imageIndexStart + 1);
 
             // If it's a big image, do something - not what is done here,
-            // something better!
+            // do something smart!
             if (isBigImage) {
-                sliceX[0] = Math.floor(imageXDim / 2) - 250;
-                sliceX[1] = Math.floor(imageXDim / 2) + 250;
-                sliceY[0] = Math.floor(imageYDim / 2) - 250;
-                sliceY[1] = Math.floor(imageYDim / 2) + 250;
-                stepX = Math.floor(imageXDim / 800);
-                stepY = Math.floor(imageYDim / 800);
+                stepX = Math.floor(imageXDim / 600);
+                stepY = Math.floor(imageYDim / 600);
                 imageSliceParameters = '::' + stepX + ',::' + stepY;
             } else {
                 imageSliceParameters = ':,:';
@@ -99,13 +116,13 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
             // dice the data
             valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
                 '&select=[' + imageIndexStart + ':' + imageIndexStop + ','
-                + imageSliceParameters  + ']';
+                + imageSliceParameters + ']';
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
             }
 
-            // Get the data (from data-retrieval.js), then plot it
+            // Get the image data - actually a 3D array
             return $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
                 function (response) {
 
@@ -128,6 +145,52 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                 }
             );
 
+        },
+
+
+        imageSeriesInput : function (value) {
+
+            var debug = true, min = 0,
+                max = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
+
+            if (debug) {
+                console.log('imageSeriesInput: ' + value);
+                console.log('min: ' + min);
+                console.log('max: ' + max);
+            }
+
+            AJAX_SPINNER.startLoadingData(100);
+
+            if (DATA_DISPLAY.isNumeric(value)) {
+
+                if (value < min) {
+                    value = min;
+                    document.getElementById("inputNumberDiv").value = min;
+                }
+
+                if (value >= max) {
+                    value = max;
+                    document.getElementById("inputNumberDiv").value = max;
+                }
+
+                if (value >= min && value <= max) {
+                    $.when(
+                        HANDLE_DATASET.readImageSeries(
+                            DATA_DISPLAY.imageSeriesTargetUrl,
+                            DATA_DISPLAY.imageSeriesNodeId,
+                            DATA_DISPLAY.imageSeriesShapeDims,
+                            value
+                        )
+                    ).then(
+
+                        function (image) {
+                            DATA_DISPLAY.initializeImageData(image);
+                            DATA_DISPLAY.updatePlotZData();
+                        }
+
+                    );
+                }
+            }
         },
 
 
@@ -187,7 +250,7 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                     }
 
                     // Save some information about the image series
-                    DATA_PLOT.saveImageSeriesInfo(targetUrl, nodeId,
+                    DATA_DISPLAY.saveImageSeriesInfo(targetUrl, nodeId,
                         shapeDims);
 
                     // Get the first image in the series and display it
@@ -197,12 +260,11 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                         function (completeImage) {
 
                             // Enable some plot controls
-                            DATA_PLOT.displayingImageSeries(true);
-                            DATA_PLOT.enableImagePlotControls(true, true);
+                            DATA_DISPLAY.enableImagePlotControls(true, true);
 
                             // Plot the data
-                            DATA_PLOT.initializeImageData(completeImage);
-                            DATA_PLOT.plotData();
+                            DATA_DISPLAY.initializeImageData(completeImage);
+                            DATA_DISPLAY.plotData();
 
                         }
                     );
@@ -266,9 +328,7 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                             }
 
                             // Display the data
-                            DATA_PLOT.displayingImageSeries(false);
-                            DATA_PLOT.enableImagePlotControls(false, false);
-                            DATA_PLOT.drawText(inputText, value, fontColor);
+                            DATA_DISPLAY.drawText(inputText, value, fontColor);
                         }
                     );
 
@@ -299,10 +359,8 @@ var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
                         console.log(response.value);
                     }
 
-                    // Plotting functions from data-plot.js
-                    DATA_PLOT.displayingImageSeries(false);
-                    DATA_PLOT.enableImagePlotControls(false, false);
-                    DATA_PLOT.plotLine(response.value, nodeTitle);
+                    // Display the data
+                    DATA_DISPLAY.plotLine(response.value, nodeTitle);
                 }
             );
 

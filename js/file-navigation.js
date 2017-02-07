@@ -3,7 +3,7 @@
 
 
 // External libraries
-var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
+var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
     // Some gloabl variables
     FILE_NAV =
@@ -22,7 +22,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
         // then add it to the tree using the proper icon
         getDatasetInfo : function (title, nodeId, targetUrl, responses) {
 
-            var debug = true, dataType = 'none';
+            var debug = true, dataType = 'none', shapeDims = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(targetUrl)).then(
                 function (response) {
@@ -43,6 +43,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
                     if (response.hasOwnProperty('shape')) {
                         if (response.shape.hasOwnProperty('dims')) {
 
+                            shapeDims = response.shape.dims;
 
                             if (debug) {
                                 console.log(response.shape.dims.length);
@@ -94,8 +95,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
                     }
 
                     responses.push({
-                        title: title,
-                        dataType: dataType
+                        title : title,
+                        dataType : dataType,
+                        shapeDims : shapeDims,
                     });
                 }
             );
@@ -215,8 +217,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
                         icon = '../images/hdf5-16px.png';
 
                         // Check for dot-files, which are proabably the h5serv
-                        // created files, and should not be served by h5serv,
-                        // yet they are...
+                        // created files, and should not be presented by
+                        // h5serv, yet here they are...
                         if (keyTitle.indexOf('.') === 0) {
                             dotFile = true;
                         }
@@ -247,6 +249,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
                                 h5path : itemList[keyTitle].h5path,
                                 h5domain : itemList[keyTitle].h5domain,
                                 dataType : itemList[keyTitle].dataType,
+                                shapeDims : itemList[keyTitle].shapeDims,
                             },
 
                             state : {
@@ -358,8 +361,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
                                             ) ? linkItem.collection : false
                                         ),
 
-                                        // This is a new object
-                                        dataType: false,
+                                        // This are new objects
+                                        dataType : false,
+                                        shapeDims : false,
                                     };
 
                                 // For datasets, find out some more information
@@ -394,11 +398,15 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
 
                         // Update each 'dataset' link item
                         for (i = 0; i < responses.length; i += 1) {
+
                             if (debug) {
                                 console.log(responses[i]);
                             }
+
                             titleList[responses[i].title].dataType =
                                 responses[i].dataType;
+                            titleList[responses[i].title].shapeDims =
+                                responses[i].shapeDims;
                         }
 
                         // Update the jstree object
@@ -529,7 +537,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_PLOT,
                                     }
 
                                     // Display welcome message
-                                    DATA_PLOT.drawText('Welcome!',
+                                    DATA_DISPLAY.drawText('Welcome!',
                                         '(click stuff on the left)',
                                         '#3a74ad');
                                 }
@@ -653,7 +661,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
         case 'datasets':
 
             // Empty the plot canvas, get ready for some new stuff
-            DATA_PLOT.purgePlotCanvas();
+            DATA_DISPLAY.purgePlotCanvas();
 
             switch (data.node.data.dataType) {
 
@@ -666,7 +674,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.selected);
+                    data.selected, data.node.data.shapeDims);
                 break;
 
             case 'line':
@@ -687,14 +695,14 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             default:
                 console.log('Is this a fucking dataset? Me thinks not matey!');
-                DATA_PLOT.displayErrorMessage(data.node.data.target);
+                DATA_DISPLAY.displayErrorMessage(data.node.data.target);
             }
 
             break;
 
         default:
             console.log('What the fuck do you want me to do with this shit?');
-            DATA_PLOT.displayErrorMessage(data.node.data.target);
+            DATA_DISPLAY.displayErrorMessage(data.node.data.target);
         }
 
     } else {
