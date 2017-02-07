@@ -1,8 +1,8 @@
-/*global $, saveImageSeriesInfo*/
+/*global $*/
 'use strict';
 
 // External libraries
-var SERVER_COMMUNICATION, DATA_PLOT,
+var SERVER_COMMUNICATION, DATA_PLOT, FILE_NAV,
 
     // The gloabl variables for this applicaiton
     HANDLE_DATASET =
@@ -39,8 +39,8 @@ var SERVER_COMMUNICATION, DATA_PLOT,
                     DATA_PLOT.enableImagePlotControls(true, false);
 
                     // Plot the data
-                    initializeImageData(response.value);
-                    plotData();
+                    DATA_PLOT.initializeImageData(response.value);
+                    DATA_PLOT.plotData();
                 }
             );
         },
@@ -187,7 +187,8 @@ var SERVER_COMMUNICATION, DATA_PLOT,
                     }
 
                     // Save some information about the image series
-                    saveImageSeriesInfo(targetUrl, nodeId, shapeDims);
+                    DATA_PLOT.saveImageSeriesInfo(targetUrl, nodeId,
+                        shapeDims);
 
                     // Get the first image in the series and display it
                     $.when(HANDLE_DATASET.readImageSeries(targetUrl,
@@ -200,14 +201,114 @@ var SERVER_COMMUNICATION, DATA_PLOT,
                             DATA_PLOT.enableImagePlotControls(true, true);
 
                             // Plot the data
-                            initializeImageData(completeImage);
-                            plotData();
+                            DATA_PLOT.initializeImageData(completeImage);
+                            DATA_PLOT.plotData();
 
                         }
                     );
                 }
             );
-        }
+        },
+
+
+        // Get some information about a 'datasets' object
+        getDataValue : function (dataUrl, getItem) {
+
+            var debug = false, returnValue = '';
+
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(dataUrl)).then(
+                function (response) {
+
+                    var key = '';
+
+                    if (debug) {
+                        for (key in response) {
+                            if (response.hasOwnProperty(key)) {
+                                console.log(key + " -> " + response[key]);
+                            }
+                        }
+                    }
+
+                    if (response.hasOwnProperty(getItem)) {
+                        returnValue = response[getItem];
+                    }
+
+                    return returnValue;
+                }
+            );
+
+        },
+
+
+        // When a dataset is selected, display whatever text there is
+        displayText : function (inputUrl, inputText, fontColor) {
+
+            var debug = false;
+
+            if (debug) {
+                console.log('inputUrl: ' + inputUrl);
+            }
+
+            // Get the link to the data
+            $.when(FILE_NAV.getTopLevelUrl(inputUrl, 'hrefs', 'data')).then(
+                function (dataUrl) {
+
+                    if (debug) {
+                        console.log('dataUrl:  ' + dataUrl);
+                    }
+
+                    // Get the data
+                    $.when(HANDLE_DATASET.getDataValue(dataUrl, 'value')).then(
+                        function (value) {
+
+                            if (debug) {
+                                console.log('value:  ' + value);
+                            }
+
+                            // Display the data
+                            DATA_PLOT.displayingImageSeries(false);
+                            DATA_PLOT.enableImagePlotControls(false, false);
+                            DATA_PLOT.drawText(inputText, value, fontColor);
+                        }
+                    );
+
+                }
+            );
+        },
+
+        displayLine : function (inputUrl, selectedId, nodeTitle) {
+
+            var debug = false, valueUrl;
+
+            if (debug) {
+                console.log('inputUrl: ' + inputUrl);
+            }
+
+            // Create the url that gets the data from the server
+            valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+
+            if (debug) {
+                console.log('valueUrl: ' + valueUrl);
+            }
+
+            // Get the data (from data-retrieval.js), then plot it
+            $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
+                function (response) {
+
+                    if (debug) {
+                        console.log(response.value);
+                    }
+
+                    // Plotting functions from data-plot.js
+                    DATA_PLOT.displayingImageSeries(false);
+                    DATA_PLOT.enableImagePlotControls(false, false);
+                    DATA_PLOT.plotLine(response.value, nodeTitle);
+                }
+            );
+
+        },
+
+
 
     };
 

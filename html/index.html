@@ -138,7 +138,7 @@
                             class="col-xs-5 form-group hidden-xs hidden-sm
                             hidden-md hidden-lg" >
                             <select class="form-control" id="selectPlotType"
-                                onchange="changeType(value);" >
+                                onchange="DATA_PLOT.changeType(value);" >
                                 <option value="" disabled>Plot Type</option>
                                 <option value="heatmap" selected>
                                     2D + profiles </option>
@@ -150,7 +150,7 @@
                             hidden-xs hidden-sm hidden-md hidden-lg" >
                             <button type="button" class="btn"
                                 id="logPlotButton"
-                                onclick='toggleLogPlot()' > Log Plot?
+                                onclick='DATA_PLOT.toggleLogPlot()' > Log Plot?
                             </button>
                         </div>
 
@@ -158,7 +158,7 @@
                             hidden-xs hidden-sm hidden-md hidden-lg" >
                             <select id="selectColorScheme"
                                 class="form-control"
-                                onchange="changeColor(value);" >
+                                onchange="DATA_PLOT.changeColor(value);" >
                                 <option value="" disabled>Color Scale </option>
                                 <option value="Blackbody">Blackbod</option>
                                 <option value="Bluered"  >Bluered </option>
@@ -191,7 +191,7 @@
                             hidden-xs hidden-sm hidden-md hidden-lg">
                             <button type="button" class="btn btn-primary
                                 btn-number"  data-type="minus"
-                                onclick='imageSeriesInput(-1);'>
+                                onclick='DATA_PLOT.imageSeriesInput(-1);'>
                                 <div class="glyphicon glyphicon-step-backward">
                                 </div>
                             </button>
@@ -214,7 +214,7 @@
                                 hidden-xs hidden-sm hidden-md hidden-lg"
                             value="0" min="0" max="10000000" maxlength="7"
                             size="7"
-                            onchange='imageSeriesInput(value);'>
+                            onchange='DATA_PLOT.imageSeriesInput(value);'>
 
                         <!-- Plus button -->
                         <div id="plusButtonDiv" class="input-group-btn
@@ -233,7 +233,7 @@
                             <button type="button"
                                 class="btn btn-primary btn-number"
                                 data-type="plus"
-                                onclick='imageSeriesInput(10000000);'>
+                                onclick='DATA_PLOT.imageSeriesInput(10000000);'>
                                 <div class="glyphicon glyphicon-step-forward">
                                 </div>
                             </button>
