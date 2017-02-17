@@ -56,23 +56,19 @@ var AJAX_SPINNER, DATA_DISPLAY,
                             }
                         }
                     }
-                }
+                },
 
+                // Settings used in all ajax requests
+                type:       'GET',
+                dataType:   'json',
+                async:      true,
+                cache:      false,
+                timeout:    20000
             });
 
         }
 
     };
-
-
-// Settings used in all ajax requests
-$.ajaxSetup({
-    type:       'GET',
-    dataType:   'json',
-    async:      true,
-    cache:      false,
-    timeout:    2000
-});
 
 
 // This function fires when the page is loaded

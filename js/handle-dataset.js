@@ -34,19 +34,22 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('isBigImage: ' + isBigImage);
             }
 
-            // If it's a big image, do something - not what is done here,
-            // do something smart!
-            if (isBigImage) {
-                stepX = Math.floor(shapeDims[0] / 600);
-                stepY = Math.floor(shapeDims[1] / 600);
-                imageSliceParameters = '::' + stepX + ',::' + stepY;
-            } else {
-                imageSliceParameters = ':,:';
-            }
+            // // If it's a big image, do something - not what is done here,
+            // // do something smart!
+            // if (isBigImage) {
+            //     stepX = Math.floor(shapeDims[0] / 600);
+            //     stepY = Math.floor(shapeDims[1] / 600);
+            //     imageSliceParameters = '::' + stepX + ',::' + stepY;
 
-            // Create the url that gets the data from the server
-            valueUrl = inputUrl.replace(selectedId, selectedId + '/value') +
-                '&select=[' + imageSliceParameters + ']';
+            //     // Create the url that gets the data from the server
+            //     valueUrl = inputUrl.replace(selectedId, selectedId + '/value')
+            //         + '&select=[' + imageSliceParameters + ']';
+            // } else {
+            //     // Create the url that gets the data from the server
+            //     valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+            // }
+
+            valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
@@ -102,21 +105,25 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             imageIndexStart = Number(imageIndex);
             imageIndexStop = Number(imageIndexStart + 1);
 
-            // If it's a big image, do something - not what is done here,
-            // do something smart!
-            if (isBigImage) {
-                stepX = Math.floor(imageXDim / 600);
-                stepY = Math.floor(imageYDim / 600);
-                imageSliceParameters = '::' + stepX + ',::' + stepY;
-            } else {
-                imageSliceParameters = ':,:';
-            }
+            // // If it's a big image, do something - not what is done here,
+            // // do something smart!
+            // if (isBigImage) {
+            //     stepX = Math.floor(imageXDim / 600);
+            //     stepY = Math.floor(imageYDim / 600);
+            //     imageSliceParameters = '::' + stepX + ',::' + stepY;
+            // } else {
+            //     imageSliceParameters = ':,:';
+            // }
 
-            // Create the url that gets the data from the server, slice and
-            // dice the data
+            // // Create the url that gets the data from the server, slice and
+            // // dice the data
+            // valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
+            //     '&select=[' + imageIndexStart + ':' + imageIndexStop + ','
+            //     + imageSliceParameters + ']';
+
             valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
                 '&select=[' + imageIndexStart + ':' + imageIndexStop + ','
-                + imageSliceParameters + ']';
+                + ':,:]';
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
