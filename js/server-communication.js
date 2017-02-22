@@ -41,7 +41,7 @@ var AJAX_SPINNER, DATA_DISPLAY,
 
                 error: function (response) {
 
-                    var debug = true, key = '';
+                    var debug = false, key = '';
 
                     AJAX_SPINNER.doneLoadingData();
                     DATA_DISPLAY.displayErrorMessage(url);

@@ -627,7 +627,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
-            var debug = true, newPlotDivHeight, newPlotDivWidth,
+            var debug = false, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
                 appWidth = $('#applicationContainer').width(),
@@ -749,7 +749,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Switch between the use of log and non-log values
         toggleLogPlot : function (useLog) {
 
-            var debug = true, useRestyle = false, type = 'linear';
+            var debug = false, useRestyle = false, type = 'linear';
 
             if (debug) {
                 console.log('useLog: ' + useLog);

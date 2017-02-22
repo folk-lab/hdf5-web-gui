@@ -13,43 +13,43 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                         '') + ':5000',
 
 
-        // When a dataset is selected, plot the data
-        displayImage : function (inputUrl, selectedId, shapeDims) {
+        // Return a dataset value
+        getDatasetValue : function (inputUrl, nodeId) {
 
-            var debug = true, valueUrl, isBigImage = false,
-                imageSliceParameters = '', stepX = 1, stepY = 1;
+            var debug = true, valueUrl;
+
 
             if (debug) {
                 console.log('inputUrl: ' + inputUrl);
-                console.log('shapeDims: ' + shapeDims);
             }
 
-            if (shapeDims[0] * shapeDims[1] > 1.0e6) {
-                isBigImage = true;
-            }
+            valueUrl = inputUrl.replace(nodeId, nodeId + '/value');
 
             if (debug) {
-                console.log('shapeDims[0]:  ' + shapeDims[0]);
-                console.log('shapeDims[1]:  ' + shapeDims[1]);
-                console.log('isBigImage: ' + isBigImage);
+                console.log('valueUrl: ' + valueUrl);
             }
 
-            // // If it's a big image, do something - not what is done here,
-            // // do something smart!
-            // if (isBigImage) {
-            //     stepX = Math.floor(shapeDims[0] / 600);
-            //     stepY = Math.floor(shapeDims[1] / 600);
-            //     imageSliceParameters = '::' + stepX + ',::' + stepY;
 
-            //     // Create the url that gets the data from the server
-            //     valueUrl = inputUrl.replace(selectedId, selectedId + '/value')
-            //         + '&select=[' + imageSliceParameters + ']';
-            // } else {
-            //     // Create the url that gets the data from the server
-            //     valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
-            // }
+            // Get the data
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
+                function (response) {
+                    return response.value;
+                }
+            );
+        },
 
-            valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+
+        // When a dataset is selected, plot the data
+        displayImage : function (inputUrl, nodeId) {
+
+            var debug = false, valueUrl;
+
+
+            if (debug) {
+                console.log('inputUrl: ' + inputUrl);
+            }
+
+            valueUrl = inputUrl.replace(nodeId, nodeId + '/value');
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
@@ -74,52 +74,15 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Get a single image from a stack of images, which are typically
         // saved as 3 dimensional arrays, with the first dimension being
         // the image number
-        readImageSeries : function (targetUrl, nodeId, shapeDims,
-            imageIndex) {
+        readImageFromSeries : function (targetUrl, nodeId, imageIndex) {
 
             var debug = true, valueUrl, chunks, matrix, numChunkRows,
-                numChunkColumns, imageIndexStart, imageIndexStop,
-                imageXDim, imageYDim, isBigImage = false,
-                imageSliceParameters = '',
-                stepX = 1, stepY = 1;
-
-            if (debug) {
-                console.log('shapeDims: ' + shapeDims);
-            }
-
-            imageXDim = shapeDims[1];
-            imageYDim = shapeDims[2];
-
-            if (imageXDim * imageYDim > 1.0e6) {
-                isBigImage = true;
-            }
-
-            if (debug) {
-                console.log('imageXDim:  ' + imageXDim);
-                console.log('imageYDim:  ' + imageYDim);
-                console.log('isBigImage: ' + isBigImage);
-            }
+                numChunkColumns, imageIndexStart, imageIndexStop;
 
             // The selected image in the stack is just a single slice of a
             // python array
             imageIndexStart = Number(imageIndex);
             imageIndexStop = Number(imageIndexStart + 1);
-
-            // // If it's a big image, do something - not what is done here,
-            // // do something smart!
-            // if (isBigImage) {
-            //     stepX = Math.floor(imageXDim / 600);
-            //     stepY = Math.floor(imageYDim / 600);
-            //     imageSliceParameters = '::' + stepX + ',::' + stepY;
-            // } else {
-            //     imageSliceParameters = ':,:';
-            // }
-
-            // // Create the url that gets the data from the server, slice and
-            // // dice the data
-            // valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
-            //     '&select=[' + imageIndexStart + ':' + imageIndexStop + ','
-            //     + imageSliceParameters + ']';
 
             valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
                 '&select=[' + imageIndexStart + ':' + imageIndexStop + ','
@@ -155,9 +118,12 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         },
 
 
+        // Handle input from image series control buttons
+        // This assumes that displayImageSeriesInitial() has at some point
+        // already been called
         imageSeriesInput : function (value) {
 
-            var debug = true, min = 0,
+            var debug = false, min = 0,
                 max = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
 
             if (debug) {
@@ -182,10 +148,9 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                 if (value >= min && value <= max) {
                     $.when(
-                        HANDLE_DATASET.readImageSeries(
+                        HANDLE_DATASET.readImageFromSeries(
                             DATA_DISPLAY.imageSeriesTargetUrl,
                             DATA_DISPLAY.imageSeriesNodeId,
-                            DATA_DISPLAY.imageSeriesShapeDims,
                             value
                         )
                     ).then(
@@ -201,86 +166,45 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         },
 
 
-        // Deal with an image series
-        setupImageSeries : function (targetUrl, nodeId) {
+        // Setup an image series
+        displayImageSeriesInitial : function (targetUrl, shapeDims) {
 
-            var debug = false;
+            var debug = true, nodeId;
 
-            // Get some information about this dataset
-            $.when(SERVER_COMMUNICATION.ajaxRequest(targetUrl)).then(
-                function (response) {
+            // Extract the id from the target url
+            nodeId = targetUrl.match(new RegExp('datasets/' + "(.*)" +
+                '\\?host'))[1];
 
-                    var key = '', shapeDims = false, layout = false,
-                        layoutDims = false;
+            if (debug) {
+                console.log('nodeId: ' + nodeId);
+                console.log(shapeDims.length);
+                console.log(shapeDims);
+            }
 
-                    if (debug) {
-                        console.log('nodeId: ' + nodeId);
+            // Save some information about the image series, used later
+            // by imageSeriesInput()
+            DATA_DISPLAY.saveImageSeriesInfo(targetUrl, nodeId,
+                shapeDims);
 
-                        for (key in response) {
-                            if (response.hasOwnProperty(key)) {
-                                console.log(key + " -> " + response[key]);
-                            }
-                        }
-                    }
+            // Get the first image in the series and display it
+            $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
+                nodeId, 0)).then(
 
-                    if (response.hasOwnProperty('shape')) {
-                        if (response.shape.hasOwnProperty('dims')) {
+                function (completeImage) {
 
-                            shapeDims = response.shape.dims;
+                    // Enable some plot controls
+                    DATA_DISPLAY.enableImagePlotControls(true, true);
 
-                            if (debug) {
-                                console.log(shapeDims.length);
-                                console.log(shapeDims);
-                            }
+                    // Plot the data
+                    DATA_DISPLAY.initializeImageData(completeImage);
+                    DATA_DISPLAY.plotData();
 
-                        }
-                    }
-
-                    if (response.hasOwnProperty('creationProperties')) {
-                        if (response.creationProperties.hasOwnProperty(
-                                'layout'
-                            )) {
-
-                            layout = response.creationProperties.layout;
-
-                            if (layout.hasOwnProperty('dims')) {
-
-                                layoutDims = layout.dims;
-
-                                if (debug) {
-                                    console.log(layoutDims.length);
-                                    console.log(layoutDims);
-                                }
-
-                            }
-                        }
-                    }
-
-                    // Save some information about the image series
-                    DATA_DISPLAY.saveImageSeriesInfo(targetUrl, nodeId,
-                        shapeDims);
-
-                    // Get the first image in the series and display it
-                    $.when(HANDLE_DATASET.readImageSeries(targetUrl,
-                        nodeId, shapeDims, 0)).then(
-
-                        function (completeImage) {
-
-                            // Enable some plot controls
-                            DATA_DISPLAY.enableImagePlotControls(true, true);
-
-                            // Plot the data
-                            DATA_DISPLAY.initializeImageData(completeImage);
-                            DATA_DISPLAY.plotData();
-
-                        }
-                    );
                 }
             );
         },
 
 
-        // Get some information about a 'datasets' object
+        // Get a simple data value - text or a number
         getDataValue : function (dataUrl, getItem) {
 
             var debug = false, returnValue = '';
