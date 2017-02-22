@@ -8,7 +8,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
     // Some gloabl variables
     FILE_NAV =
     {
-        // h5serv has an issue with full hostnames
+        // h5serv has an issue with full hostnames - dumb quick fix
         hdf5DataServer : window.location.protocol + '//' +
                          window.location.hostname.replace('.maxiv.lu.se', '') +
                          ':5000',
@@ -16,11 +16,310 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         processSelectNodeEvent : true,
         data : null,
         useDarkTheme : false,
+        temp : false,
+
+        // Get basic information contained in a list of 'links'
+        getLinksInformation : function (linksUrl) {
+
+            var debug = true;
+
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(linksUrl)).then(
+                function (response) {
+
+                    var key = '', titleList = {};
+
+                    if (debug) {
+                        for (key in response) {
+                            if (response.hasOwnProperty(key)) {
+                                console.log(key + " -> " + response[key]);
+                            }
+                        }
+                    }
+
+                    // Look for the 'links' section
+                    if (response.hasOwnProperty('links')) {
+
+                        // Loop over each 'link' === folder, file, or dataset
+                        for (key in response.links) {
+                            if (response.links.hasOwnProperty(key)) {
+
+                                if (debug) {
+                                    console.log(key + " -> " +
+                                        response.links[key].title);
+                                }
+
+                                // Save some of the information
+                                titleList[response.links[key].title] =
+                                    response.links[key];
+                            }
+                        }
+                    }
+
+                    return titleList;
+                }
+            );
+        },
+
+
+        // Recursively follow a file path - either through folders on disk,
+        // or wihtin an HDF5 file
+        followFilePath : function (topLevelUrl, filePathPieces, index) {
+
+            var debug = true;
+
+            if (debug) {
+                console.log('topLevelUrl: ' + topLevelUrl);
+            }
+
+            // Get the url to the links available
+            return $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
+                'links')).then(
+
+                function (linksUrl) {
+
+                    var returnValue = false;
+
+                    if (debug) {
+                        console.log('linksUrl:  ' + linksUrl);
+                    }
+
+                    // Get information about each link
+                    return $.when(FILE_NAV.getLinksInformation(linksUrl)).then(
+                        function (titleList) {
+
+                            var newTopLevelUrl = '';
+
+                            if (debug) {
+                                console.log(filePathPieces[index]);
+                                console.log(titleList);
+                            }
+
+                            // If a link title matches the piece of file path
+                            // that we're looking for
+                            if (titleList.hasOwnProperty(
+                                    filePathPieces[index]
+                                )) {
+
+                                console.log('We got a hit!');
+                                console.log(titleList[filePathPieces[index]]);
+
+                                newTopLevelUrl =
+                                    titleList[filePathPieces[index]].target;
+
+                                console.log(newTopLevelUrl);
+
+                                if (filePathPieces.length > index + 1) {
+                                    return FILE_NAV.followFilePath(
+                                        newTopLevelUrl,
+                                        filePathPieces,
+                                        index + 1
+                                    );
+                                }
+
+                                returnValue = newTopLevelUrl;
+
+                            }
+
+                            return returnValue;
+                        }
+                    );
+                }
+            );
+
+        },
+
+
+        // Given a file path, file name, and a ath within an HDF5 file,
+        // get the target url of an object
+        findH5ObjectUrl : function (filePath, h5Path) {
+
+            var debug = true, filePathPieces = [], h5PathPieces,
+                initialUrl = FILE_NAV.hdf5DataServer + '/groups';
+
+
+            // Chop off the file name extension
+            filePath = filePath.substr(0, filePath.lastIndexOf('.')) ||
+                filePath;
+
+            // Remove leading slah, if it exists
+            h5Path = (h5Path.length && h5Path[0] === '/') ? h5Path.slice(1) :
+                    h5Path;
+
+            filePathPieces = filePath.split('/');
+            h5PathPieces = h5Path.split('/');
+
+            if (debug) {
+                console.log('filePath: ' + filePath);
+                console.log('  ' + filePathPieces);
+
+                console.log('h5Path:     ' + h5Path);
+                console.log('  ' + h5PathPieces);
+            }
+
+            // Get the url which will give info about the folder contents
+            return $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs',
+                'root')).then(
+                function (topLevelUrl) {
+
+                    if (debug) {
+                        console.log('topLevelUrl: ' + topLevelUrl);
+                    }
+
+                    // Get the contents of this folder
+                    return $.when(FILE_NAV.followFilePath(topLevelUrl,
+                        filePathPieces, 0)).then(
+
+                        function (output) {
+
+                            console.log(output);
+
+                            if (output) {
+                                return FILE_NAV.findObjectInFile(output,
+                                    h5PathPieces);
+                            }
+                        }
+                    );
+
+                }
+            );
+
+        },
+
+
+        // Follow a file path to an object within an HDF5 file
+        findObjectInFile : function (inputUrl, h5PathPieces) {
+
+            var debug = false;
+
+            if (debug) {
+                console.log('inputUrl: ' + inputUrl);
+            }
+
+            // Get the url to the links available
+            return $.when(FILE_NAV.getTopLevelUrl(inputUrl, 'hrefs',
+                'root')).then(
+                function (topLevelUrl) {
+
+                    if (debug) {
+                        console.log('topLevelUrl:  ' + topLevelUrl);
+                    }
+
+                    // Treat the contents of the file as one would a folder
+                    return FILE_NAV.followFilePath(topLevelUrl,
+                        h5PathPieces, 0);
+
+                }
+            );
+
+        },
+
+
+        // Given a filename, the path to it (relative to the root data folder),
+        // and the path within the file, get a dataset value
+        getH5PathObject : function (filePath, h5Path) {
+
+            // Find the target url pointing to an object, given the file name,
+            // path, and path within the file
+            $.when(FILE_NAV.findH5ObjectUrl(filePath, h5Path)).then(
+
+                function (targetUrl) {
+                    var responses = [];
+
+                    console.log(targetUrl);
+
+                    // Get information about the dataset
+                    $.when(FILE_NAV.getDatasetInfo('', targetUrl,
+                        responses)).then(
+
+                        function () {
+
+                            var datasetInfo = responses[0];
+
+                            console.log(datasetInfo);
+
+                            switch (datasetInfo.dataType) {
+
+                            case 'image-series':
+                                AJAX_SPINNER.startLoadingData(10);
+                                HANDLE_DATASET.displayImageSeriesInitial(
+                                    targetUrl,
+                                    datasetInfo.shapeDims,
+                                    datasetInfo.id
+                                );
+                                break;
+
+                            case 'image':
+                                AJAX_SPINNER.startLoadingData(10);
+                                HANDLE_DATASET.displayImage(targetUrl,
+                                    datasetInfo.id);
+                                break;
+
+                            case 'line':
+                                AJAX_SPINNER.startLoadingData(10);
+                                HANDLE_DATASET.displayLine(targetUrl,
+                                    datasetInfo.id, datasetInfo.text);
+                                break;
+
+                            case 'number':
+                                HANDLE_DATASET.displayText(targetUrl,
+                                    datasetInfo.text, '#ad3a3a');
+                                break;
+
+                            case 'text':
+                                HANDLE_DATASET.displayText(targetUrl,
+                                    datasetInfo.text, '#3a74ad');
+                                break;
+
+                            default:
+                                console.log('Is this a fucking dataset?');
+                                DATA_DISPLAY.displayErrorMessage(targetUrl);
+                            }
+
+                        }
+
+                    );
+
+
+                }
+
+            );
+
+        },
+
+
+        // Get information about the dataset object in a linked-to data file
+        getH5ObjectLinkInfo : function (title, filePath, h5path, h5domain,
+            responses) {
+
+            var fileName, dirName = '';
+
+            dirName =  filePath.substring(0, filePath.lastIndexOf('/'));
+            fileName = dirName + '/' + h5domain;
+
+            console.log('filePath: ' + filePath);
+            console.log('dirName:  ' + dirName);
+            console.log('fileName: ' + fileName);
+            console.log('h5path:   ' + h5path);
+
+            // Find the url pointing to the linked-to data file
+            return $.when(FILE_NAV.findH5ObjectUrl(fileName, h5path)).then(
+                function (targetUrl) {
+                    console.log(targetUrl);
+                    FILE_NAV.temp = targetUrl;
+
+                    // Get information about the dataset object in the
+                    // linked-to data file
+                    return FILE_NAV.getDatasetInfo(title, targetUrl,
+                        responses);
+                }
+            );
+
+        },
 
         // Get some information about a 'datasets' object - try and figure out
         // if it's an array, matrix, number, string, or somthing else,
         // then add it to the tree using the proper icon
-        getDatasetInfo : function (title, nodeId, targetUrl, responses) {
+        getDatasetInfo : function (title, targetUrl, responses) {
 
             var debug = true, dataType = 'none', shapeDims = false;
 
@@ -30,7 +329,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     var key = '';
 
                     if (debug) {
-                        console.log('nodeId: ' + nodeId);
 
                         for (key in response) {
                             if (response.hasOwnProperty(key)) {
@@ -98,6 +396,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         title : title,
                         dataType : dataType,
                         shapeDims : shapeDims,
+                        id : response.id,
+                        target : targetUrl,
                     });
                 }
             );
@@ -152,8 +452,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
-                doesNodeExist = false, dotFile = false, needToRefresh = false;
+            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
+                doesNodeExist = false, dotFile = false, needToRefresh = false,
+                filePath = '', h5Path = '', parentTreeNode;
 
             if (createNewTree) {
                 FILE_NAV.jstreeDict = [];
@@ -166,12 +467,14 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             itemList[keyTitle].target);
                         console.log(keyTitle + " -> " +
                             itemList[keyTitle].dataType);
+                        console.log(keyTitle + " -> " +
+                            itemList[keyTitle].collection);
                     }
 
                     doesNodeExist = false;
                     dotFile = false;
 
-                    // Folders and datasets within HDF5 files
+                    // Folders and datasets within HDF5 files have an 'id'
                     if (itemList[keyTitle].id) {
 
                         treeId = itemList[keyTitle].id;
@@ -182,9 +485,11 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         }
 
                         if (itemList[keyTitle].collection === 'datasets') {
+
                             type = 'datasets';
 
                             if (itemList[keyTitle].dataType) {
+
                                 switch (itemList[keyTitle].dataType) {
                                 case 'image-series':
                                     icon = 'glyphicon glyphicon-certificate';
@@ -204,24 +509,59 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                 default:
                                     icon = 'glyphicon glyphicon-question-sign';
                                 }
+
                             } else {
                                 icon = 'glyphicon glyphicon-remove-sign';
                             }
                         }
                     }
 
-                    // HDF5 files
-                    if (itemList[keyTitle].h5domain) {
+                    // HDF5 files have an 'h5domain'
+                    if (itemList[keyTitle].h5domain &&
+                            !itemList[keyTitle].dataType) {
                         treeId = itemList[keyTitle].h5domain;
                         type = 'file';
                         icon = '../images/hdf5-16px.png';
 
-                        // Check for dot-files, which are proabably the h5serv
+                        // Check for dot-files, which are probably the h5serv
                         // created files, and should not be presented by
                         // h5serv, yet here they are...
                         if (keyTitle.indexOf('.') === 0) {
                             dotFile = true;
                         }
+                    }
+
+                    // Record the file path on disk, and within the HDF5 file
+                    filePath = '';
+                    h5Path  = '';
+
+                    if (!createNewTree) {
+                        parentTreeNode =
+                            $('#jstree_div').jstree(true).get_node(selectedId);
+
+                        if (parentTreeNode) {
+                            console.log('parentTreeNode.data.filePath: ' +
+                                parentTreeNode.data.filePath);
+                            filePath = parentTreeNode.data.filePath;
+                        }
+
+                        if (parentTreeNode.data.type !== 'file' &&
+                                parentTreeNode.data.h5Path === '') {
+                            filePath += '/' + keyTitle;
+                        }
+
+                        if (parentTreeNode.data.type === 'file') {
+                            h5Path = keyTitle;
+                        }
+
+                        if (parentTreeNode.data.type !== 'file' &&
+                                parentTreeNode.data.h5Path !== '') {
+                            h5Path = parentTreeNode.data.h5Path;
+                            h5Path += '/' + keyTitle;
+                        }
+
+                    } else {
+                        filePath = keyTitle;
                     }
 
                     // Check if this id exists already
@@ -232,7 +572,11 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
 
                     // If this has not already been added to the tree, add it
-                    if (!doesNodeExist && !dotFile) {
+                    // Do not add MXCube data files, they should be linked to
+                    // from teh master file
+                    if (!doesNodeExist && !dotFile &&
+                            !itemList[keyTitle].mxData) {
+
                         FILE_NAV.jstreeDict.push({
 
                             // The key-value pairs needed by jstree
@@ -246,7 +590,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             data : {
                                 type : type,
                                 target : itemList[keyTitle].target,
-                                h5path : itemList[keyTitle].h5path,
+                                filePath : filePath,
+                                h5Path : h5Path,
                                 h5domain : itemList[keyTitle].h5domain,
                                 dataType : itemList[keyTitle].dataType,
                                 shapeDims : itemList[keyTitle].shapeDims,
@@ -298,17 +643,17 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         },
 
 
-        getListOfLinks : function (linksUrl, selectedId, createNewTree) {
         // Given a 'links' url, make a list of all the links (files, folders,
         // datasets) saving some information about each one.
+        getListOfLinks : function (linksUrl, selectedId, createNewTree) {
 
-            var debug = false;
+            var debug = false, parentTreeNode = false, filePath = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(linksUrl)).then(
                 function (response) {
 
                     var i, key = '', titleList = {}, linkItem, promises = [],
-                        responses = [];
+                        responses = [], mxMaster = false, mxData = false;
 
                     if (debug) {
                         console.log('response.length: ' + response.length);
@@ -327,10 +672,31 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         for (key in response.links) {
                             if (response.links.hasOwnProperty(key)) {
 
+                                mxMaster = false;
+                                mxData = false;
+
                                 linkItem = response.links[key];
 
                                 if (debug) {
                                     console.log(key + " -> " + linkItem.title);
+                                }
+
+                                // Try and guess if this is an MX-Cube dataset
+                                // taken at MAXIV in a crappy way - this should
+                                // really be done by adding attributes the HDF5
+                                // file
+                                if (linkItem.title.includes('_master')) {
+                                    console.log('master:' +
+                                        linkItem.title.includes('_master'));
+                                    mxMaster =
+                                        linkItem.title.replace('_master', '');
+                                }
+                                if (linkItem.title.includes('_data_')) {
+                                    console.log('data:  ' +
+                                        linkItem.title.includes('_data_'));
+                                    mxData = linkItem.title.split('_data_');
+                                    mxMaster = mxData[0];
+                                    mxData = mxData[1];
                                 }
 
                                 // Save some of the information
@@ -338,11 +704,14 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                     {
                                         // All links items have these objects
                                         title: linkItem.title,
-                                        target: linkItem.target,
                                         class: linkItem.class,
 
                                         // Some link items have these objects,
                                         // some don't
+                                        target: (
+                                            linkItem.hasOwnProperty('target')
+                                            ? linkItem.target : false
+                                        ),
                                         id: (
                                             linkItem.hasOwnProperty('id')
                                             ? linkItem.id : false
@@ -364,6 +733,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                         // This are new objects
                                         dataType : false,
                                         shapeDims : false,
+                                        mxMaster : mxMaster,
+                                        mxData : mxData,
                                     };
 
                                 // For datasets, find out some more information
@@ -379,10 +750,49 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                     // to 'responses'
                                     promises.push(
                                         FILE_NAV.getDatasetInfo(linkItem.title,
-                                            titleList[linkItem.title].id,
                                             linkItem.target, responses)
                                     );
                                 }
+
+                                // For links to datasets, find out more info
+                                if (titleList[linkItem.title].h5domain &&
+                                        !titleList[linkItem.title].target) {
+
+                                    if (debug) {
+                                        console.log('link to datasets found!');
+                                    }
+
+                                    titleList[linkItem.title].id =
+                                        titleList[linkItem.title].h5domain;
+                                    titleList[linkItem.title].collection =
+                                        'datasets';
+
+                                    // Get the file path of the jstree parent
+                                    // of this item - not such a pretty method
+                                    parentTreeNode =
+                                        $('#jstree_div').jstree(true).get_node(
+                                            selectedId
+                                        );
+
+                                    if (parentTreeNode) {
+                                        filePath =
+                                            parentTreeNode.data.filePath;
+                                    }
+
+                                    // Make a list of the ajax processes that
+                                    // will be run, the output of each is saved
+                                    // to 'responses'
+                                    promises.push(
+                                        FILE_NAV.getH5ObjectLinkInfo(
+                                            linkItem.title,
+                                            filePath,
+                                            linkItem.h5path,
+                                            linkItem.h5domain,
+                                            responses
+                                        )
+                                    );
+                                }
+
                             }
                         }
                     }
@@ -396,7 +806,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             console.log('All Done!');
                         }
 
-                        // Update each 'dataset' link item
+                        // Update each 'datasets' link item
                         for (i = 0; i < responses.length; i += 1) {
 
                             if (debug) {
@@ -407,6 +817,11 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                 responses[i].dataType;
                             titleList[responses[i].title].shapeDims =
                                 responses[i].shapeDims;
+
+                            // Symbolic links to datasets will need a new
+                            // target value
+                            titleList[responses[i].title].target =
+                                responses[i].target;
                         }
 
                         // Update the jstree object
@@ -421,54 +836,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
 
         // Get a list of items in a folder, then update the jstree object
-        getFileContents : function (inputUrl, selectedId) {
-
-            var debug = false;
-
-            if (debug) {
-                console.log('inputUrl: ' + inputUrl);
-            }
-
-            // Get the url to the links available
-            $.when(FILE_NAV.getTopLevelUrl(inputUrl, 'hrefs', 'root')).then(
-                function (topLevelUrl) {
-
-                    if (debug) {
-                        console.log('topLevelUrl:  ' + topLevelUrl);
-                    }
-
-                    // Get the url to the links available
-                    $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
-                        'links')).then(
-
-                        function (linksUrl) {
-
-                            if (debug) {
-                                console.log('linksUrl:  ' + linksUrl);
-                            }
-
-                            // From each link, get its title and target url,
-                            // the first level of the directory tree will be
-                            // filled with this information
-                            $.when(FILE_NAV.getListOfLinks(linksUrl,
-                                selectedId, false)).then(
-
-                                function (titleList) {
-                                    if (debug) {
-                                        console.log(titleList);
-                                    }
-                                }
-                            );
-                        }
-                    );
-                }
-            );
-
-        },
-
-
-        // Get a list of items in a folder, then update the jstree object
-        getFolderContents : function (topLevelUrl, selectedId) {
+        getFolderContents : function (topLevelUrl, selectedId, createNewTree) {
 
             var debug = false;
 
@@ -488,14 +856,48 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                     // From each link, get its title and target url
                     $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
-                        false)).then(
-
+                        createNewTree)).then(
                         function (titleList) {
+
                             if (debug) {
                                 console.log(titleList);
                             }
+
+                            // If this is the root diretory, display welcome
+                            // message
+                            if (createNewTree) {
+                                DATA_DISPLAY.drawText('Welcome!',
+                                    '(click stuff on the left)',
+                                    '#3a74ad');
+                            }
                         }
                     );
+                }
+            );
+
+        },
+
+
+        // Get a list of items in a file, then update the jstree object
+        getFileContents : function (inputUrl, selectedId) {
+
+            var debug = false;
+
+            if (debug) {
+                console.log('inputUrl: ' + inputUrl);
+            }
+
+            // Get the url to the links available
+            $.when(FILE_NAV.getTopLevelUrl(inputUrl, 'hrefs', 'root')).then(
+                function (topLevelUrl) {
+
+                    if (debug) {
+                        console.log('topLevelUrl:  ' + topLevelUrl);
+                    }
+
+                    // Treat the contents of the file as one would a folder
+                    FILE_NAV.getFolderContents(topLevelUrl, selectedId, false);
+
                 }
             );
 
@@ -509,7 +911,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
             var debug = false,
                 initialUrl = FILE_NAV.hdf5DataServer + '/groups';
 
-            // Get the url which will gve info about the groups
+            // Get the url which will give info about the folder contents
             $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs', 'root')).then(
                 function (topLevelUrl) {
 
@@ -517,33 +919,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         console.log('topLevelUrl: ' + topLevelUrl);
                     }
 
-                    // Get the url to the links available
-                    $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
-                        'links')).then(
-
-                        function (linksUrl) {
-
-                            if (debug) {
-                                console.log('linksUrl:  ' + linksUrl);
-                            }
-
-                            // From each link, get its title and target url
-                            $.when(FILE_NAV.getListOfLinks(linksUrl, false,
-                                true)).then(
-
-                                function (titleList) {
-                                    if (debug) {
-                                        console.log(titleList);
-                                    }
-
-                                    // Display welcome message
-                                    DATA_DISPLAY.drawText('Welcome!',
-                                        '(click stuff on the left)',
-                                        '#3a74ad');
-                                }
-                            );
-                        }
-                    );
+                    // Get the contents of this folder
+                    FILE_NAV.getFolderContents(topLevelUrl, false, true);
                 }
             );
 
@@ -559,7 +936,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
             $('#treeSectionDiv').height(content_height);
 
         },
-
 
     };
 
@@ -596,7 +972,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
     var debug = false, keyData, keyNode;
 
-    // // Open or close the node
+    // Open or close the node
     // data.instance.toggle_node(data.node);
     $('#jstree_div').jstree(true).toggle_node(data.node.id);
 
@@ -647,11 +1023,11 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
     if (FILE_NAV.processSelectNodeEvent) {
 
         // Do different things depending on what type of item has been clicked
-
         switch (data.node.data.type) {
 
         case 'folder':
-            FILE_NAV.getFolderContents(data.node.data.target, data.selected);
+            FILE_NAV.getFolderContents(data.node.data.target, data.selected,
+                false);
             break;
 
         case 'file':
@@ -667,14 +1043,14 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             case 'image-series':
                 AJAX_SPINNER.startLoadingData(10);
-                HANDLE_DATASET.setupImageSeries(data.node.data.target,
-                    data.selected);
+                HANDLE_DATASET.displayImageSeriesInitial(data.node.data.target,
+                    data.node.data.shapeDims, data.selected);
                 break;
 
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.selected, data.node.data.shapeDims);
+                    data.selected);
                 break;
 
             case 'line':
@@ -734,4 +1110,19 @@ $(document).ready(function () {
     // Fill the uppermost level of the file tree
     FILE_NAV.getRootDirectoryContents();
 
+    ///////////////////////////////////////////////////////////////////////////
+    // TESTING //
+    /////////////
+    // FILE_NAV.getH5PathObject('jie/tau1-tau_2_master.h5',
+    //     'entry/instrument/detector/detectorSpecific/pixel_mask');
+    // FILE_NAV.getH5PathObject('jie/tau1-tau_2_data_000002.h5',
+    //     'entry/data/data');
+    // $.when(FILE_NAV.findH5ObjectUrl('jie/tau1-tau_2_data_000002.h5',
+    //     'entry/data/data')).then(
+    //     function (targetUrl) {
+    //         console.log(targetUrl);
+    //         FILE_NAV.temp = targetUrl;
+    //     }
+    // );
+    ///////////////////////////////////////////////////////////////////////////
 });
