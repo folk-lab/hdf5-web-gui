@@ -20,6 +20,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         plotWidth : 550,
         plotHeight : 550,
         useDarkTheme : false,
+        mobileDisplay : false,
 
         imageSeries : false,
         imageSeriesNodeId : undefined,
@@ -37,32 +38,72 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             enableSeriesControls) {
 
             var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
-                divNames = ['#plotTypeButtonDiv', '#logButtonDiv',
-                    '#colorButtonDiv'],
-                seriesControls = ['#inputNumberDiv', '#beginButtonDiv',
-                    '#plusButtonDiv', '#endButtonDiv', '#minusButtonDiv',
-                    '#sliderDiv'];
+                imageControlDiv = ['#plotControls'],
+                seriesControlDiv = ['#imageSeriesControl'], seriesMax = 0,
+                endButtonWidth = '50px';
 
-            // General plotting controls
-            for (i = 0; i < divNames.length; i += 1) {
+            // General plotting controls - show, hide
+            for (i = 0; i < imageControlDiv.length; i += 1) {
                 if (enableImageControls) {
-                    $(divNames[i]).removeClass(classNames);
+                    $(imageControlDiv[i]).removeClass(classNames);
                 } else {
-                    $(divNames[i]).addClass(classNames);
+                    $(imageControlDiv[i]).addClass(classNames);
                 }
             }
 
-            // Image series controls
-            for (i = 0; i < seriesControls.length; i += 1) {
+            // Image series controls - show, hide
+            for (i = 0; i < seriesControlDiv.length; i += 1) {
                 if (enableSeriesControls) {
-                    $(seriesControls[i]).removeClass(classNames);
+                    $(seriesControlDiv[i]).removeClass(classNames);
                 } else {
-                    $(seriesControls[i]).addClass(classNames);
+                    $(seriesControlDiv[i]).addClass(classNames);
                 }
             }
 
             DATA_DISPLAY.imageSeries = enableSeriesControls;
-            document.getElementById("inputNumberDiv").value = 0;
+
+            if (enableSeriesControls) {
+
+                seriesMax = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
+
+                // Reset the value and limits of the input field
+                $("#inputNumberDiv").val("0");
+                $('#inputNumberDiv').attr({
+                    'min' : 0,
+                    'max' : seriesMax,
+                });
+
+                // Set the limits of the slider
+                $("#slider").slider({
+                    'data-value': 0,
+                    'value': 0,
+                    'min': 0,
+                    'max': seriesMax,
+                });
+                $("#slider").slider('refresh');
+
+                // Set the text of the start and end buttons
+                $('#startButtonValue').text(0);
+                $('#endButtonValue').text(seriesMax);
+
+                // Set the width of the end button, depending on text size
+                if (seriesMax > 9) {
+                    endButtonWidth = '60px';
+                }
+                if (seriesMax > 99) {
+                    endButtonWidth = '70px';
+                }
+                if (seriesMax > 999) {
+                    endButtonWidth = '80px';
+                }
+                if (seriesMax > 9999) {
+                    endButtonWidth = '90px';
+                }
+                if (seriesMax > 99999) {
+                    endButtonWidth = '100px';
+                }
+                $('#endButton').css("width", endButtonWidth);
+            }
         },
 
 
@@ -259,7 +300,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         draw3DPlot : function () {
 
-            var data, layout, options;
+            var data, layout, options, plotMargins;
 
             // Create data object
             data = [
@@ -267,6 +308,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     z: DATA_DISPLAY.dataValues,
                     type: DATA_DISPLAY.plotType,
                     colorscale: DATA_DISPLAY.colorScale,
+                    showscale : !DATA_DISPLAY.mobileDisplay,
 
                     // opacity: 0.999,
                     // autocolorscale : false,
@@ -287,10 +329,16 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 }
             ];
 
+            plotMargins =  { l: 65, r: 50, b: 65, t: 90, };
+            if (DATA_DISPLAY.mobileDisplay) {
+                plotMargins =  { l: 30, r: 20, b: 30, t: 20, };
+            }
+
             // And the layout
             layout = {
                 showlegend: false,
-                title: 'Title goes here',
+                title : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : 'Title goes here'),
                 autosize: false,
                 width: DATA_DISPLAY.plotWidth,
                 height: DATA_DISPLAY.plotHeight,
@@ -300,12 +348,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         '#333333' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
                         '#333333' : '#ffffff'),
-                margin: {
-                    l: 65,
-                    r: 50,
-                    b: 65,
-                    t: 90,
-                },
+                margin: plotMargins,
                 scene: {
                     xaxis: {
                         title: 'x',
@@ -429,7 +472,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // that update when zooming
 
             var debug = false, profiles, xProfilePlot, yProfilePlot, data,
-                layout, options, mainDataPlot;
+                layout, options, mainDataPlot, plotMargins = {};
 
             if (debug) {
                 console.log('DATA_DISPLAY.dataValues.length: ' +
@@ -452,6 +495,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 //     smoothing: 0.5
                 // },
                 colorscale: DATA_DISPLAY.colorScale,
+                showscale : !DATA_DISPLAY.mobileDisplay,
+                // DATA_DISPLAY.mobileDisplay
             };
 
             // The x-profile of the plot, displayed as a bar chart / histogram
@@ -479,15 +524,25 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // All the data that is to be plotted
             data = [mainDataPlot, xProfilePlot, yProfilePlot];
 
+            plotMargins =  { l: 65, r: 50, b: 65, t: 90, };
+            if (DATA_DISPLAY.mobileDisplay) {
+                plotMargins =  { l: 30, r: 20, b: 30, t: 20, };
+            }
+
+
             // The layout of the plotting canvas and axes. Note that the amount
             // of space each plot takes up is a range from 0 to 1, and follows
             // the keyword 'domain'
             layout = {
-                title: 'Title goes here',
+                title : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : 'Title goes here'),
                 showlegend: false,
                 autosize: false,
+
                 width: DATA_DISPLAY.plotWidth,
                 height: DATA_DISPLAY.plotHeight,
+                margin: plotMargins,
+
                 hovermode: 'closest',
                 bargap: 0,
                 paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
@@ -627,7 +682,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
-            var debug = false, newPlotDivHeight, newPlotDivWidth,
+            var debug = true, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
                 appWidth = $('#applicationContainer').width(),
@@ -641,11 +696,28 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             if (DATA_DISPLAY.imageSeries) {
                 newPlotDivHeight -= 35;
             }
-            newPlotDivWidth = containerWidth - 40;
+
+            // For smaller screens, fuck padding
+            if (windowWidth > 978) {
+                DATA_DISPLAY.mobileDisplay = false;
+            } else {
+                DATA_DISPLAY.mobileDisplay = true;
+            }
+
+            newPlotDivWidth = containerWidth;
+            if (!DATA_DISPLAY.mobileDisplay) {
+                newPlotDivWidth -= 40;
+            }
+
+            if (DATA_DISPLAY.imageSeries && DATA_DISPLAY.mobileDisplay) {
+                newPlotDivHeight -= 50;
+            }
 
             if (debug) {
                 console.log('DATA_DISPLAY.imageSeries: ' +
                     DATA_DISPLAY.imageSeries);
+                console.log('DATA_DISPLAY.mobileDisplay: ' +
+                    DATA_DISPLAY.mobileDisplay);
                 console.log('appWidth:     ' + appWidth);
                 console.log('appHeight:    ' + appHeight);
                 console.log('windowWidth:  ' + windowWidth);
@@ -882,30 +954,21 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         showPlotCanvas : function () {
-            // console.log('showPlotCanvas');
             document.getElementById("plotCanvasDiv").style.display = "block";
-
-
-            // Look at :
-            //  http://seiyria.com/bootstrap-slider/
-            //  https://github.com/seiyria/bootstrap-slider
-            $('#slider').slider({
-                formatter: function (value) {
-                    return 'Current value: ' + value;
-                }
-            });
-            $('#slider').slider().on('slide', function (slideEvt) {
-                document.getElementById("inputNumberDiv").value =
-                    slideEvt.value;
-                HANDLE_DATASET.imageSeriesInput(slideEvt.value);
-            });
-
         },
 
     };
 
 
-// Handle increment click events
+// Handle image series slider events
+$('#slider').slider().on('slideStop', function (slideEvt) {
+
+    // Get an image from the series
+    HANDLE_DATASET.imageSeriesInput(slideEvt.value);
+});
+
+
+// Handle images series button click events
 $('.btn-number').click(function (e) {
 
     var fieldName, type, input, currentVal;
@@ -937,9 +1000,11 @@ $('.btn-number').click(function (e) {
             }
 
         }
+
     } else {
         input.val(0);
     }
+
 });
 
 
@@ -951,7 +1016,6 @@ $(window).resize(function () {
     if (debug) {
         console.log('wait for it...');
     }
-
 
     // During a window resize event, the resize function will be called several
     // times per second, on the order of 15! Best to wait a bit try to just

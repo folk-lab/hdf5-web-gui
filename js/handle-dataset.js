@@ -16,7 +16,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Return a dataset value
         getDatasetValue : function (inputUrl, nodeId) {
 
-            var debug = true, valueUrl;
+            var debug = false, valueUrl;
 
 
             if (debug) {
@@ -76,7 +76,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // the image number
         readImageFromSeries : function (targetUrl, nodeId, imageIndex) {
 
-            var debug = true, valueUrl, chunks, matrix, numChunkRows,
+            var debug = false, valueUrl, chunks, matrix, numChunkRows,
                 numChunkColumns, imageIndexStart, imageIndexStop;
 
             // The selected image in the stack is just a single slice of a
@@ -132,20 +132,31 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('max: ' + max);
             }
 
-            AJAX_SPINNER.startLoadingData(100);
-
             if (DATA_DISPLAY.isNumeric(value)) {
 
+                // Start the spinner
+                AJAX_SPINNER.startLoadingData(100);
+
+                // Check for out of range values
                 if (value < min) {
                     value = min;
-                    document.getElementById("inputNumberDiv").value = min;
                 }
 
-                if (value >= max) {
+                if (value > max) {
                     value = max;
-                    document.getElementById("inputNumberDiv").value = max;
                 }
 
+                // Set image series entry field value
+                $("#inputNumberDiv").val(value);
+
+                // Set the slider value
+                $("#slider").slider({
+                    'data-value': value,
+                    'value': value,
+                });
+                $("#slider").slider('refresh');
+
+                // Get an image from the series and display it
                 if (value >= min && value <= max) {
                     $.when(
                         HANDLE_DATASET.readImageFromSeries(
@@ -162,6 +173,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     );
                 }
+            } else {
+                HANDLE_DATASET.imageSeriesInput(0);
             }
         },
 
@@ -169,7 +182,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Setup an image series
         displayImageSeriesInitial : function (targetUrl, shapeDims) {
 
-            var debug = true, nodeId;
+            var debug = false, nodeId;
 
             // Extract the id from the target url
             nodeId = targetUrl.match(new RegExp('datasets/' + "(.*)" +
