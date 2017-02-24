@@ -460,14 +460,16 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 FILE_NAV.jstreeDict = [];
             }
 
+            // Loop over the list of items
             for (keyTitle in itemList) {
                 if (itemList.hasOwnProperty(keyTitle)) {
+
                     if (debug) {
-                        console.log(keyTitle + " -> " +
+                        console.log(keyTitle + " -> target:     " +
                             itemList[keyTitle].target);
-                        console.log(keyTitle + " -> " +
+                        console.log(keyTitle + " -> dataType:   " +
                             itemList[keyTitle].dataType);
-                        console.log(keyTitle + " -> " +
+                        console.log(keyTitle + " -> collection: " +
                             itemList[keyTitle].collection);
                     }
 
@@ -573,7 +575,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                     // If this has not already been added to the tree, add it
                     // Do not add MXCube data files, they should be linked to
-                    // from teh master file
+                    // from the master file
                     if (!doesNodeExist && !dotFile &&
                             !itemList[keyTitle].mxData) {
 
@@ -1038,6 +1040,9 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             // Empty the plot canvas, get ready for some new stuff
             DATA_DISPLAY.purgePlotCanvas();
+
+            // Remove plot controls
+            DATA_DISPLAY.enableImagePlotControls(false, false);
 
             switch (data.node.data.dataType) {
 

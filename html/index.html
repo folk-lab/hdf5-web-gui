@@ -56,21 +56,21 @@
 
         <!-- css for this page -->
         <link rel="stylesheet"
-            href="../css/data-plot-controls.css?v=201702171319"/>
+            href="../css/data-plot-controls.css?v=201702222126"/>
         <link rel="stylesheet"
-            href="../css/navmenu.css?v=201702171319">
+            href="../css/navmenu.css?v=201702222126">
 
         <!-- Javascript for this page -->
         <script type="text/javascript"
-            src="../js/ajax-spinner.js?v=201702171319"></script>
+            src="../js/ajax-spinner.js?v=201702222126"></script>
         <script type="text/javascript" defer
-            src="../js/server-communication.js?v=201702171319"></script>
+            src="../js/server-communication.js?v=201702222126"></script>
         <script type="text/javascript" defer
-            src="../js/file-navigation.js?v=201702171319"></script>
+            src="../js/file-navigation.js?v=201702222126"></script>
         <script type="text/javascript" defer
-            src="../js/data-display.js?v=201702171319"></script>
+            src="../js/data-display.js?v=201702222126"></script>
         <script type="text/javascript" defer
-            src="../js/handle-dataset.js?v=201702171319"></script>
+            src="../js/handle-dataset.js?v=201702222126"></script>
 
     </head>
 
@@ -127,8 +127,8 @@
 
             <!-- Container for plot canvas and controls -->
             <div id="plotContainer" class="container">
-                <div
-                    class="collapse navbar-collapse col-lg-8">
+
+                <div class="collapse navbar-collapse col-lg-8">
 
                     <!-- Image Plot Controls -->
                     <form id="plotControls" class="navbar-form navbar-left">
@@ -177,28 +177,30 @@
 
                 </div>
 
-                <!-- The plotting canvas will be placed here -->
+                <!-- The plotting canvas -->
                 <div id="plotCanvasDiv" class="col-xs-12 animate-bottom"
                     style="display:none;"></div>
 
-                <div class="col-xs-12">
-                    <!-- Image Series Control -->
+                <!-- Image Series Control -->
+                <div id='imageSeriesControl' class="col-xs-6 col-xs-offset-2
+                    hidden-xs hidden-sm hidden-md hidden-lg" >
+
                     <div class="input-group col-xs-12">
 
-                        <!-- Beginning button -->
-                        <div id="beginButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
-                            <button type="button" class="btn btn-primary
+                        <!-- Start button -->
+                        <div class="input-group-btn">
+                            <button type="button" id='startButton'
+                                class="btn-labels-large btn btn-primary
                                 btn-number"  data-type="minus"
-                                onclick='HANDLE_DATASET.imageSeriesInput(-1);'>
+                                onclick='HANDLE_DATASET.imageSeriesInput(0);'>
+                                <span id='startButtonValue' >0</span>
                                 <div class="glyphicon glyphicon-step-backward">
                                 </div>
                             </button>
                         </div>
 
                         <!-- Minus button -->
-                        <div id="minusButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
+                        <div class="input-group-btn">
                             <button type="button" class="btn btn-info
                                 btn-number"  data-type="minus"
                                 data-field="quant[0]">
@@ -208,16 +210,14 @@
                         </div>
 
                         <!-- Display and enter values -->
-                        <input id="inputNumberDiv" type="text" name="quant[0]"
-                            class="form-control input-number
-                                hidden-xs hidden-sm hidden-md hidden-lg"
-                            value="0" min="0" max="10000000" maxlength="7"
+                        <input id="inputNumberDiv"  type="text" name="quant[0]"
+                            class="form-control input-number"
+                            value="0" min="0" max="1" maxlength="7"
                             size="7"
                             onchange='HANDLE_DATASET.imageSeriesInput(value);'>
 
                         <!-- Plus button -->
-                        <div id="plusButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
+                        <div class="input-group-btn">
                             <button type="button"
                                 class="btn btn-info btn-number"
                                 data-type="plus" data-field="quant[0]">
@@ -227,28 +227,25 @@
                         </div>
 
                         <!-- End button -->
-                        <div id="endButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
-                            <button type="button"
+                        <div class="input-group-btn">
+                            <button type="button" id='endButton'
                                 class="btn btn-primary btn-number"
                                 data-type="plus"
                                 onclick='HANDLE_DATASET.imageSeriesInput(
                                     10000000);'>
                                 <div class="glyphicon glyphicon-step-forward">
                                 </div>
+                                <span id='endButtonValue' >0</span>
                             </button>
                         </div>
 
                     </div>
 
-                    <div id="sliderDiv" class="input-group col-xs-12
-                        hidden-xs hidden-sm hidden-md hidden-lg">
-                        <input id="slider" data-slider-id='imageSeriesSlider'
-                            data-slider-tooltip="hide"
-                            type="text" data-slider-handle="square"
-                            data-slider-min="0" data-slider-max="27440"
-                            data-slider-step="1" data-slider-value="0"
-                            value=""/>
+                    <div id='sliderDiv' class="col-xs-12">
+                        <input id="slider" type='text'
+                            data-slider-id='imageSeriesSlider'
+                            data-slider-tooltip='hide'
+                            data-slider-handle='square' />
                     </div>
 
                 </div>

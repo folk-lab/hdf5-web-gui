@@ -39,11 +39,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
                 divNames = ['#plotTypeButtonDiv', '#logButtonDiv',
                     '#colorButtonDiv'],
-                seriesControls = ['#inputNumberDiv', '#beginButtonDiv',
-                    '#plusButtonDiv', '#endButtonDiv', '#minusButtonDiv',
-                    '#sliderDiv'];
+                seriesControls = ['#imageSeriesControl'], seriesMax = 0,
+                endButtonWidth = '50px';
 
-            // General plotting controls
+            // General plotting controls - show, hide
             for (i = 0; i < divNames.length; i += 1) {
                 if (enableImageControls) {
                     $(divNames[i]).removeClass(classNames);
@@ -52,7 +51,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 }
             }
 
-            // Image series controls
+            // Image series controls - show, hide
             for (i = 0; i < seriesControls.length; i += 1) {
                 if (enableSeriesControls) {
                     $(seriesControls[i]).removeClass(classNames);
@@ -62,7 +61,49 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             DATA_DISPLAY.imageSeries = enableSeriesControls;
-            document.getElementById("inputNumberDiv").value = 0;
+
+            if (enableSeriesControls) {
+
+                seriesMax = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
+
+                // Reset the value and limits of the input field
+                $("#inputNumberDiv").val("0");
+                $('#inputNumberDiv').attr({
+                    'min' : 0,
+                    'max' : seriesMax,
+                });
+
+                // Set the limits of the slider
+                $("#slider").slider({
+                    'data-value': 0,
+                    'value': 0,
+                    'min': 0,
+                    'max': seriesMax,
+                });
+                $("#slider").slider('refresh');
+
+                // Set the text of the start and end buttons
+                $('#startButtonValue').text(0);
+                $('#endButtonValue').text(seriesMax);
+
+                // Set the width of the end button, depending on text size
+                if (seriesMax > 9) {
+                    endButtonWidth = '60px';
+                }
+                if (seriesMax > 99) {
+                    endButtonWidth = '70px';
+                }
+                if (seriesMax > 999) {
+                    endButtonWidth = '80px';
+                }
+                if (seriesMax > 9999) {
+                    endButtonWidth = '90px';
+                }
+                if (seriesMax > 99999) {
+                    endButtonWidth = '100px';
+                }
+                $('#endButton').css("width", endButtonWidth);
+            }
         },
 
 
@@ -882,30 +923,21 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         showPlotCanvas : function () {
-            // console.log('showPlotCanvas');
             document.getElementById("plotCanvasDiv").style.display = "block";
-
-
-            // Look at :
-            //  http://seiyria.com/bootstrap-slider/
-            //  https://github.com/seiyria/bootstrap-slider
-            $('#slider').slider({
-                formatter: function (value) {
-                    return 'Current value: ' + value;
-                }
-            });
-            $('#slider').slider().on('slide', function (slideEvt) {
-                document.getElementById("inputNumberDiv").value =
-                    slideEvt.value;
-                HANDLE_DATASET.imageSeriesInput(slideEvt.value);
-            });
-
         },
 
     };
 
 
-// Handle increment click events
+// Handle image series slider events
+$('#slider').slider().on('slideStop', function (slideEvt) {
+
+    // Get an image from the series
+    HANDLE_DATASET.imageSeriesInput(slideEvt.value);
+});
+
+
+// Handle images series button click events
 $('.btn-number').click(function (e) {
 
     var fieldName, type, input, currentVal;
@@ -937,9 +969,11 @@ $('.btn-number').click(function (e) {
             }
 
         }
+
     } else {
         input.val(0);
     }
+
 });
 
 
@@ -951,7 +985,6 @@ $(window).resize(function () {
     if (debug) {
         console.log('wait for it...');
     }
-
 
     // During a window resize event, the resize function will be called several
     // times per second, on the order of 15! Best to wait a bit try to just

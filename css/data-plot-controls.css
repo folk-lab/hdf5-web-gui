@@ -95,11 +95,33 @@ body{
 
 /* input range */
 #imageSeriesSlider .slider-selection {
-    background: #BABABA;
-}
-#slider .slider-selection {
     background: #8283FF;
 }
+#imageSeriesSlider  .slider-track-high {
+    background: #9798d8;
+}
+#imageSeriesSlider .slider-handle {
+    border-bottom-color: blue;
+}
 #imageSeriesSlider {
-    width: 300px;
+    width: 100%;
+}
+#inputNumberDiv {
+    width: 100%;
+}
+.btn-labels,
+.btn-labels:focus, .btn-labels.focus
+.btn-labels:active, .btn-labels.active,
+.btn-labels:hover {
+    background-color:   #222;
+    color:              #fff;
+    border-color:       #080808;
+}
+#startButton {
+    text-align:         right;
+    width:              50px;
+}
+#endButton {
+    text-align:         left;
+    width:              100px;
 }

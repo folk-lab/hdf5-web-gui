@@ -76,7 +76,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // the image number
         readImageFromSeries : function (targetUrl, nodeId, imageIndex) {
 
-            var debug = true, valueUrl, chunks, matrix, numChunkRows,
+            var debug = false, valueUrl, chunks, matrix, numChunkRows,
                 numChunkColumns, imageIndexStart, imageIndexStop;
 
             // The selected image in the stack is just a single slice of a
@@ -123,7 +123,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // already been called
         imageSeriesInput : function (value) {
 
-            var debug = false, min = 0,
+            var debug = true, min = 0,
                 max = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
 
             if (debug) {
@@ -132,20 +132,31 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('max: ' + max);
             }
 
-            AJAX_SPINNER.startLoadingData(100);
-
             if (DATA_DISPLAY.isNumeric(value)) {
 
+                // Start the spinner
+                AJAX_SPINNER.startLoadingData(100);
+
+                // Check for out of range values
                 if (value < min) {
                     value = min;
-                    document.getElementById("inputNumberDiv").value = min;
                 }
 
-                if (value >= max) {
+                if (value > max) {
                     value = max;
-                    document.getElementById("inputNumberDiv").value = max;
                 }
 
+                // Set image series entry field value
+                $("#inputNumberDiv").val(value);
+
+                // Set the slider value
+                $("#slider").slider({
+                    'data-value': value,
+                    'value': value,
+                });
+                $("#slider").slider('refresh');
+
+                // Get an image from the series and display it
                 if (value >= min && value <= max) {
                     $.when(
                         HANDLE_DATASET.readImageFromSeries(
@@ -162,6 +173,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     );
                 }
+            } else {
+                HANDLE_DATASET.imageSeriesInput(0);
             }
         },
 
