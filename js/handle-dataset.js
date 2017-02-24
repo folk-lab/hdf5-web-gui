@@ -16,7 +16,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Return a dataset value
         getDatasetValue : function (inputUrl, nodeId) {
 
-            var debug = true, valueUrl;
+            var debug = false, valueUrl;
 
 
             if (debug) {
@@ -123,7 +123,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // already been called
         imageSeriesInput : function (value) {
 
-            var debug = true, min = 0,
+            var debug = false, min = 0,
                 max = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
 
             if (debug) {
@@ -182,7 +182,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Setup an image series
         displayImageSeriesInitial : function (targetUrl, shapeDims) {
 
-            var debug = true, nodeId;
+            var debug = false, nodeId;
 
             // Extract the id from the target url
             nodeId = targetUrl.match(new RegExp('datasets/' + "(.*)" +

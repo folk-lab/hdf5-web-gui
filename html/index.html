@@ -88,15 +88,15 @@
                 offcanvas-sm">
 
                 <!-- Brand image and name -->
-                <div class="col-xs-5">
-                    <a class="navbar-brand" href="#">
-                        <img alt="Brand" id="logoImage"
-                           src="../images/maxiv-logo-101x35.png"></a>
-                </div>
-
                 <div class="col-xs-7">
                     <a class="navmenu-brand visible-md visible-lg"
                         href="#">HDF5 Data Viewer</a>
+                </div>
+
+                <div class="col-xs-5">
+                    <a class="navbar-brand visible-md visible-lg" href="#">
+                        <img alt="Brand" id="logoImage"
+                           src="../images/maxiv-logo-101x35.png"></a>
                 </div>
 
                 <!-- The file browser-->
@@ -116,73 +116,83 @@
             <!-- The mobile menu button -->
             <div class="navbar navbar-default navbar-fixed-top hidden-md
                 hidden-lg">
+
                 <button type="button" class="navbar-toggle"
                     data-toggle="offcanvas" data-target=".navmenu">
                     <span class="icon-bar">&nbsp;</span>
                     <span class="icon-bar">&nbsp;</span>
                     <span class="icon-bar">&nbsp;</span>
                 </button>
-                <a class="navbar-brand" href="#">HDF5 Data Viewer</a>
+
+                <div class="col-xs-5 col-xs-offset-2">
+                <a class="navbar-brand" href="#">HDF5 Viewer</a>
+                </div>
+
+                <div class="col-xs-5">
+                <a class="navbar-brand" href="#">
+                    <img alt="Brand" id="logoImage"
+                       src="../images/maxiv-logo-101x35.png"></a>
+                </div>
             </div>
 
             <!-- Container for plot canvas and controls -->
             <div id="plotContainer" class="container">
 
-                <div class="collapse navbar-collapse col-lg-8">
+                <!-- Image Plot Controls -->
+                <form id="plotControls" class="container navbar-form navbar-left
+                    hidden-xs hidden-sm hidden-md hidden-lg">
 
-                    <!-- Image Plot Controls -->
-                    <form id="plotControls" class="navbar-form navbar-left">
+                    <div id="plotTypeButtonDiv" class="col-xs-4 col-md-5
+                        form-group">
+                        <select class="form-control col-xs-12"
+                            id="selectPlotType"
+                            onchange="DATA_DISPLAY.changeType(value);" >
+                            <option value=""
+                                disabled>Plot Type</option>
+                            <option class="hidden-xs hidden-sm" value="heatmap"
+                                selected> 2D + profiles </option>
+                            <option class="hidden-md hidden-lg" value="heatmap"
+                                selected> 2D</option>
+                            <option value="surface">3D</option>
+                        </select>
+                    </div>
 
-                        <div id="plotTypeButtonDiv"
-                            class="col-xs-5 form-group hidden-xs hidden-sm
-                            hidden-md hidden-lg" >
-                            <select class="form-control" id="selectPlotType"
-                                onchange="DATA_DISPLAY.changeType(value);" >
-                                <option value="" disabled>Plot Type</option>
-                                <option value="heatmap" selected>
-                                    2D + profiles </option>
-                                <option value="surface">3D</option>
-                            </select>
-                        </div>
+                    <div id="logButtonDiv" class="col-xs-4 col-md-3">
+                        <button type="button" class="btn"
+                            id="logPlotButton"
+                            onclick='DATA_DISPLAY.toggleLogPlot()'>
+                            Log Plot?
+                        </button>
+                    </div>
 
-                        <div id="logButtonDiv" class="col-xs-4
-                            hidden-xs hidden-sm hidden-md hidden-lg" >
-                            <button type="button" class="btn"
-                                id="logPlotButton"
-                                onclick='DATA_DISPLAY.toggleLogPlot()' > Log Plot?
-                            </button>
-                        </div>
+                    <div id="colorButtonDiv" class="form-group col-xs-4">
+                        <select id="selectColorScheme"
+                            class="form-control"
+                            onchange="DATA_DISPLAY.changeColor(value);" >
+                            <option value="" disabled>Color Scale </option>
+                            <option value="Blackbody">Blackbod</option>
+                            <option value="Bluered"  >Bluered </option>
+                            <option value="Earth"    >Earth   </option>
+                            <option value="Electric" >Electric</option>
+                            <option value="Greens"   >Greens  </option>
+                            <option value="Greys"    >Greys   </option>
+                            <option value="Hot"      >Hot     </option>
+                            <option value="Jet" selected> Jet </option>
+                            <option value="Picnic"   >Picnic  </option>
+                            <option value="Portland" >Portland</option>
+                            <option value="RdBu"     >RdBu    </option>
+                        </select>
+                    </div>
 
-                        <div id="colorButtonDiv" class="form-group col-xs-3
-                            hidden-xs hidden-sm hidden-md hidden-lg" >
-                            <select id="selectColorScheme"
-                                class="form-control"
-                                onchange="DATA_DISPLAY.changeColor(value);" >
-                                <option value="" disabled>Color Scale </option>
-                                <option value="Blackbody">Blackbod</option>
-                                <option value="Bluered"  >Bluered </option>
-                                <option value="Earth"    >Earth   </option>
-                                <option value="Electric" >Electric</option>
-                                <option value="Greens"   >Greens  </option>
-                                <option value="Greys"    >Greys   </option>
-                                <option value="Hot"      >Hot     </option>
-                                <option value="Jet" selected> Jet </option>
-                                <option value="Picnic"   >Picnic  </option>
-                                <option value="Portland" >Portland</option>
-                                <option value="RdBu"     >RdBu    </option>
-                            </select>
-                        </div>
-
-                    </form>
-
-                </div>
+                </form>
 
                 <!-- The plotting canvas -->
-                <div id="plotCanvasDiv" class="col-xs-12 animate-bottom"
-                    style="display:none;"></div>
+                <div id="plotCanvasDiv" class="container col-xs-12
+                    animate-bottom" style="display:none;"></div>
 
                 <!-- Image Series Control -->
-                <div id='imageSeriesControl' class="col-xs-6 col-xs-offset-2
+                <div id='imageSeriesControl' class="col-xs-12
+                    col-md-6 col-md-offset-2
                     hidden-xs hidden-sm hidden-md hidden-lg" >
 
                     <div class="input-group col-xs-12">

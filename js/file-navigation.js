@@ -21,7 +21,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Get basic information contained in a list of 'links'
         getLinksInformation : function (linksUrl) {
 
-            var debug = true;
+            var debug = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(linksUrl)).then(
                 function (response) {
@@ -65,7 +65,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // or wihtin an HDF5 file
         followFilePath : function (topLevelUrl, filePathPieces, index) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('topLevelUrl: ' + topLevelUrl);
@@ -133,7 +133,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // get the target url of an object
         findH5ObjectUrl : function (filePath, h5Path) {
 
-            var debug = true, filePathPieces = [], h5PathPieces,
+            var debug = false, filePathPieces = [], h5PathPieces,
                 initialUrl = FILE_NAV.hdf5DataServer + '/groups';
 
 
@@ -321,7 +321,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // then add it to the tree using the proper icon
         getDatasetInfo : function (title, targetUrl, responses) {
 
-            var debug = true, dataType = 'none', shapeDims = false;
+            var debug = false, dataType = 'none', shapeDims = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(targetUrl)).then(
                 function (response) {
@@ -452,7 +452,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
