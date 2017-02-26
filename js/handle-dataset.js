@@ -40,9 +40,9 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // When a dataset is selected, plot the data
-        displayImage : function (inputUrl, nodeId) {
+        displayImage : function (inputUrl, shapeDims, nodeId) {
 
-            var debug = false, valueUrl;
+            var debug = true, valueUrl;
 
 
             if (debug) {
@@ -55,12 +55,15 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('valueUrl: ' + valueUrl);
             }
 
+            // Save some information about the image series, used later
+            // by imageSeriesInput()
+            DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims);
 
             // Get the data
             $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
                 function (response) {
 
-                    // Enable some plot controls
+                    // Enable plot controls
                     DATA_DISPLAY.enableImagePlotControls(true, false);
 
                     // Plot the data
@@ -124,7 +127,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         imageSeriesInput : function (value) {
 
             var debug = false, min = 0,
-                max = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
+                max = DATA_DISPLAY.imageShapeDims[0] - 1;
 
             if (debug) {
                 console.log('imageSeriesInput: ' + value);
@@ -182,7 +185,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Setup an image series
         displayImageSeriesInitial : function (targetUrl, shapeDims) {
 
-            var debug = false, nodeId;
+            var debug = true, nodeId;
 
             // Extract the id from the target url
             nodeId = targetUrl.match(new RegExp('datasets/' + "(.*)" +
@@ -196,8 +199,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
             // Save some information about the image series, used later
             // by imageSeriesInput()
-            DATA_DISPLAY.saveImageSeriesInfo(targetUrl, nodeId,
-                shapeDims);
+            DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,

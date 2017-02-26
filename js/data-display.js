@@ -23,9 +23,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         mobileDisplay : false,
 
         imageSeries : false,
-        imageSeriesNodeId : undefined,
-        imageSeriesTargetUrl : undefined,
-        imageSeriesShapeDims : undefined,
+        imageNodeId : undefined,
+        imageTargetUrl : undefined,
+        imageShapeDims : undefined,
 
         // Clear the plotting canvas along with whatever objects were there
         purgePlotCanvas : function () {
@@ -37,7 +37,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         enableImagePlotControls : function (enableImageControls,
             enableSeriesControls) {
 
-            var i, classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
+            var i, debug = false,
+                classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
                 imageControlDiv = ['#plotControls'],
                 seriesControlDiv = ['#imageSeriesControl'], seriesMax = 0,
                 endButtonWidth = '50px';
@@ -64,7 +65,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             if (enableSeriesControls) {
 
-                seriesMax = DATA_DISPLAY.imageSeriesShapeDims[0] - 1;
+                seriesMax = DATA_DISPLAY.imageShapeDims[0] - 1;
 
                 // Reset the value and limits of the input field
                 $("#inputNumberDiv").val("0");
@@ -87,21 +88,13 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 $('#endButtonValue').text(seriesMax);
 
                 // Set the width of the end button, depending on text size
-                if (seriesMax > 9) {
-                    endButtonWidth = '60px';
+                endButtonWidth = seriesMax.toString().length * 10 + 40;
+                endButtonWidth = parseInt(endButtonWidth, 10) + 'px';
+
+                if (debug) {
+                    console.log('endButtonWidth: ' + endButtonWidth);
                 }
-                if (seriesMax > 99) {
-                    endButtonWidth = '70px';
-                }
-                if (seriesMax > 999) {
-                    endButtonWidth = '80px';
-                }
-                if (seriesMax > 9999) {
-                    endButtonWidth = '90px';
-                }
-                if (seriesMax > 99999) {
-                    endButtonWidth = '100px';
-                }
+
                 $('#endButton').css("width", endButtonWidth);
             }
         },
@@ -471,16 +464,46 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Plot the image as a 2D heatmap along with x and y profile histograms
         // that update when zooming
 
-            var debug = false, profiles, xProfilePlot, yProfilePlot, data,
-                layout, options, mainDataPlot, plotMargins = {};
+            var debug = true, profiles, xProfilePlot, yProfilePlot, data,
+                layout, options, mainDataPlot, plotMargins = {}, lowEnd,
+                highEnd, xArr, yArr;
 
             if (debug) {
                 console.log('DATA_DISPLAY.dataValues.length: ' +
                     DATA_DISPLAY.dataValues.length);
+                console.log('DATA_DISPLAY.dataValues[0].length: ' +
+                    DATA_DISPLAY.dataValues[0].length);
+
+                console.log('DATA_DISPLAY.imageShapeDims[0]' +
+                    DATA_DISPLAY.imageShapeDims[0]);
+                console.log('DATA_DISPLAY.imageShapeDims[1]' +
+                    DATA_DISPLAY.imageShapeDims[1]);
             }
 
             profiles = DATA_DISPLAY.fillProfileHistograms(false, 0, 0, false,
                 0, 0);
+
+            // Check if this is a downsampled image - if so, change the axes
+            // ranges
+            lowEnd = 0;
+            highEnd = DATA_DISPLAY.imageShapeDims[1];
+            xArr = [];
+            while (lowEnd < highEnd) {
+                xArr.push(Math.floor(lowEnd));
+                lowEnd += DATA_DISPLAY.imageShapeDims[1] /
+                    DATA_DISPLAY.dataValues[0].length;
+            }
+            console.log(xArr);
+
+            lowEnd = 0;
+            highEnd = DATA_DISPLAY.imageShapeDims[0];
+            yArr = [];
+            while (lowEnd < highEnd) {
+                yArr.push(Math.floor(lowEnd));
+                lowEnd += DATA_DISPLAY.imageShapeDims[0] /
+                    DATA_DISPLAY.dataValues.length;
+            }
+            console.log(yArr);
 
             // The primary, 2-dimensional plot of the data - works best as a
             // 'contour' plot me thinks
@@ -488,15 +511,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 z: DATA_DISPLAY.dataValues,
                 // zmin: 0,
                 // zmax: 6,
+                x: xArr,
+                y: yArr,
                 zsmooth: false,
-                // zsmooth: 'best',
                 type: DATA_DISPLAY.plotType,
-                // line: {
-                //     smoothing: 0.5
-                // },
                 colorscale: DATA_DISPLAY.colorScale,
                 showscale : !DATA_DISPLAY.mobileDisplay,
-                // DATA_DISPLAY.mobileDisplay
             };
 
             // The x-profile of the plot, displayed as a bar chart / histogram
@@ -682,7 +702,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
-            var debug = true, newPlotDivHeight, newPlotDivWidth,
+            var debug = false, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
                 appWidth = $('#applicationContainer').width(),
@@ -930,7 +950,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Save the log values
             DATA_DISPLAY.logOfDataValues = logOfValue;
 
-            // Set the default data to use for plotting - raw values or thei
+            // Set the default data to use for plotting - raw values or the
             // log
             if (DATA_DISPLAY.plotLogValues) {
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
@@ -946,10 +966,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
 
-        saveImageSeriesInfo : function (targetUrl, nodeId, shapeDims) {
-            DATA_DISPLAY.imageSeriesNodeId = nodeId;
-            DATA_DISPLAY.imageSeriesTargetUrl = targetUrl;
-            DATA_DISPLAY.imageSeriesShapeDims = shapeDims;
+        saveImageInfo : function (targetUrl, nodeId, shapeDims) {
+            DATA_DISPLAY.imageNodeId = nodeId;
+            DATA_DISPLAY.imageTargetUrl = targetUrl;
+            DATA_DISPLAY.imageShapeDims = shapeDims;
         },
 
 
