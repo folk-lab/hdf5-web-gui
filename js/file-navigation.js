@@ -251,7 +251,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             case 'image':
                                 AJAX_SPINNER.startLoadingData(10);
                                 HANDLE_DATASET.displayImage(targetUrl,
-                                    datasetInfo.id);
+                                    datasetInfo.shapeDims, datasetInfo.id);
                                 break;
 
                             case 'line':
@@ -1055,7 +1055,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.node.data.shapeDims, data.selected);
+                    data.node.data.shapeDims, false, data.selected);
                 break;
 
             case 'line':

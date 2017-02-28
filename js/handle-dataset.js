@@ -40,7 +40,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // When a dataset is selected, plot the data
-        displayImage : function (inputUrl, shapeDims, nodeId) {
+        displayImage : function (inputUrl, shapeDims, section, nodeId) {
 
             var debug = true, valueUrl;
 
@@ -51,23 +51,36 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
             valueUrl = inputUrl.replace(nodeId, nodeId + '/value');
 
+            if (section) {
+                valueUrl += '&select=[' + section[2] + ':' + section[3] + ','
+                    + section[0] + ':' + section[1] + ']';
+            }
+
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
+                console.log('section:  ' + section);
             }
 
             // Save some information about the image series, used later
             // by imageSeriesInput()
-            DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims);
+            DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims, section);
 
             // Get the data
-            $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
                 function (response) {
 
                     // Enable plot controls
                     DATA_DISPLAY.enableImagePlotControls(true, false);
 
+                    console.log('response');
+                    console.log(response);
+
                     // Plot the data
                     DATA_DISPLAY.initializeImageData(response.value);
+                    if (section) {
+                        return response.value;
+                    }
+
                     DATA_DISPLAY.plotData();
                 }
             );

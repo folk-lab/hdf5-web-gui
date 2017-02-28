@@ -26,6 +26,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         imageNodeId : undefined,
         imageTargetUrl : undefined,
         imageShapeDims : undefined,
+        imageIsDownsampled : false,
+        imageZoomSection : false,
+
+        imageRange : undefined,
+        imageRangeSize : [0, 0],
+        imageSize : undefined,
 
         // Clear the plotting canvas along with whatever objects were there
         purgePlotCanvas : function () {
@@ -386,55 +392,96 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         // Fill x and y profile histograms, given the image and the dimensions
         // of the section of the image being viewed
-        fillProfileHistograms : function (useFillLimitsX, xMin, xMax,
-            useFillLimitsY, yMin, yMax) {
+        fillProfileHistograms : function (xMin, xMax, yMin, yMax) {
 
-            var debug = false, i, j, useFillLimits = false, histValuesX1 = [],
-                histValuesY1 = [], histValuesX2 = [], histValuesY2 = [];
+            var debug = true, i, j, histValuesX1 = [], histValuesY1 = [],
+                histValuesX2 = [], histValuesY2 = [], xFactor = 1, yFactor = 1,
+                plotLayout;
 
             if (debug) {
-                console.log('useFillLimitsX: ' + useFillLimitsX);
                 console.log('xMin:           ' + xMin);
                 console.log('xMax:           ' + xMax);
-                console.log('useFillLimitsY: ' + useFillLimitsY);
                 console.log('yMin:           ' + yMin);
                 console.log('yMax:           ' + yMax);
             }
 
-            if (useFillLimitsY || useFillLimitsX) {
-                useFillLimits = true;
+            // Check if this is a downsampled image - if so, change the axes
+            // ranges
+            if (DATA_DISPLAY.imageIsDownsampled) {
+                xFactor = DATA_DISPLAY.imageShapeDims[1] /
+                    DATA_DISPLAY.dataValues[0].length;
+                console.log('xFactor: ' + xFactor);
+
+                yFactor = DATA_DISPLAY.imageShapeDims[0] /
+                    DATA_DISPLAY.dataValues.length;
+                console.log('yFactor: ' + yFactor);
             }
 
-            if (!useFillLimitsX) {
+            // Get the present plot ranges
+            plotLayout = DATA_DISPLAY.plotCanvasDiv.layout;
+            console.log('plotLayout: ');
+            console.log(plotLayout);
+
+            if (xMin === -1) {
+                xMin = Math.floor(plotLayout.xaxis.range[0]);
+            }
+            if (xMax === -1) {
+                xMax = Math.ceil(plotLayout.xaxis.range[1]);
+            }
+            if (yMin === -1) {
+                yMin = Math.floor(plotLayout.yaxis.range[0]);
+            }
+            if (yMax === -1) {
+                yMax = Math.ceil(plotLayout.yaxis.range[1]);
+            }
+
+
+            // Set ranges if necessary
+            if (xMin === -1) {
                 xMin = 0;
-                xMax = DATA_DISPLAY.dataValues[0].length;
+            }
+            if (xMax === -1) {
+                xMax = DATA_DISPLAY.imageShapeDims[1];
+            }
+            if (yMin === -1) {
+                yMin = 0;
+            }
+            if (yMax === -1) {
+                yMax = DATA_DISPLAY.imageShapeDims[0];
             }
 
-            if (!useFillLimitsY) {
-                yMin = 0;
-                yMax = DATA_DISPLAY.dataValues.length;
+            if (debug) {
+                console.log('xMin:           ' + xMin);
+                console.log('xMax:           ' + xMax);
+                console.log('yMin:           ' + yMin);
+                console.log('yMax:           ' + yMax);
+                console.log('xFactor:        ' + xFactor);
+                console.log('yFactor:        ' + yFactor);
             }
 
             // Fill profile histograms
             for (i = 0; i < DATA_DISPLAY.dataValues.length; i += 1) {
 
                 // The y-profile values
-                histValuesX1[i] = i;
+                histValuesX1[i] = DATA_DISPLAY.imageRange[2] + yFactor * i;
                 histValuesY1[i] = 0;
 
                 for (j = 0; j < DATA_DISPLAY.dataValues[i].length; j += 1) {
 
                     if (i === 0) {
                         // The x-profile values
-                        histValuesX2[j] = j;
+                        histValuesX2[j] = DATA_DISPLAY.imageRange[0] +
+                            xFactor * j;
                         histValuesY2[j] = 0;
                     }
 
                     // If zooming, fill only relevant data
-                    if (!useFillLimits || (useFillLimits &&
-                            i >= yMin && i < yMax && j >= xMin && j < xMax)) {
+                    if (i * yFactor >= yMin && i * yFactor < yMax &&
+                            j * xFactor >= xMin && j * xFactor < xMax) {
+
                         histValuesY1[i] += DATA_DISPLAY.dataValues[i][j];
                         histValuesY2[j] += DATA_DISPLAY.dataValues[i][j];
+
                     }
                 }
             }
@@ -442,12 +489,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             if (debug) {
                 console.log('histValuesX1.length: ' + histValuesX1.length);
                 console.log('histValuesY1.length: ' + histValuesY1.length);
-                console.log('histValuesY1[' + yMin + ']:     ' +
-                    histValuesY1[yMin]);
                 console.log('histValuesX2.length: ' + histValuesX2.length);
                 console.log('histValuesY2.length: ' + histValuesY2.length);
-                console.log('histValuesY2[' + xMin + ']:     ' +
-                    histValuesY2[xMin]);
             }
 
             return {
@@ -465,54 +508,28 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // that update when zooming
 
             var debug = true, profiles, xProfilePlot, yProfilePlot, data,
-                layout, options, mainDataPlot, plotMargins = {}, lowEnd,
-                highEnd, xArr, yArr;
+                layout, options, mainDataPlot, plotMargins = {};
 
             if (debug) {
-                console.log('DATA_DISPLAY.dataValues.length: ' +
-                    DATA_DISPLAY.dataValues.length);
-                console.log('DATA_DISPLAY.dataValues[0].length: ' +
-                    DATA_DISPLAY.dataValues[0].length);
-
                 console.log('DATA_DISPLAY.imageShapeDims[0]' +
                     DATA_DISPLAY.imageShapeDims[0]);
                 console.log('DATA_DISPLAY.imageShapeDims[1]' +
                     DATA_DISPLAY.imageShapeDims[1]);
             }
 
-            profiles = DATA_DISPLAY.fillProfileHistograms(false, 0, 0, false,
-                0, 0);
+            profiles = DATA_DISPLAY.fillProfileHistograms(0,
+                DATA_DISPLAY.imageShapeDims[1], 0,
+                DATA_DISPLAY.imageShapeDims[0]);
 
-            // Check if this is a downsampled image - if so, change the axes
-            // ranges
-            lowEnd = 0;
-            highEnd = DATA_DISPLAY.imageShapeDims[1];
-            xArr = [];
-            while (lowEnd < highEnd) {
-                xArr.push(Math.floor(lowEnd));
-                lowEnd += DATA_DISPLAY.imageShapeDims[1] /
-                    DATA_DISPLAY.dataValues[0].length;
-            }
-            console.log(xArr);
-
-            lowEnd = 0;
-            highEnd = DATA_DISPLAY.imageShapeDims[0];
-            yArr = [];
-            while (lowEnd < highEnd) {
-                yArr.push(Math.floor(lowEnd));
-                lowEnd += DATA_DISPLAY.imageShapeDims[0] /
-                    DATA_DISPLAY.dataValues.length;
-            }
-            console.log(yArr);
+            // console.log('profiles.histValuesX2: ' + profiles.histValuesX2);
+            // console.log('profiles.histValuesX1: ' + profiles.histValuesX1);
 
             // The primary, 2-dimensional plot of the data - works best as a
-            // 'contour' plot me thinks
+            // 'heatmap' plot me thinks
             mainDataPlot = {
                 z: DATA_DISPLAY.dataValues,
-                // zmin: 0,
-                // zmax: 6,
-                x: xArr,
-                y: yArr,
+                x: profiles.histValuesX2,
+                y: profiles.histValuesX1,
                 zsmooth: false,
                 type: DATA_DISPLAY.plotType,
                 colorscale: DATA_DISPLAY.colorScale,
@@ -623,21 +640,32 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             );
 
             // Refill the profile histograms when a zoom event occurs
-            // Why isn't this done already in the plotly library?!
+            // Why isn't this properly done already in the plotly library?!
             DATA_DISPLAY.plotCanvasDiv.on('plotly_relayout',
                 function (eventdata) {
 
-                    var useFillLimitsX = false, xMin = 0, xMax = 0,
-                        useFillLimitsY = false, yMin = 0, yMax = 0;
+                    var xMin = -1, xMax = -1, yMin = -1, yMax = -1,
+                        keys = ['xaxis.range[0]', 'xaxis.range[1]',
+                            'yaxis.range[0]', 'yaxis.range[1]',
+                            'xaxis.autorange', 'yaxis.autorange'],
+                        i = 0, zoomEvent = false;
 
                     if (debug) {
-                        console.log('plotly_relayout ' +
-                            DATA_DISPLAY.plotType);
+                        console.log('DATA_DISPLAY.plotCanvasDiv' +
+                            'plotly_relayout ' + DATA_DISPLAY.plotType);
                         console.log(JSON.stringify(eventdata));
                     }
 
-                    if (eventdata.hasOwnProperty('width') &&
-                            eventdata.hasOwnProperty('height')) {
+                    // Zoom events return json objects containing keys like
+                    // 'xaxis.range', other events have other keywords - ignore
+                    // those
+                    for (i = 0; i < keys.length; i += 1) {
+                        if (eventdata.hasOwnProperty(keys[i])) {
+                            zoomEvent = true;
+                        }
+                    }
+
+                    if (!zoomEvent) {
 
                         if (debug) {
                             console.log('Looks like a window resize event, ' +
@@ -647,54 +675,81 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         return;
                     }
 
-
-                    if ((eventdata.hasOwnProperty('xaxis.range[0]') &&
-                            eventdata.hasOwnProperty('xaxis.range[1]')) ||
-                            (eventdata.hasOwnProperty('yaxis.range[0]') &&
-                            eventdata.hasOwnProperty('yaxis.range[1]'))) {
-
-                        if (debug) {
-                            console.log('Looks like a plot zoom event,' +
-                                ' carry on!');
-                        }
+                    if (debug) {
+                        console.log('Looks like a plot zoom event,' +
+                            ' carry on!');
                     }
 
-
-                    if (eventdata.hasOwnProperty('xaxis.range[0]') &&
-                            eventdata.hasOwnProperty('xaxis.range[1]')) {
-
+                    if (eventdata.hasOwnProperty('xaxis.range[0]')) {
                         xMin = Math.floor(eventdata['xaxis.range[0]']);
-                        xMax = Math.ceil(eventdata['xaxis.range[1]']);
-                        useFillLimitsX = true;
                     }
-                    if (eventdata.hasOwnProperty('yaxis.range[0]') &&
-                            eventdata.hasOwnProperty('yaxis.range[1]')) {
+                    if (eventdata.hasOwnProperty('xaxis.range[1]')) {
+                        xMax = Math.ceil(eventdata['xaxis.range[1]']);
+                    }
 
+                    if (eventdata.hasOwnProperty('yaxis.range[0]')) {
                         yMin = Math.floor(eventdata['yaxis.range[0]']);
+                    }
+                    if (eventdata.hasOwnProperty('yaxis.range[1]')) {
                         yMax = Math.ceil(eventdata['yaxis.range[1]']);
-                        useFillLimitsY = true;
+                    }
+
+
+                    if (eventdata.hasOwnProperty('xaxis.autorange')) {
+                        xMin = 0;
+                        xMax = DATA_DISPLAY.imageShapeDims[1];
+                    }
+                    if (eventdata.hasOwnProperty('yaxis.autorange')) {
+                        yMin = 0;
+                        yMax = DATA_DISPLAY.imageShapeDims[0];
                     }
 
                     if (debug) {
                         console.log('x-axis start: ' + xMin);
                         console.log('x-axis end:   ' + xMax);
                         console.log('y-axis start: ' + yMin);
-                        console.log('y-axis end:   ' + xMax);
+                        console.log('y-axis end:   ' + yMax);
                     }
 
-                    profiles =
-                        DATA_DISPLAY.fillProfileHistograms(useFillLimitsX,
-                            xMin, xMax, useFillLimitsY, yMin, yMax);
+                    // If the original image was downsampled, fetch a new
+                    // image from the server when zooming
 
-                    Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                        x: [profiles.histValuesX2],
-                        y: [profiles.histValuesY2],
-                    }, [1]);
+                    $.when(HANDLE_DATASET.displayImage(
+                        DATA_DISPLAY.imageTargetUrl,
+                        DATA_DISPLAY.imageShapeDims,
+                        [xMin, xMax, yMin, yMax],
+                        DATA_DISPLAY.imageNodeId
+                    )).then(
+                        function (response) {
 
-                    Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                        x: [profiles.histValuesY1],
-                        y: [profiles.histValuesX1],
-                    }, [2]);
+                            console.log('refilling histograms');
+
+                            DATA_DISPLAY.draw2DPlot();
+
+                            // // Refill the profile histograms
+                            // profiles = DATA_DISPLAY.fillProfileHistograms(xMin,
+                            //     xMax, yMin, yMax);
+
+                            // // Refill the 2D plot
+                            // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                            //     z: [DATA_DISPLAY.dataValues],
+                            //     // x: [profiles.histValuesX2],
+                            //     // y: [profiles.histValuesX1],
+                            // }, [0]);
+
+                            // // Update the profile histograms in the plot
+                            // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                            //     x: [profiles.histValuesX2],
+                            //     y: [profiles.histValuesY2],
+                            // }, [1]);
+
+                            // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                            //     x: [profiles.histValuesY1],
+                            //     y: [profiles.histValuesX1],
+                            // }, [2]);
+
+                        }
+                    );
                 });
         },
 
@@ -958,24 +1013,65 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.initialDataValues;
             }
 
+
+            ////////////////////////////
+            ////////////////////////////
+
+            // The range of the image
+            DATA_DISPLAY.imageRange = [0, DATA_DISPLAY.imageShapeDims[1], 0,
+                DATA_DISPLAY.imageShapeDims[0]];
+            // The size (in pixels) of the image
+            DATA_DISPLAY.imageSize = [DATA_DISPLAY.dataValues[0].length,
+                DATA_DISPLAY.dataValues.length];
+
+            // If we are zoomed in, set the proper range
+            if (DATA_DISPLAY.imageZoomSection) {
+                DATA_DISPLAY.imageRange = DATA_DISPLAY.imageZoomSection;
+            }
+
+            // The size of the image range
+            DATA_DISPLAY.imageRangeSize[0] = DATA_DISPLAY.imageRange[1] -
+                DATA_DISPLAY.imageRange[0];
+            DATA_DISPLAY.imageRangeSize[1] = DATA_DISPLAY.imageRange[3] -
+                DATA_DISPLAY.imageRange[2];
+
+            // Check if the image has been downsampled
+            DATA_DISPLAY.imageIsDownsampled = false;
+            if (DATA_DISPLAY.imageRangeSize[0] !== DATA_DISPLAY.imageSize[0] ||
+                    DATA_DISPLAY.imageRangeSize[1] !==
+                    DATA_DISPLAY.imageSize[1]) {
+
+                DATA_DISPLAY.imageIsDownsampled = true;
+            }
+
+            console.log('DATA_DISPLAY.imageSize: ' +
+                DATA_DISPLAY.imageSize);
+            console.log('DATA_DISPLAY.imageRange: ' +
+                DATA_DISPLAY.imageRange);
+            console.log('DATA_DISPLAY.imageRangeSize: ' +
+                DATA_DISPLAY.imageRangeSize);
+            console.log('DATA_DISPLAY.imageZoomSection:   ' +
+                DATA_DISPLAY.imageZoomSection);
+            console.log('DATA_DISPLAY.imageIsDownsampled: ' +
+                DATA_DISPLAY.imageIsDownsampled);
+
         },
 
 
+        // Check if the object is a number
         isNumeric : function (n) {
             return !isNaN(parseFloat(n)) && isFinite(n);
         },
 
 
-        saveImageInfo : function (targetUrl, nodeId, shapeDims) {
+        // Save some information about an image
+        saveImageInfo : function (targetUrl, nodeId, shapeDims, section) {
             DATA_DISPLAY.imageNodeId = nodeId;
             DATA_DISPLAY.imageTargetUrl = targetUrl;
             DATA_DISPLAY.imageShapeDims = shapeDims;
+            DATA_DISPLAY.imageZoomSection = section;
         },
 
-
-        showPlotCanvas : function () {
-            document.getElementById("plotCanvasDiv").style.display = "block";
-        },
 
     };
 
@@ -1081,5 +1177,6 @@ $(document).ready(function () {
     // Calculate the plot dimensions and save them
     DATA_DISPLAY.calculatePlotSize();
 
-    DATA_DISPLAY.showPlotCanvas();
+    // Un-hide the plotting canvas
+    document.getElementById("plotCanvasDiv").style.display = "block";
 });
