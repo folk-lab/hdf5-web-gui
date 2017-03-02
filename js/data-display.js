@@ -396,7 +396,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             var debug = true, i, j, histValuesX1 = [], histValuesY1 = [],
                 histValuesX2 = [], histValuesY2 = [], xFactor = 1, yFactor = 1,
-                plotLayout;
+                plotLayout, zMin = 1e100, zMax = -1e100;
+
 
             if (debug) {
                 console.log('xMin:           ' + xMin);
@@ -476,11 +477,22 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     }
 
                     // If zooming, fill only relevant data
-                    if (i * yFactor >= yMin && i * yFactor < yMax &&
-                            j * xFactor >= xMin && j * xFactor < xMax) {
+                    if (DATA_DISPLAY.imageRange[2] + i * yFactor >= yMin &&
+                            DATA_DISPLAY.imageRange[2] + i * yFactor < yMax &&
+                            DATA_DISPLAY.imageRange[0] + j * xFactor >= xMin &&
+                            DATA_DISPLAY.imageRange[0] + j * xFactor < xMax) {
 
                         histValuesY1[i] += DATA_DISPLAY.dataValues[i][j];
                         histValuesY2[j] += DATA_DISPLAY.dataValues[i][j];
+
+                        // Find the max and min values - used for setting
+                        // colorscale range
+                        if (DATA_DISPLAY.dataValues[i][j] < zMin) {
+                            zMin = DATA_DISPLAY.dataValues[i][j];
+                        }
+                        if (DATA_DISPLAY.dataValues[i][j] > zMax) {
+                            zMax = DATA_DISPLAY.dataValues[i][j];
+                        }
 
                     }
                 }
@@ -491,6 +503,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 console.log('histValuesY1.length: ' + histValuesY1.length);
                 console.log('histValuesX2.length: ' + histValuesX2.length);
                 console.log('histValuesY2.length: ' + histValuesY2.length);
+                console.log('zMin: ' + zMin);
+                console.log('zMax: ' + zMax);
             }
 
             return {
@@ -498,6 +512,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 histValuesY1 : histValuesY1,
                 histValuesX2 : histValuesX2,
                 histValuesY2 : histValuesY2,
+                zMin : zMin,
+                zMax : zMax,
             };
 
         },
@@ -528,6 +544,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // 'heatmap' plot me thinks
             mainDataPlot = {
                 z: DATA_DISPLAY.dataValues,
+                zmin: [profiles.zMin],
+                zmax: [profiles.zMax],
                 x: profiles.histValuesX2,
                 y: profiles.histValuesX1,
                 zsmooth: false,
@@ -598,6 +616,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     title: 'y',
                     domain: [0, 0.85],
                     showgrid: false,
+                    // autorange : "reversed",
                     zeroline: false
                 },
 
@@ -713,40 +732,44 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
                     // If the original image was downsampled, fetch a new
                     // image from the server when zooming
-
                     $.when(HANDLE_DATASET.displayImage(
                         DATA_DISPLAY.imageTargetUrl,
                         DATA_DISPLAY.imageShapeDims,
                         [xMin, xMax, yMin, yMax],
                         DATA_DISPLAY.imageNodeId
                     )).then(
-                        function (response) {
+                        function () {
 
                             console.log('refilling histograms');
 
-                            DATA_DISPLAY.draw2DPlot();
+                            // DATA_DISPLAY.draw2DPlot();
 
-                            // // Refill the profile histograms
-                            // profiles = DATA_DISPLAY.fillProfileHistograms(xMin,
-                            //     xMax, yMin, yMax);
+                            // Refill the profile histograms
+                            profiles = DATA_DISPLAY.fillProfileHistograms(xMin,
+                                xMax, yMin, yMax);
 
-                            // // Refill the 2D plot
-                            // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                            //     z: [DATA_DISPLAY.dataValues],
-                            //     // x: [profiles.histValuesX2],
-                            //     // y: [profiles.histValuesX1],
-                            // }, [0]);
+                            console.log('profiles:');
+                            console.log(profiles);
 
-                            // // Update the profile histograms in the plot
-                            // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                            //     x: [profiles.histValuesX2],
-                            //     y: [profiles.histValuesY2],
-                            // }, [1]);
+                            // Refill the 2D plot
+                            Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                                z: [DATA_DISPLAY.dataValues],
+                                x: [profiles.histValuesX2],
+                                y: [profiles.histValuesX1],
+                                zmin: [profiles.zMin],
+                                zmax: [profiles.zMax],
+                            }, [0]);
 
-                            // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                            //     x: [profiles.histValuesY1],
-                            //     y: [profiles.histValuesX1],
-                            // }, [2]);
+                            // Update the profile histograms in the plot
+                            Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                                x: [profiles.histValuesX2],
+                                y: [profiles.histValuesY2],
+                            }, [1]);
+
+                            Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                                x: [profiles.histValuesY1],
+                                y: [profiles.histValuesX1],
+                            }, [2]);
 
                         }
                     );
