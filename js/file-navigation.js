@@ -251,7 +251,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             case 'image':
                                 AJAX_SPINNER.startLoadingData(10);
                                 HANDLE_DATASET.displayImage(targetUrl,
-                                    datasetInfo.shapeDims, datasetInfo.id);
+                                    datasetInfo.shapeDims, false,
+                                    datasetInfo.id, true);
                                 break;
 
                             case 'line':
@@ -1049,13 +1050,13 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             case 'image-series':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImageSeriesInitial(data.node.data.target,
-                    data.node.data.shapeDims, data.selected);
+                    data.node.data.shapeDims);
                 break;
 
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.node.data.shapeDims, false, data.selected);
+                    data.node.data.shapeDims, false, data.selected, true);
                 break;
 
             case 'line':

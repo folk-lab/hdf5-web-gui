@@ -40,7 +40,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // When a dataset is selected, plot the data
-        displayImage : function (inputUrl, shapeDims, section, nodeId) {
+        displayImage : function (inputUrl, shapeDims, section, nodeId,
+            newImage) {
 
             var debug = true, valueUrl;
 
@@ -76,7 +77,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     console.log(response);
 
                     // Plot the data
-                    DATA_DISPLAY.initializeImageData(response.value);
+                    DATA_DISPLAY.initializeImageData(response.value, newImage);
                     if (section) {
                         return response.value;
                     }
@@ -90,9 +91,10 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Get a single image from a stack of images, which are typically
         // saved as 3 dimensional arrays, with the first dimension being
         // the image number
-        readImageFromSeries : function (targetUrl, nodeId, imageIndex) {
+        readImageFromSeries : function (targetUrl, nodeId, imageIndex,
+            section) {
 
-            var debug = false, valueUrl, chunks, matrix, numChunkRows,
+            var debug = true, valueUrl, chunks, matrix, numChunkRows,
                 numChunkColumns, imageIndexStart, imageIndexStop;
 
             // The selected image in the stack is just a single slice of a
@@ -100,9 +102,19 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             imageIndexStart = Number(imageIndex);
             imageIndexStop = Number(imageIndexStart + 1);
 
+            if (debug) {
+                console.log('targetUrl: ' + targetUrl);
+            }
+
             valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
-                '&select=[' + imageIndexStart + ':' + imageIndexStop + ','
-                + ':,:]';
+                '&select=[' + imageIndexStart + ':' + imageIndexStop + ',';
+
+            if (section) {
+                valueUrl += section[2] + ':' + section[3] + ','
+                    + section[0] + ':' + section[1] + ']';
+            } else {
+                valueUrl += ':,:]';
+            }
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
@@ -137,61 +149,65 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Handle input from image series control buttons
         // This assumes that displayImageSeriesInitial() has at some point
         // already been called
-        imageSeriesInput : function (value) {
+        imageSeriesInput : function (imageIndex, section, newImage) {
 
-            var debug = false, min = 0,
-                max = DATA_DISPLAY.imageShapeDims[0] - 1;
+            var debug = true, min = 0,
+                max = DATA_DISPLAY.imageSeriesRange - 1;
 
             if (debug) {
-                console.log('imageSeriesInput: ' + value);
+                console.log('imageSeriesInput: ' + imageIndex);
+                console.log('section: ');
+                console.log(section);
                 console.log('min: ' + min);
                 console.log('max: ' + max);
             }
 
-            if (DATA_DISPLAY.isNumeric(value)) {
+            if (DATA_DISPLAY.isNumeric(imageIndex)) {
 
                 // Start the spinner
                 AJAX_SPINNER.startLoadingData(100);
 
                 // Check for out of range values
-                if (value < min) {
-                    value = min;
+                if (imageIndex < min) {
+                    imageIndex = min;
                 }
 
-                if (value > max) {
-                    value = max;
+                if (imageIndex > max) {
+                    imageIndex = max;
                 }
 
                 // Set image series entry field value
-                $("#inputNumberDiv").val(value);
+                $("#inputNumberDiv").val(imageIndex);
 
                 // Set the slider value
                 $("#slider").slider({
-                    'data-value': value,
-                    'value': value,
+                    'data-value': imageIndex,
+                    'value': imageIndex,
                 });
                 $("#slider").slider('refresh');
 
+                DATA_DISPLAY.imageZoomSection = section;
+
                 // Get an image from the series and display it
-                if (value >= min && value <= max) {
-                    $.when(
-                        HANDLE_DATASET.readImageFromSeries(
-                            DATA_DISPLAY.imageSeriesTargetUrl,
-                            DATA_DISPLAY.imageSeriesNodeId,
-                            value
-                        )
-                    ).then(
+                return $.when(
+                    HANDLE_DATASET.readImageFromSeries(
+                        DATA_DISPLAY.imageTargetUrl,
+                        DATA_DISPLAY.imageNodeId,
+                        imageIndex,
+                        section
+                    )
+                ).then(
 
-                        function (image) {
-                            DATA_DISPLAY.initializeImageData(image);
-                            DATA_DISPLAY.updatePlotZData();
-                        }
+                    function (image) {
+                        // Change the data being displayed
+                        DATA_DISPLAY.initializeImageData(image, newImage);
+                        DATA_DISPLAY.updatePlotZData();
+                    }
 
-                    );
-                }
-            } else {
-                HANDLE_DATASET.imageSeriesInput(0);
+                );
             }
+
+            HANDLE_DATASET.imageSeriesInput(0, false, true);
         },
 
 
@@ -212,11 +228,11 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
             // Save some information about the image series, used later
             // by imageSeriesInput()
-            DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims);
+            DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, false);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
-                nodeId, 0)).then(
+                nodeId, 0, false)).then(
 
                 function (completeImage) {
 
@@ -224,7 +240,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     DATA_DISPLAY.enableImagePlotControls(true, true);
 
                     // Plot the data
-                    DATA_DISPLAY.initializeImageData(completeImage);
+                    DATA_DISPLAY.initializeImageData(completeImage, true);
                     DATA_DISPLAY.plotData();
 
                 }
