@@ -656,7 +656,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 if (DATA_DISPLAY.imageSeries) {
 
                     promises.push(
-                        HANDLE_DATASET.imageSeriesInput(0, ranges, false)
+                        HANDLE_DATASET.imageSeriesInput(0, ranges, false, true)
                     );
 
                 // For an image
@@ -1141,6 +1141,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //  - loaded image range : of the raw image
         //  - zoom range
         //
+        //------------------------------------------------
+        //  - original data image size (data taken)
+        //  - selected range of image (zoom)
+        //  - size of returned image (could be downsampled or not)
+        //------------------------------------------------
         //
         initializeImageData : function (value) {
 
@@ -1155,16 +1160,15 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // The range of the image
             //      → should be 0 to something, unless zoomed in on a
             //        previously downsampled image
-            if (DATA_DISPLAY.usingOriginalImage) {
+            if (DATA_DISPLAY.imageZoomSection) {
+                DATA_DISPLAY.loadedImageRange =
+                    DATA_DISPLAY.imageZoomSection;
+            } else {
                 DATA_DISPLAY.loadedImageRange = [0,
                     DATA_DISPLAY.imageShapeDims[1],
                     0, DATA_DISPLAY.imageShapeDims[0]];
-            } else {
-                if (DATA_DISPLAY.imageZoomSection) {
-                    DATA_DISPLAY.loadedImageRange =
-                        DATA_DISPLAY.imageZoomSection;
-                }
             }
+
 
             if (!DATA_DISPLAY.imageZoomSection) {
                 DATA_DISPLAY.imageZoomSection = DATA_DISPLAY.loadedImageRange;
@@ -1235,8 +1239,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //      - zoomed
         //          - fetched zoomed area
         //
+        //------------------------------------------------
+        //  - original data image size (data taken)
+        //  - selected range of image (zoom)
+        //  - size of returned image (could be downsampled or not)
+        //------------------------------------------------
+        //
         saveImageInfo : function (targetUrl, nodeId, shapeDims, newImage,
-            keepZoom) {
+            section) {
 
             var debug = true;
 
@@ -1254,9 +1264,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.imageShapeDims = [shapeDims[1], shapeDims[2]];
                 }
             }
+
             DATA_DISPLAY.usingOriginalImage = newImage;
-            if (!keepZoom) {
-                DATA_DISPLAY.imageZoomSection = false;
+            if (section !== true) {
+                DATA_DISPLAY.imageZoomSection = section;
             }
 
             if (debug) {
@@ -1264,6 +1275,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.imageShapeDims[0]);
                 console.log('DATA_DISPLAY.imageShapeDims[1]' +
                     DATA_DISPLAY.imageShapeDims[1]);
+                console.log('DATA_DISPLAY.imageZoomSection:   ' +
+                    DATA_DISPLAY.imageZoomSection);
+                console.log('DATA_DISPLAY.usingOriginalImage: ' +
+                    DATA_DISPLAY.usingOriginalImage);
             }
 
         },
@@ -1276,7 +1291,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 $('#slider').slider().on('slideStop', function (slideEvt) {
 
     // Get an image from the series
-    HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true);
+    HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true, false);
 });
 
 

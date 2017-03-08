@@ -51,10 +51,12 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     // Save some information about the image
                     DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims,
-                        newImage, !newImage);
+                        newImage, section);
 
                     DATA_DISPLAY.initializeImageData(value, false);
 
+                    // For zooming in large downsampled image, this should
+                    // be false
                     if (newImage) {
                         // Enable plot controls
                         DATA_DISPLAY.enableImagePlotControls(true, false);
@@ -163,7 +165,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Handle input from image series control buttons
         // This assumes that displayImageSeriesInitial() has at some point
         // already been called
-        imageSeriesInput : function (imageIndex, section, newImage) {
+        imageSeriesInput : function (imageIndex, section, newImage,
+            zoomEvent) {
 
             var debug = true, min = 0,
                 max = DATA_DISPLAY.imageSeriesRange - 1;
@@ -200,7 +203,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 });
                 $("#slider").slider('refresh');
 
-                DATA_DISPLAY.saveImageInfo(false, false, false, true, true);
+                DATA_DISPLAY.saveImageInfo(false, false, false, true, section);
 
                 // Get an image from the series and display it
                 return $.when(
@@ -208,20 +211,26 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                         DATA_DISPLAY.imageTargetUrl,
                         DATA_DISPLAY.imageNodeId,
                         imageIndex,
-                        section
+                        DATA_DISPLAY.imageZoomSection
                     )
                 ).then(
 
                     function (image) {
                         // Change the data being displayed
                         DATA_DISPLAY.initializeImageData(image, imageIndex);
-                        DATA_DISPLAY.updatePlotZData(section, newImage);
+
+                        if (!zoomEvent) {
+                            DATA_DISPLAY.updatePlotZData(
+                                DATA_DISPLAY.imageZoomSection,
+                                newImage
+                            );
+                        }
                     }
 
                 );
             }
 
-            HANDLE_DATASET.imageSeriesInput(0, false, true);
+            HANDLE_DATASET.imageSeriesInput(0, false, true, false);
         },
 
 
