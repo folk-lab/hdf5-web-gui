@@ -39,9 +39,36 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         },
 
 
-        // When a dataset is selected, plot the data
+        // When an image is desired, get and plot it - maybe
         displayImage : function (inputUrl, shapeDims, section, nodeId,
             newImage) {
+
+            // Get the data
+            return $.when(HANDLE_DATASET.getImage(inputUrl, section,
+                nodeId)).then(
+
+                function (value) {
+
+                    // Save some information about the image
+                    DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims,
+                        newImage, !newImage);
+
+                    DATA_DISPLAY.initializeImageData(value, false);
+
+                    if (newImage) {
+                        // Enable plot controls
+                        DATA_DISPLAY.enableImagePlotControls(true, false);
+
+                        // Plot the data
+                        DATA_DISPLAY.plotData();
+                    }
+                }
+            );
+        },
+
+
+        // When a dataset is selected, plot the data
+        getImage : function (inputUrl, section, nodeId) {
 
             var debug = true, valueUrl;
 
@@ -62,27 +89,14 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('section:  ' + section);
             }
 
-            // Save some information about the image series, used later
-            // by imageSeriesInput()
-            DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims, section);
-
             // Get the data
             return $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
                 function (response) {
 
-                    // Enable plot controls
-                    DATA_DISPLAY.enableImagePlotControls(true, false);
-
                     console.log('response');
                     console.log(response);
 
-                    // Plot the data
-                    DATA_DISPLAY.initializeImageData(response.value, newImage);
-                    if (section) {
-                        return response.value;
-                    }
-
-                    DATA_DISPLAY.plotData();
+                    return response.value;
                 }
             );
         },
@@ -186,7 +200,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 });
                 $("#slider").slider('refresh');
 
-                DATA_DISPLAY.imageZoomSection = section;
+                DATA_DISPLAY.saveImageInfo(false, false, false, true, true);
 
                 // Get an image from the series and display it
                 return $.when(
@@ -200,8 +214,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     function (image) {
                         // Change the data being displayed
-                        DATA_DISPLAY.initializeImageData(image, newImage);
-                        DATA_DISPLAY.updatePlotZData();
+                        DATA_DISPLAY.initializeImageData(image, imageIndex);
+                        DATA_DISPLAY.updatePlotZData(section, newImage);
                     }
 
                 );
@@ -226,9 +240,9 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log(shapeDims);
             }
 
-            // Save some information about the image series, used later
-            // by imageSeriesInput()
-            DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, false);
+            // Save some information about the image series
+            DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, true,
+                false);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
@@ -240,7 +254,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     DATA_DISPLAY.enableImagePlotControls(true, true);
 
                     // Plot the data
-                    DATA_DISPLAY.initializeImageData(completeImage, true);
+                    DATA_DISPLAY.initializeImageData(completeImage, 0);
                     DATA_DISPLAY.plotData();
 
                 }
