@@ -251,7 +251,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             case 'image':
                                 AJAX_SPINNER.startLoadingData(10);
                                 HANDLE_DATASET.displayImage(targetUrl,
-                                    datasetInfo.id);
+                                    datasetInfo.shapeDims, false,
+                                    datasetInfo.id, true);
                                 break;
 
                             case 'line':
@@ -321,7 +322,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // then add it to the tree using the proper icon
         getDatasetInfo : function (title, targetUrl, responses) {
 
-            var debug = false, dataType = 'none', shapeDims = false;
+            var debug = true, dataType = 'none', shapeDims = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(targetUrl)).then(
                 function (response) {
@@ -649,7 +650,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // datasets) saving some information about each one.
         getListOfLinks : function (linksUrl, selectedId, createNewTree) {
 
-            var debug = false, parentTreeNode = false, filePath = false;
+            var debug = true, parentTreeNode = false, filePath = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(linksUrl)).then(
                 function (response) {
@@ -840,7 +841,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Get a list of items in a folder, then update the jstree object
         getFolderContents : function (topLevelUrl, selectedId, createNewTree) {
 
-            var debug = false;
+            var debug = true;
 
             if (debug) {
                 console.log('topLevelUrl: ' + topLevelUrl);
@@ -1049,13 +1050,13 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             case 'image-series':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImageSeriesInitial(data.node.data.target,
-                    data.node.data.shapeDims, data.selected);
+                    data.node.data.shapeDims);
                 break;
 
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.selected);
+                    data.node.data.shapeDims, false, data.selected, true);
                 break;
 
             case 'line':

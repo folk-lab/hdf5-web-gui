@@ -10,6 +10,7 @@ var AJAX_SPINNER =
         loaderVisible : true,
         ajaxLoaderTimeOut : null,
 
+
         showLoadingSpinner : function (showSpinner, timeout) {
 
             if (timeout === undefined) {
@@ -80,6 +81,7 @@ var AJAX_SPINNER =
 
         },
 
+
         // Make note that data is being loaded, then the spinner will stay
         // visible even while other ajax requests start and finish
         startLoadingData : function (timeout) {
@@ -92,6 +94,7 @@ var AJAX_SPINNER =
 
             AJAX_SPINNER.showLoadingSpinner(true, timeout);
         },
+
 
         // When data is doen being lodaded, turn off the spinner
         doneLoadingData : function () {

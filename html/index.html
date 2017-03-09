@@ -56,7 +56,7 @@
 
         <!-- css for this page -->
         <link rel="stylesheet"
-            href="../css/data-plot-controls.css?v=201702241346"/>
+            href="../css/index.css?v=201702241346"/>
         <link rel="stylesheet"
             href="../css/navmenu.css?v=201702241346">
 
@@ -202,7 +202,8 @@
                             <button type="button" id='startButton'
                                 class="btn-labels-large btn btn-primary
                                 btn-number"  data-type="minus"
-                                onclick='HANDLE_DATASET.imageSeriesInput(0);'>
+                                onclick='HANDLE_DATASET.imageSeriesInput(0,
+                                    true, true, false);'>
                                 <span id='startButtonValue' >0</span>
                                 <div class="glyphicon glyphicon-step-backward">
                                 </div>
@@ -224,7 +225,8 @@
                             class="form-control input-number"
                             value="0" min="0" max="1" maxlength="7"
                             size="7"
-                            onchange='HANDLE_DATASET.imageSeriesInput(value);'>
+                            onchange='HANDLE_DATASET.imageSeriesInput(value,
+                                true, true, false);'>
 
                         <!-- Plus button -->
                         <div class="input-group-btn">
@@ -242,7 +244,7 @@
                                 class="btn btn-primary btn-number"
                                 data-type="plus"
                                 onclick='HANDLE_DATASET.imageSeriesInput(
-                                    10000000);'>
+                                    10000000, true, true, false);'>
                                 <div class="glyphicon glyphicon-step-forward">
                                 </div>
                                 <span id='endButtonValue' >0</span>
