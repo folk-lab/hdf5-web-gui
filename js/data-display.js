@@ -977,14 +977,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 // Also, the domain needs to be set again, not sure why...
                 Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
                     xaxis: {
-                        range : [DATA_DISPLAY.imageZoomSection[0],
-                            DATA_DISPLAY.imageZoomSection[1]],
+                        range : [DATA_DISPLAY.imageZoomSection[0] - 0.5,
+                            DATA_DISPLAY.imageZoomSection[1]] - 0.5,
                         domain : [0, 0.85]
                     },
 
                     yaxis: {
-                        range : [DATA_DISPLAY.imageZoomSection[2],
-                            DATA_DISPLAY.imageZoomSection[3]],
+                        range : [DATA_DISPLAY.imageZoomSection[2] - 0.5,
+                            DATA_DISPLAY.imageZoomSection[3]] - 0.5,
                         domain : [0, 0.85]
                     },
                 });
