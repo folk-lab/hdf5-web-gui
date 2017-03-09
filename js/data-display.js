@@ -12,6 +12,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         colorScale : 'Jet',
         plotLogValues : false,
         plotType : 'heatmap',
+        plotDimension : 2,
         displayType : '',
         logOfDataValues : [],
         dataValues : [],
@@ -780,6 +781,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
                         '#333333' : '#ffffff'),
 
+                scene: {
+                    zaxis: {
+                        title: 'z blah',
+                        type: 'log',
+                        autorange: true
+                    }
+                },
+
                 xaxis: {
                     title: 'x',
                     domain: [0, 0.85],
@@ -924,7 +933,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.calculatePlotSize();
 
-            if (DATA_DISPLAY.plotType === 'heatmap') {
+            if (DATA_DISPLAY.plotDimension === 2) {
                 DATA_DISPLAY.draw2DPlot();
             } else {
                 DATA_DISPLAY.draw3DPlot();
@@ -1035,6 +1044,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 DATA_DISPLAY.purgePlotCanvas();
                 AJAX_SPINNER.startLoadingData(1);
                 DATA_DISPLAY.plotType = type;
+                if (DATA_DISPLAY.plotType === 'heatmap') {
+                    DATA_DISPLAY.plotDimension = 2;
+                } else {
+                    DATA_DISPLAY.plotDimension = 3;
+                }
                 setTimeout(function () {
                     DATA_DISPLAY.plotData();
                 }, 10);
@@ -1060,23 +1074,21 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Switch between the use of log and non-log values
         toggleLogPlot : function (useLog) {
 
-            var debug = false, useRestyle = false, type = 'linear';
+            var debug = true, type = 'linear';
 
             if (debug) {
                 console.log('useLog: ' + useLog);
             }
 
-            // Clear the plot and start the laoder, as this can take some time
-            // when the plot has many points
-            if (!useRestyle) {
-                DATA_DISPLAY.purgePlotCanvas();
-            }
-            AJAX_SPINNER.startLoadingData(1);
-
             if (useLog === undefined) {
                 DATA_DISPLAY.plotLogValues = !DATA_DISPLAY.plotLogValues;
             } else {
                 DATA_DISPLAY.plotLogValues = useLog;
+            }
+
+            if (debug) {
+                console.log('DATA_DISPLAY.plotLogValues: ' +
+                    DATA_DISPLAY.plotLogValues);
             }
 
             if (DATA_DISPLAY.plotLogValues) {
@@ -1086,10 +1098,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 $("#logPlotButton").html('Log Plot!');
                 $("#logPlotButton").addClass('btn-success');
 
-                if (useRestyle) {
-                    type = 'log';
-                } else {
+                type = 'log';
+                if (DATA_DISPLAY.plotDimension === 2) {
                     DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
+                } else {
+                    DATA_DISPLAY.dataValues = DATA_DISPLAY.initialDataValues;
                 }
             } else {
                 if (debug) {
@@ -1098,24 +1111,27 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 $("#logPlotButton").html('Log Plot?');
                 $("#logPlotButton").removeClass('btn-success');
 
-                if (useRestyle) {
-                    type = 'linear';
-                }
+                type = 'linear';
+                DATA_DISPLAY.dataValues = DATA_DISPLAY.initialDataValues;
             }
 
-            // I can't get this restyle command to work quite right yet with
-            // log scales & colorscheme... the scale of the colorbar is all off
-            // :(
+            if (debug) {
+                console.log('type: ' + type);
+            }
+
+
+            AJAX_SPINNER.startLoadingData(1);
+
             setTimeout(function () {
 
-                if (useRestyle) {
-
+                if (DATA_DISPLAY.plotDimension === 2) {
+                    DATA_DISPLAY.updatePlotZData(false, true);
                     // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
                     //     z: [DATA_DISPLAY.dataValues],
                     // }, [0]).then(
                     //     AJAX_SPINNER.doneLoadingData()
                     // );
-
+                } else {
                     Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
                         scene: {
                             zaxis: {
@@ -1125,16 +1141,48 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     }, [0]).then(
                         AJAX_SPINNER.doneLoadingData()
                     );
-                } else {
-                    DATA_DISPLAY.plotData();
                 }
             }, 10);
 
         },
 
 
+        calculateLogValues : function (value) {
+
+            var i, j, logOfValue = [];
+
+            DATA_DISPLAY.initialDataValues = value;
+
+            // Take the log of the points, save for future use - is there a
+            // better way??
+            for (i = 0; i < value.length; i += 1) {
+                logOfValue[i] = [];
+                for (j = 0; j < value[i].length; j += 1) {
+                    if (value[i][j] > 0) {
+                        logOfValue[i][j] = Math.log(value[i][j]) / Math.LN10;
+                    } else {
+                        logOfValue[i][j] = 0;
+                    }
+                }
+            }
+
+            // Save the log values
+            DATA_DISPLAY.logOfDataValues = logOfValue;
+
+            // Set the default data to use for plotting - raw values or thei
+            // log
+            if (DATA_DISPLAY.plotLogValues) {
+                DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
+            } else {
+                DATA_DISPLAY.dataValues = DATA_DISPLAY.initialDataValues;
+            }
+
+        },
+
+
         // Save the image data and the log of the image data to global
-        // variables
+        // variables (2D heatmaps have no option to switch the z-axis to log
+        // scale!)
         //
         //  - raw image size : shape dims
         //  - loaded image size : width and height in number of pixels
@@ -1168,7 +1216,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.imageShapeDims[1],
                     0, DATA_DISPLAY.imageShapeDims[0]];
             }
-
 
             if (!DATA_DISPLAY.imageZoomSection) {
                 DATA_DISPLAY.imageZoomSection = DATA_DISPLAY.loadedImageRange;
@@ -1208,6 +1255,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.usingOriginalImage);
             }
 
+            // Calculate the log of the values
+            DATA_DISPLAY.calculateLogValues(value);
         },
 
 
