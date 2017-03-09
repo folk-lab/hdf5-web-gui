@@ -938,7 +938,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             console.log('** updatePlotZData **');
 
-            var debug = true, xLength, yLength, profiles;
+            var debug = true, profiles;
 
             if (debug) {
                 console.log('refilling histograms');
