@@ -39,7 +39,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         },
 
 
-        // When an image is desired, get and plot it - maybe
+        // When an image is selected, get it and plot it
         displayImage : function (inputUrl, shapeDims, section, nodeId,
             newImage) {
 
@@ -222,7 +222,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                         if (!zoomEvent) {
                             DATA_DISPLAY.updatePlotZData(
                                 DATA_DISPLAY.imageZoomSection,
-                                newImage
+                                newImage,
+                                true
                             );
                         }
                     }

@@ -691,7 +691,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // fetch an image), refill the plot and shit
             $.when.apply(null, promises).done(
                 function () {
-                    DATA_DISPLAY.updatePlotZData(ranges, newImageFetched);
+                    DATA_DISPLAY.updatePlotZData(ranges, newImageFetched,
+                        true);
                 }
             );
         },
@@ -780,14 +781,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         '#333333' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
                         '#333333' : '#ffffff'),
-
-                scene: {
-                    zaxis: {
-                        title: 'z blah',
-                        type: 'log',
-                        autorange: true
-                    }
-                },
 
                 xaxis: {
                     title: 'x',
@@ -943,7 +936,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         // Change the data used in the plot without redrawing everything
-        updatePlotZData : function (ranges, newImageFetched) {
+        updatePlotZData : function (ranges, newImageFetched, setAxesRange) {
 
             console.log('** updatePlotZData **');
 
@@ -951,6 +944,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             if (debug) {
                 console.log('refilling histograms');
+                console.log('ranges:');
+                console.log(ranges);
+                console.log('newImageFetched: ' + newImageFetched);
             }
 
             if (!ranges) {
@@ -981,22 +977,31 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     zmax: [profiles.zMax],
                 }, [0]);
 
-                // Set the ranges of the 2D plot properly - otherwise
-                // empty bands will appears when not centered on data.
-                // Also, the domain needs to be set again, not sure why...
-                Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-                    xaxis: {
-                        range : [DATA_DISPLAY.imageZoomSection[0] - 0.5,
-                            DATA_DISPLAY.imageZoomSection[1]] - 0.5,
-                        domain : [0, 0.85]
-                    },
 
-                    yaxis: {
-                        range : [DATA_DISPLAY.imageZoomSection[2] - 0.5,
-                            DATA_DISPLAY.imageZoomSection[3]] - 0.5,
-                        domain : [0, 0.85]
-                    },
-                });
+                console.log('DATA_DISPLAY.imageZoomSection:');
+                console.log(DATA_DISPLAY.imageZoomSection[0]);
+                console.log(DATA_DISPLAY.imageZoomSection[1]);
+                console.log(DATA_DISPLAY.imageZoomSection[2]);
+                console.log(DATA_DISPLAY.imageZoomSection[3]);
+
+                if (setAxesRange) {
+                    // Set the ranges of the 2D plot properly - otherwise
+                    // empty bands will appears when not centered on data.
+                    // Also, the domain needs to be set again, not sure why...
+                    Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                        xaxis: {
+                            range : [DATA_DISPLAY.imageZoomSection[0] - 0.5,
+                                DATA_DISPLAY.imageZoomSection[1]] - 0.5,
+                            domain : [0, 0.85]
+                        },
+
+                        yaxis: {
+                            range : [DATA_DISPLAY.imageZoomSection[2] - 0.5,
+                                DATA_DISPLAY.imageZoomSection[3]] - 0.5,
+                            domain : [0, 0.85]
+                        },
+                    });
+                }
 
 
             } else {
@@ -1023,32 +1028,25 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
 
-        // Change the plot type - not all work well for large numbers of
-        // points, I think that 'surface' and 'heatmap' seem to work best and
-        // are useful
+        // Change the plot type - 2D heatmap or 3D surface seem to be the best
+        // options
         changeType : function (type) {
-
-            ///////////////////////////////////////////////////////////////////
-            // Should use restyle instead of redrawing the entire plot:
-            //   https://plot.ly/javascript/plotlyjs-function-reference/
-            //      #plotly-restyle
-            //
-            // This doesn't work so well currently, but maybe if I fix things
-            // up a bit?
-            // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-            //     type: [type],
-            // }, [0]);
-            ///////////////////////////////////////////////////////////////////
 
             if (type !== '') {
                 DATA_DISPLAY.purgePlotCanvas();
+
                 AJAX_SPINNER.startLoadingData(1);
+
                 DATA_DISPLAY.plotType = type;
+
                 if (DATA_DISPLAY.plotType === 'heatmap') {
                     DATA_DISPLAY.plotDimension = 2;
                 } else {
                     DATA_DISPLAY.plotDimension = 3;
                 }
+
+                // Use a bit of a delay just so that the loading spinner has
+                // a chance to start up
                 setTimeout(function () {
                     DATA_DISPLAY.plotData();
                 }, 10);
@@ -1125,12 +1123,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             setTimeout(function () {
 
                 if (DATA_DISPLAY.plotDimension === 2) {
-                    DATA_DISPLAY.updatePlotZData(false, true);
-                    // Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                    //     z: [DATA_DISPLAY.dataValues],
-                    // }, [0]).then(
-                    //     AJAX_SPINNER.doneLoadingData()
-                    // );
+                    DATA_DISPLAY.updatePlotZData(false, true, false);
                 } else {
                     Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
                         scene: {
