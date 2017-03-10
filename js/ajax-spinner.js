@@ -5,7 +5,7 @@
 // The global variables for this applicaiton
 var AJAX_SPINNER =
     {
-        debug : false,
+        debug : true,
         loadingData : false,
         loaderVisible : true,
         ajaxLoaderTimeOut : null,
