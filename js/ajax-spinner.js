@@ -5,9 +5,9 @@
 // The global variables for this applicaiton
 var AJAX_SPINNER =
     {
-        debug : true,
+        debug : false,
         loadingData : false,
-        loaderVisible : true,
+        loaderVisible : false,
         ajaxLoaderTimeOut : null,
 
 
@@ -42,6 +42,7 @@ var AJAX_SPINNER =
                     AJAX_SPINNER.ajaxLoaderTimeOut = setTimeout(function () {
                         document.getElementById("loader").style.display =
                             "block";
+
                         AJAX_SPINNER.loaderVisible = true;
 
                         if (AJAX_SPINNER.debug) {
@@ -70,6 +71,7 @@ var AJAX_SPINNER =
                     setTimeout(function () {
                         document.getElementById("loader").style.display =
                             "none";
+
                         AJAX_SPINNER.loaderVisible = false;
 
                         if (AJAX_SPINNER.debug) {
@@ -112,15 +114,13 @@ var AJAX_SPINNER =
     };
 
 
+// Start and stop the loading spinner when doing ajax stuff
 $(document).ajaxStart(function () {
     if (AJAX_SPINNER.debug) {
         console.log('ajaxStart');
     }
     AJAX_SPINNER.showLoadingSpinner(true);
-});
-
-
-$(document).ajaxStop(function () {
+}).ajaxStop(function () {
     if (AJAX_SPINNER.debug) {
         console.log('ajaxStop');
     }

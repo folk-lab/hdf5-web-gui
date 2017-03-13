@@ -14,8 +14,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         plotType : 'heatmap',
         plotDimension : 2,
         displayType : '',
-        logOfDataValues : [],
+        initialDataValues : [],
+        stringDataValues : [],
         dataValues : [],
+        logOfDataValues : [],
         resizeTimer : undefined,
         plotWidth : 550,
         plotHeight : 550,
@@ -302,19 +304,29 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         draw3DPlot : function () {
 
-            var data, layout, options, plotMargins;
+            var debug = true, data, layout, options, plotMargins, profiles;
+
+            // Get the proper x & y axes ranges if this image has been
+            // downsampled
+            profiles = DATA_DISPLAY.fillProfileHistograms(
+                [0, DATA_DISPLAY.imageShapeDims[1],
+                    0, DATA_DISPLAY.imageShapeDims[0]]
+            );
 
             // Create data object
             data = [
                 {
                     z: DATA_DISPLAY.dataValues,
+                    zmin: profiles.zMin,
+                    zmax: profiles.zMax,
+                    x: profiles.histValuesX2,
+                    y: profiles.histValuesX1,
 
                     // For mouse-over hover information, show the data values
                     // in the text field so that the same values appear when
                     // displaying the log values
                     hoverinfo: 'x+y+text',
-                    text: DATA_DISPLAY.initialDataValues,
-
+                    text: DATA_DISPLAY.stringDataValues,
                     type: DATA_DISPLAY.plotType,
                     colorscale: DATA_DISPLAY.colorScale,
                     showscale : !DATA_DISPLAY.mobileDisplay,
@@ -381,6 +393,19 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 AJAX_SPINNER.doneLoadingData()
             );
 
+            // Refill the profile histograms when a zoom event occurs
+            // Why isn't this properly done already in the plotly library?!
+            DATA_DISPLAY.plotCanvasDiv.on('plotly_relayout',
+                function (eventdata) {
+
+                    if (debug) {
+                        console.log('DATA_DISPLAY.plotCanvasDiv' +
+                            'plotly_relayout ' + DATA_DISPLAY.plotType);
+                    }
+
+                    DATA_DISPLAY.handle3DZoom(eventdata);
+
+                });
         },
 
 
@@ -628,6 +653,75 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
 
+        // Do what it takes to handle a zoom event in a 3D image
+        handle3DZoom : function (eventdata) {
+
+            var debug = true, promises = [], newImageFetched = false;
+
+            console.log(JSON.stringify(eventdata));
+
+            // Try and guess if the 'Rest camera to default' button has been
+            // pressed - there must be a better way!
+            // If so, get a brand spanking new image, which is necessary if
+            // we are already zoomed in on a previously downsampled image.
+            if (eventdata.hasOwnProperty('scene')) {
+                if (eventdata.scene.hasOwnProperty('eye')) {
+                    if (eventdata.scene.eye.x === 1.25 &&
+                            eventdata.scene.eye.y === 1.25 &&
+                            eventdata.scene.eye.z === 1.25) {
+
+                        if (debug) {
+                            console.log('reset button pressed?');
+                        }
+
+                        // For an image series
+                        if (DATA_DISPLAY.imageSeries) {
+                            promises.push(
+                                HANDLE_DATASET.imageSeriesInput(
+                                    DATA_DISPLAY.imageSeriesIndex,
+                                    false,
+                                    false,
+                                    true
+                                )
+                            );
+
+                        // For an image
+                        } else {
+                            promises.push(
+                                HANDLE_DATASET.displayImage(
+                                    DATA_DISPLAY.imageTargetUrl,
+                                    DATA_DISPLAY.imageShapeDims,
+                                    false,
+                                    DATA_DISPLAY.imageNodeId,
+                                    false
+                                )
+                            );
+                        }
+
+                        newImageFetched = true;
+
+                        if (debug) {
+                            console.log('newImageFetched: ' +
+                                newImageFetched);
+                        }
+
+                        if (newImageFetched) {
+
+                            $.when.apply(null, promises).done(
+                                function () {
+                                    DATA_DISPLAY.updatePlotZData(false,
+                                        newImageFetched,
+                                        true);
+                                }
+                            );
+                        }
+
+                    }
+                }
+            }
+        },
+
+
         // Do what it takes to handle a zoom event in a 2D image
         handle2DZoom : function (eventdata) {
 
@@ -751,7 +845,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 // the text field so that the same values appear when
                 // displaying the log values
                 hoverinfo: 'x+y+text',
-                text: DATA_DISPLAY.initialDataValues,
+                text: DATA_DISPLAY.stringDataValues,
 
                 zsmooth: false,
                 type: DATA_DISPLAY.plotType,
@@ -1000,6 +1094,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 // bar range updates
                 Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
                     z: [DATA_DISPLAY.dataValues],
+                    text: [DATA_DISPLAY.stringDataValues],
                     x: [profiles.histValuesX2],
                     y: [profiles.histValuesX1],
                     zmin: [profiles.zMin],
@@ -1147,27 +1242,36 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         calculateLogValues : function (value) {
 
-            var i, j, logOfValue = [];
+            var i, j;
 
+            DATA_DISPLAY.logOfDataValues = [];
+            DATA_DISPLAY.stringDataValues = [];
             DATA_DISPLAY.initialDataValues = value;
 
             // Take the log of the points, save for future use - is there a
             // better way??
             for (i = 0; i < value.length; i += 1) {
-                logOfValue[i] = [];
+
+                DATA_DISPLAY.logOfDataValues[i] = [];
+                DATA_DISPLAY.stringDataValues[i] = [];
+
                 for (j = 0; j < value[i].length; j += 1) {
+
                     if (value[i][j] > 0) {
-                        logOfValue[i][j] = Math.log(value[i][j]) / Math.LN10;
+                        DATA_DISPLAY.logOfDataValues[i][j] =
+                            Math.log(value[i][j]) / Math.LN10;
                     } else {
-                        logOfValue[i][j] = 0;
+                        DATA_DISPLAY.logOfDataValues[i][j] = 0;
                     }
+
+                    // Conver to string for use in the mouse-over tool-tip,
+                    // otherwise values of '0' are not displayed
+                    DATA_DISPLAY.stringDataValues[i][j] =
+                        value[i][j].toString();
                 }
             }
 
-            // Save the log values
-            DATA_DISPLAY.logOfDataValues = logOfValue;
-
-            // Set the default data to use for plotting - raw values or thei
+            // Set the default data to use for plotting - raw values or their
             // log
             if (DATA_DISPLAY.plotLogValues) {
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
@@ -1195,7 +1299,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //
         initializeImageData : function (value) {
 
-            var debug = false;
+            var debug = true;
 
             DATA_DISPLAY.dataValues = value;
 
@@ -1255,6 +1359,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             // Calculate the log of the values
             DATA_DISPLAY.calculateLogValues(value);
+
+            if (debug) {
+                console.log('DATA_DISPLAY.initialDataValues:');
+                console.log(DATA_DISPLAY.initialDataValues);
+            }
         },
 
 
