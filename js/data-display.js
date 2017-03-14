@@ -304,7 +304,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         draw3DPlot : function () {
 
-            var debug = true, data, layout, options, plotMargins, profiles;
+            var debug = false, data, layout, options, plotMargins, profiles;
 
             // Get the proper x & y axes ranges if this image has been
             // downsampled
@@ -319,8 +319,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     z: DATA_DISPLAY.dataValues,
                     zmin: profiles.zMin,
                     zmax: profiles.zMax,
-                    x: profiles.histValuesX2,
-                    y: profiles.histValuesX1,
+                    x: profiles.imageXAxis,
+                    y: profiles.imageYAxis,
 
                     // For mouse-over hover information, show the data values
                     // in the text field so that the same values appear when
@@ -331,6 +331,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     colorscale: DATA_DISPLAY.colorScale,
                     showscale : !DATA_DISPLAY.mobileDisplay,
                     zauto : true,
+
+                    colorbar : {
+                        title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
+                        titleside : 'bottom',
+                        exponentformat : 'power',
+                    },
                 }
             ];
 
@@ -441,8 +447,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // of the section of the image being viewed
         fillProfileHistograms : function (ranges) {
 
-            var debug = true, i, j, histValuesX1 = [], histValuesY1 = [],
-                histValuesX2 = [], histValuesY2 = [], xFactor = 1, yFactor = 1,
+            var debug = false, i, j,
+                imageYAxis = [], imageXAxis = [],
+                yProfileXAxis = [], yProfileYValues = [],
+                xProfileXAxis = [], xProfileYValues = [],
+                xFactor = 1, yFactor = 1,
                 zMin = 1e100, zMax = -1e100, xMin = ranges[0],
                 xMax = ranges[1], yMin = ranges[2], yMax = ranges[3],
                 xCoordinate, yCoordinate;
@@ -451,13 +460,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // ranges
             if (DATA_DISPLAY.imageIsDownsampled) {
                 xFactor = (xMax - xMin) / DATA_DISPLAY.dataValues[0].length;
-                console.log('xFactor: ' + xFactor);
 
                 yFactor = (yMax - yMin) / DATA_DISPLAY.dataValues.length;
-                console.log('yFactor: ' + yFactor);
+
             }
 
             if (debug) {
+                console.log('xFactor: ' + xFactor);
+                console.log('yFactor: ' + yFactor);
                 console.log('xMin:           ' + xMin);
                 console.log('xMax:           ' + xMax);
                 console.log('yMin:           ' + yMin);
@@ -479,30 +489,32 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Fill profile histograms
             for (i = 0; i < DATA_DISPLAY.dataValues.length; i += 1) {
 
-                yCoordinate = Math.round(DATA_DISPLAY.loadedImageRange[2]) +
+                yCoordinate = DATA_DISPLAY.loadedImageRange[2] +
                     yFactor * i;
 
                 // The y-profile values
-                histValuesX1[i] = yCoordinate;
-                histValuesY1[i] = 0;
+                imageYAxis[i] = Math.round(yCoordinate);
+                yProfileXAxis[i] = yCoordinate;
+                yProfileYValues[i] = 0;
 
                 for (j = 0; j < DATA_DISPLAY.dataValues[i].length; j += 1) {
 
-                    xCoordinate = Math.round(DATA_DISPLAY.loadedImageRange[0])
+                    xCoordinate = DATA_DISPLAY.loadedImageRange[0]
                         + j * xFactor;
 
                     if (i === 0) {
                         // The x-profile values
-                        histValuesX2[j] = xCoordinate;
-                        histValuesY2[j] = 0;
+                        imageXAxis[j] = Math.round(xCoordinate);
+                        xProfileXAxis[j] = xCoordinate;
+                        xProfileYValues[j] = 0;
                     }
 
                     // Fill only relevant data
                     if (yCoordinate >= yMin && yCoordinate < yMax &&
                             xCoordinate >= xMin && xCoordinate < xMax) {
 
-                        histValuesY1[i] += DATA_DISPLAY.dataValues[i][j];
-                        histValuesY2[j] += DATA_DISPLAY.dataValues[i][j];
+                        yProfileYValues[i] += DATA_DISPLAY.dataValues[i][j];
+                        xProfileYValues[j] += DATA_DISPLAY.dataValues[i][j];
 
                         // Find the max and min values - used for setting
                         // colorscale range
@@ -518,19 +530,23 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('histValuesX1.length: ' + histValuesX1.length);
-                console.log('histValuesY1.length: ' + histValuesY1.length);
-                console.log('histValuesX2.length: ' + histValuesX2.length);
-                console.log('histValuesY2.length: ' + histValuesY2.length);
+                console.log('yProfileXAxis.length: ' + yProfileXAxis.length);
+                console.log('yProfileYValues.length: ' +
+                    yProfileYValues.length);
+                console.log('xProfileXAxis.length: ' + xProfileXAxis.length);
+                console.log('xProfileYValues.length: ' +
+                    xProfileYValues.length);
                 console.log('zMin: ' + zMin);
                 console.log('zMax: ' + zMax);
             }
 
             return {
-                histValuesX1 : histValuesX1,
-                histValuesY1 : histValuesY1,
-                histValuesX2 : histValuesX2,
-                histValuesY2 : histValuesY2,
+                imageYAxis : imageYAxis,
+                imageXAxis : imageXAxis,
+                yProfileXAxis : yProfileXAxis,
+                yProfileYValues : yProfileYValues,
+                xProfileXAxis : xProfileXAxis,
+                xProfileYValues : xProfileYValues,
                 zMin : zMin,
                 zMax : zMax,
             };
@@ -610,7 +626,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 // Need to add 1 to end of ranges
                 if (!DATA_DISPLAY.isEven(i)) {
                     ranges[i] += 1;
-                    console.log('ranges[' + i + ']: ' + ranges[i]);
+                    if (debug) {
+                        console.log('ranges[' + i + ']: ' + ranges[i]);
+                    }
                 }
             }
 
@@ -656,9 +674,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 3D image
         handle3DZoom : function (eventdata) {
 
-            var debug = true, promises = [], newImageFetched = false;
+            var debug = false, promises = [], newImageFetched = false;
 
-            console.log(JSON.stringify(eventdata));
+            if (debug) {
+                console.log(JSON.stringify(eventdata));
+            }
 
             // Try and guess if the 'Rest camera to default' button has been
             // pressed - there must be a better way!
@@ -725,7 +745,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 2D image
         handle2DZoom : function (eventdata) {
 
-            var debug = true, i = 0, ranges = [-1, -1, -1, -1],
+            var debug = false, i = 0, ranges = [-1, -1, -1, -1],
                 promises = [], newImageFetched = false, resetZoomEvent = false,
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
 
@@ -836,10 +856,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // 'heatmap' plot me thinks
             mainDataPlot = {
                 z: DATA_DISPLAY.dataValues,
+                zsmooth: false,
+                type: DATA_DISPLAY.plotType,
                 zmin: profiles.zMin,
                 zmax: profiles.zMax,
-                x: profiles.histValuesX2,
-                y: profiles.histValuesX1,
+                x: profiles.imageXAxis,
+                y: profiles.imageYAxis,
 
                 // For mouse-over hover information, show the data values in
                 // the text field so that the same values appear when
@@ -847,16 +869,19 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 hoverinfo: 'x+y+text',
                 text: DATA_DISPLAY.stringDataValues,
 
-                zsmooth: false,
-                type: DATA_DISPLAY.plotType,
                 colorscale: DATA_DISPLAY.colorScale,
                 showscale : !DATA_DISPLAY.mobileDisplay,
+                colorbar : {
+                    title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
+                    titleside : 'bottom',
+                    exponentformat : 'power',
+                },
             };
 
             // The x-profile of the plot, displayed as a bar chart / histogram
             xProfilePlot = {
-                x: profiles.histValuesX2,
-                y: profiles.histValuesY2,
+                x: profiles.xProfileXAxis,
+                y: profiles.xProfileYValues,
                 name: 'x profile',
                 marker: {color: 'rgb(102,0,0)'},
                 yaxis: 'y2',
@@ -864,10 +889,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             };
 
             // The y-profile, also displayed as a bar chart / histogram,
-            // oriented horizontally
+            // oriented horizontally --> switch x & y
             yProfilePlot = {
-                x: profiles.histValuesY1,
-                y: profiles.histValuesX1,
+                x: profiles.yProfileYValues,
+                y: profiles.yProfileXAxis,
                 name: 'y profile',
                 marker: {color: 'rgb(102,0,0)'},
                 xaxis: 'x2',
@@ -1061,11 +1086,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Change the data used in the plot without redrawing everything
         updatePlotZData : function (ranges, newImageFetched, setAxesRange) {
 
-            console.log('** updatePlotZData **');
-
             var debug = false, profiles;
 
             if (debug) {
+                console.log('** updatePlotZData **');
                 console.log('refilling histograms');
                 console.log('ranges:');
                 console.log(ranges);
@@ -1095,18 +1119,25 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
                     z: [DATA_DISPLAY.dataValues],
                     text: [DATA_DISPLAY.stringDataValues],
-                    x: [profiles.histValuesX2],
-                    y: [profiles.histValuesX1],
+                    x: [profiles.imageXAxis],
+                    y: [profiles.imageYAxis],
                     zmin: [profiles.zMin],
                     zmax: [profiles.zMax],
+                    colorbar : [{
+                        title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
+                        titleside : 'bottom',
+                        exponentformat : 'power',
+                    }],
                 }, [0]);
 
                 if (DATA_DISPLAY.plotDimension === 2) {
-                    console.log('DATA_DISPLAY.imageZoomSection:');
-                    console.log(DATA_DISPLAY.imageZoomSection[0]);
-                    console.log(DATA_DISPLAY.imageZoomSection[1]);
-                    console.log(DATA_DISPLAY.imageZoomSection[2]);
-                    console.log(DATA_DISPLAY.imageZoomSection[3]);
+                    if (debug) {
+                        console.log('DATA_DISPLAY.imageZoomSection:');
+                        console.log(DATA_DISPLAY.imageZoomSection[0]);
+                        console.log(DATA_DISPLAY.imageZoomSection[1]);
+                        console.log(DATA_DISPLAY.imageZoomSection[2]);
+                        console.log(DATA_DISPLAY.imageZoomSection[3]);
+                    }
 
                     if (setAxesRange) {
                         // Set the ranges of the 2D plot properly - otherwise
@@ -1142,18 +1173,21 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             if (DATA_DISPLAY.plotDimension === 2) {
                 // Update the profile histograms in the plot
                 Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                    x: [profiles.histValuesX2],
-                    y: [profiles.histValuesY2],
+                    x: [profiles.xProfileXAxis],
+                    y: [profiles.xProfileYValues],
                 }, [1]);
 
                 Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                    x: [profiles.histValuesY1],
-                    y: [profiles.histValuesX1],
+                    x: [profiles.yProfileYValues],
+                    y: [profiles.yProfileXAxis],
                 }, [2]);
             }
 
-            console.log('** End of updatePlotZData **');
             AJAX_SPINNER.doneLoadingData();
+
+            if (debug) {
+                console.log('** End of updatePlotZData **');
+            }
         },
 
 
@@ -1299,7 +1333,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //
         initializeImageData : function (value) {
 
-            var debug = true;
+            var debug = false;
 
             DATA_DISPLAY.dataValues = value;
 

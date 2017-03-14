@@ -100,13 +100,19 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                     filePathPieces[index]
                                 )) {
 
-                                console.log('We got a hit!');
-                                console.log(titleList[filePathPieces[index]]);
+                                if (debug) {
+                                    console.log('We got a hit!');
+                                    console.log(
+                                        titleList[filePathPieces[index]]
+                                    );
+                                }
 
                                 newTopLevelUrl =
                                     titleList[filePathPieces[index]].target;
 
-                                console.log(newTopLevelUrl);
+                                if (debug) {
+                                    console.log(newTopLevelUrl);
+                                }
 
                                 if (filePathPieces.length > index + 1) {
                                     return FILE_NAV.followFilePath(
@@ -171,7 +177,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                         function (output) {
 
-                            console.log(output);
+                            if (debug) {
+                                console.log(output);
+                            }
 
                             if (output) {
                                 return FILE_NAV.findObjectInFile(output,
@@ -292,20 +300,25 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         getH5ObjectLinkInfo : function (title, filePath, h5path, h5domain,
             responses) {
 
-            var fileName, dirName = '';
+            var debug = false, fileName, dirName = '';
 
             dirName =  filePath.substring(0, filePath.lastIndexOf('/'));
             fileName = dirName + '/' + h5domain;
 
-            console.log('filePath: ' + filePath);
-            console.log('dirName:  ' + dirName);
-            console.log('fileName: ' + fileName);
-            console.log('h5path:   ' + h5path);
+            if (debug) {
+                console.log('filePath: ' + filePath);
+                console.log('dirName:  ' + dirName);
+                console.log('fileName: ' + fileName);
+                console.log('h5path:   ' + h5path);
+            }
 
             // Find the url pointing to the linked-to data file
             return $.when(FILE_NAV.findH5ObjectUrl(fileName, h5path)).then(
                 function (targetUrl) {
-                    console.log(targetUrl);
+                    if (debug) {
+                        console.log(targetUrl);
+                    }
+
                     FILE_NAV.temp = targetUrl;
 
                     // Get information about the dataset object in the
@@ -543,8 +556,10 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             $('#jstree_div').jstree(true).get_node(selectedId);
 
                         if (parentTreeNode) {
-                            console.log('parentTreeNode.data.filePath: ' +
-                                parentTreeNode.data.filePath);
+                            if (debug) {
+                                console.log('parentTreeNode.data.filePath: ' +
+                                    parentTreeNode.data.filePath);
+                            }
                             filePath = parentTreeNode.data.filePath;
                         }
 
@@ -689,14 +704,21 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                 // really be done by adding attributes the HDF5
                                 // file
                                 if (linkItem.title.includes('_master')) {
-                                    console.log('master:' +
-                                        linkItem.title.includes('_master'));
+                                    if (debug) {
+                                        console.log('master:' +
+                                            linkItem.title.includes('_master')
+                                            );
+                                    }
+
                                     mxMaster =
                                         linkItem.title.replace('_master', '');
                                 }
                                 if (linkItem.title.includes('_data_')) {
-                                    console.log('data:  ' +
-                                        linkItem.title.includes('_data_'));
+                                    if (debug) {
+                                        console.log('data:  ' +
+                                            linkItem.title.includes('_data_'));
+                                    }
+
                                     mxData = linkItem.title.split('_data_');
                                     mxMaster = mxData[0];
                                     mxData = mxData[1];

@@ -95,8 +95,10 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             return $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
                 function (response) {
 
-                    console.log('response');
-                    console.log(response);
+                    if (debug) {
+                        console.log('response');
+                        console.log(response);
+                    }
 
                     return response.value;
                 }
