@@ -39,7 +39,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         },
 
 
-        // When an image is desired, get and plot it - maybe
+        // When an image is selected, get it and plot it
         displayImage : function (inputUrl, shapeDims, section, nodeId,
             newImage) {
 
@@ -51,9 +51,9 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     // Save some information about the image
                     DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims,
-                        newImage, section);
+                        newImage, section, false);
 
-                    DATA_DISPLAY.initializeImageData(value, false);
+                    DATA_DISPLAY.initializeImageData(value);
 
                     // For zooming in large downsampled image, this should
                     // be false
@@ -72,7 +72,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // When a dataset is selected, plot the data
         getImage : function (inputUrl, section, nodeId) {
 
-            var debug = true, valueUrl;
+            var debug = false, valueUrl;
 
 
             if (debug) {
@@ -95,8 +95,10 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             return $.when(SERVER_COMMUNICATION.ajaxRequest(valueUrl)).then(
                 function (response) {
 
-                    console.log('response');
-                    console.log(response);
+                    if (debug) {
+                        console.log('response');
+                        console.log(response);
+                    }
 
                     return response.value;
                 }
@@ -110,7 +112,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         readImageFromSeries : function (targetUrl, nodeId, imageIndex,
             section) {
 
-            var debug = true, valueUrl, chunks, matrix, numChunkRows,
+            var debug = false, valueUrl, chunks, matrix, numChunkRows,
                 numChunkColumns, imageIndexStart, imageIndexStop;
 
             // The selected image in the stack is just a single slice of a
@@ -168,7 +170,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         imageSeriesInput : function (imageIndex, section, newImage,
             zoomEvent) {
 
-            var debug = true, min = 0,
+            var debug = false, min = 0,
                 max = DATA_DISPLAY.imageSeriesRange - 1;
 
             if (debug) {
@@ -182,7 +184,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             if (DATA_DISPLAY.isNumeric(imageIndex)) {
 
                 // Start the spinner
-                AJAX_SPINNER.startLoadingData(100);
+                AJAX_SPINNER.startLoadingData(1);
 
                 // Check for out of range values
                 if (imageIndex < min) {
@@ -203,7 +205,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 });
                 $("#slider").slider('refresh');
 
-                DATA_DISPLAY.saveImageInfo(false, false, false, true, section);
+                DATA_DISPLAY.saveImageInfo(false, false, false, true, section,
+                    imageIndex);
 
                 // Get an image from the series and display it
                 return $.when(
@@ -217,12 +220,13 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     function (image) {
                         // Change the data being displayed
-                        DATA_DISPLAY.initializeImageData(image, imageIndex);
+                        DATA_DISPLAY.initializeImageData(image);
 
                         if (!zoomEvent) {
                             DATA_DISPLAY.updatePlotZData(
                                 DATA_DISPLAY.imageZoomSection,
-                                newImage
+                                newImage,
+                                true
                             );
                         }
                     }
@@ -237,7 +241,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Setup an image series
         displayImageSeriesInitial : function (targetUrl, shapeDims) {
 
-            var debug = true, nodeId;
+            var debug = false, nodeId;
 
             // Extract the id from the target url
             nodeId = targetUrl.match(new RegExp('datasets/' + "(.*)" +
@@ -251,7 +255,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
             // Save some information about the image series
             DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, true,
-                false);
+                false, 0);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
@@ -263,7 +267,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     DATA_DISPLAY.enableImagePlotControls(true, true);
 
                     // Plot the data
-                    DATA_DISPLAY.initializeImageData(completeImage, 0);
+                    DATA_DISPLAY.initializeImageData(completeImage);
                     DATA_DISPLAY.plotData();
 
                 }
