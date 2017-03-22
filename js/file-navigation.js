@@ -8,10 +8,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
     // Some gloabl variables
     FILE_NAV =
     {
-        // h5serv has an issue with full hostnames - dumb quick fix
-        hdf5DataServer : window.location.protocol + '//' +
-                         window.location.hostname.replace('.maxiv.lu.se', '') +
-                         ':5000',
         jstreeDict : [],
         processSelectNodeEvent : true,
         data : null,
@@ -140,7 +136,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         findH5ObjectUrl : function (filePath, h5Path) {
 
             var debug = false, filePathPieces = [], h5PathPieces,
-                initialUrl = FILE_NAV.hdf5DataServer + '/groups';
+                initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
 
             // Chop off the file name extension
@@ -423,7 +419,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
             var debug = false, topLevelUrl = '';
 
-            return $.when(SERVER_COMMUNICATION.ajaxRequest(initialUrl)).then(
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(initialUrl,
+                    true)).then(
+
                 function (response) {
 
                     var key = '';
@@ -933,8 +931,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // object
         getRootDirectoryContents : function () {
 
-            var debug = false,
-                initialUrl = FILE_NAV.hdf5DataServer + '/groups';
+            var debug = true,
+                initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will give info about the folder contents
             $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs', 'root')).then(
