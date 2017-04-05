@@ -420,7 +420,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
             var debug = false, topLevelUrl = '';
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(initialUrl,
-                    true)).then(
+                    false)).then(
 
                 function (response) {
 
@@ -931,7 +931,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // object
         getRootDirectoryContents : function () {
 
-            var debug = true,
+            var debug = false,
                 initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will give info about the folder contents

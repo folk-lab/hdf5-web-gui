@@ -42,24 +42,42 @@ var AJAX_SPINNER, DATA_DISPLAY,
 
                 },
 
-                error: function (response) {
 
-                    var key = '';
-
-                    AJAX_SPINNER.doneLoadingData();
-                    DATA_DISPLAY.displayErrorMessage(url);
-
-                    console.log('AJAX ' + url + ' error: ' + response);
-
-                    if (debug) {
-                        for (key in response) {
-                            if (response.hasOwnProperty(key)) {
-                                console.log("** " + key + " -> " +
-                                    response[key]);
-                            }
-                        }
+                error: function (x, status, error) {
+                    if (x.status === 403) {
+                        DATA_DISPLAY.enableImagePlotControls(false, false);
+                        DATA_DISPLAY.drawText(
+                            'Sorry, I can\'t let you look at that',
+                            'You need to get permission first',
+                            '#ad3a74'
+                        );
+                        console.log(
+                            'HTTP 403: Forbidden (Access is not permitted)'
+                        );
+                    } else {
+                        console.log("An error occurred: " + status +
+                            "nError: " + error);
                     }
                 },
+
+                // error: function (response) {
+
+                //     var key = '';
+
+                //     AJAX_SPINNER.doneLoadingData();
+                //     DATA_DISPLAY.displayErrorMessage(url);
+
+                //     console.log('AJAX ' + url + ' error: ' + response);
+
+                //     if (debug) {
+                //         for (key in response) {
+                //             if (response.hasOwnProperty(key)) {
+                //                 console.log("** " + key + " -> " +
+                //                     response[key]);
+                //             }
+                //         }
+                //     }
+                // },
 
                 // Settings used in all ajax requests
                 type: 'GET',
