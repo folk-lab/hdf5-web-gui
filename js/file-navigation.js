@@ -483,6 +483,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             itemList[keyTitle].dataType);
                         console.log(keyTitle + " -> collection: " +
                             itemList[keyTitle].collection);
+                        console.log(keyTitle + " -> readable: " +
+                            itemList[keyTitle].readable);
                     }
 
                     doesNodeExist = false;
@@ -591,7 +593,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     // Do not add MXCube data files, they should be linked to
                     // from the master file
                     if (!doesNodeExist && !dotFile &&
-                            !itemList[keyTitle].mxData) {
+                            !itemList[keyTitle].mxData &&
+                            (itemList[keyTitle].readable ||
+                             itemList[keyTitle].readable === undefined)) {
 
                         FILE_NAV.jstreeDict.push({
 
@@ -746,6 +750,10 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                         h5domain: (
                                             linkItem.hasOwnProperty('h5domain')
                                             ? linkItem.h5domain : false
+                                        ),
+                                        readable: (
+                                            linkItem.hasOwnProperty('readable')
+                                            ? linkItem.readable : undefined
                                         ),
                                         collection: (
                                             linkItem.hasOwnProperty(

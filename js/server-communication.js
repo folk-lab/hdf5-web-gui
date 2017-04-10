@@ -22,8 +22,6 @@ var AJAX_SPINNER, DATA_DISPLAY,
             return $.ajax({
 
                 url: url,
-                // url: url + '?callback=?',
-                // url: url + '?callback=SERVER_COMMUNICATION.jsonpCallback',
 
                 success: function (response) {
 
@@ -60,30 +58,10 @@ var AJAX_SPINNER, DATA_DISPLAY,
                     }
                 },
 
-                // error: function (response) {
-
-                //     var key = '';
-
-                //     AJAX_SPINNER.doneLoadingData();
-                //     DATA_DISPLAY.displayErrorMessage(url);
-
-                //     console.log('AJAX ' + url + ' error: ' + response);
-
-                //     if (debug) {
-                //         for (key in response) {
-                //             if (response.hasOwnProperty(key)) {
-                //                 console.log("** " + key + " -> " +
-                //                     response[key]);
-                //             }
-                //         }
-                //     }
-                // },
-
                 // Settings used in all ajax requests
                 type: 'GET',
                 dataType: 'json',
                 xhrFields: { withCredentials: true },
-                // crossDomain: true,
                 async: true,
                 cache: false,
                 timeout: 20000
