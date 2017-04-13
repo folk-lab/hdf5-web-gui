@@ -53,6 +53,9 @@
         <script type="text/javascript" defer
             src="../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js?v=201701010000">
         </script>
+        <script type="text/javascript" defer
+            src="../lib/js/js-cookie/js.cookie.js?v=201701010000">
+        </script>
 
         <!-- css for this page -->
         <link rel="stylesheet"
@@ -71,6 +74,8 @@
             src="../js/data-display.js?v=201702241346"></script>
         <script type="text/javascript" defer
             src="../js/handle-dataset.js?v=201702241346"></script>
+        <script type="text/javascript" defer
+            src="../js/cas-authentication.js?v=201702241346"></script>
 
     </head>
 
@@ -87,16 +92,27 @@
             <div class="navmenu navmenu-default navmenu-fixed-left
                 offcanvas-sm">
 
-                <!-- Brand image and name -->
-                <div class="col-xs-7">
+                <!-- Desktop - Brand image and name -->
+                <div class="col-xs-8">
                     <a class="navmenu-brand visible-md visible-lg"
                         href="#">HDF5 Data Viewer</a>
                 </div>
 
-                <div class="col-xs-5">
-                    <a class="navbar-brand visible-md visible-lg" href="#">
+                <!--
+                <div class="col-xs-2">
+                    <a class="navmenu-brand visible-md visible-lg" href="#">
                         <img alt="Brand" id="logoImage"
-                           src="../images/maxiv-logo-101x35.png"></a>
+                           src="../images/rings-22x22.png"></a>
+                </div>
+                -->
+
+                <div class="col-xs-4">
+                    <a class="navmenu-brand visible-md visible-lg" href="#">
+                        <span class="glyphicon glyphicon-log-in">
+                            <span class="hidden-xs hidden-sm hidden-md
+                                hidden-lg">Login </span>
+                        </span>
+                        Login</a>
                 </div>
 
                 <!-- The file browser-->
@@ -113,27 +129,61 @@
 
             </div>
 
-            <!-- The mobile menu button -->
-            <div class="navbar navbar-default navbar-fixed-top hidden-md
-                hidden-lg">
+            <!-- Mobile toggle menu button & navbar -->
+            <nav class="navbar navbar-default navbar-fixed-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
 
-                <button type="button" class="navbar-toggle"
-                    data-toggle="offcanvas" data-target=".navmenu">
-                    <span class="icon-bar">&nbsp;</span>
-                    <span class="icon-bar">&nbsp;</span>
-                    <span class="icon-bar">&nbsp;</span>
-                </button>
+                        <button type="button" class="navbar-toggle collapsed"
+                            data-toggle="offcanvas" data-target=".navmenu">
+                            <span class="icon-bar">&nbsp;</span>
+                            <span class="icon-bar">&nbsp;</span>
+                            <span class="icon-bar">&nbsp;</span>
+                        </button>
 
-                <div class="col-xs-5 col-xs-offset-2">
-                <a class="navbar-brand" href="#">HDF5 Viewer</a>
+                        <!--
+                        <div class="col-xs-5 col-xs-offset-2">
+                        <a class="navbar-brand" href="#">HDF5 Viewer</a>
+                        </div>
+                        -->
+
+                        <div class="col-xs-3 col-xs-offset-2">
+                        <button type="button" class="btn"
+                            id="logPlotButton"
+                            onclick='CAS_AUTH.loginServer()'>
+                            Server
+                        </button>
+                        </div>
+
+                        <div class="col-xs-3">
+                        <button type="button" class="btn"
+                            id="logPlotButton"
+                            onclick='CAS_AUTH.login()'>
+                            Login
+                        </button>
+                        </div>
+
+                        <div class="col-xs-3">
+                        <button type="button" class="btn"
+                            id="logPlotButton"
+                            onclick='CAS_AUTH.logout()'>
+                            Logout
+                        </button>
+                        </div>
+                        <!--
+                        <a class="navbar-brand"
+                            onclick='DATA_DISPLAY.toggleLogPlot()'>
+                            <span class="glyphicon glyphicon-log-in">
+                                <span class="hidden-xs hidden-sm hidden-md
+                                    hidden-lg">Login </span>
+                            </span>
+                            Login</a>
+                        -->
+                        </div>
+
+                    </div>
                 </div>
-
-                <div class="col-xs-5">
-                <a class="navbar-brand" href="#">
-                    <img alt="Brand" id="logoImage"
-                       src="../images/maxiv-logo-101x35.png"></a>
-                </div>
-            </div>
+            </nav>
 
             <!-- Container for plot canvas and controls -->
             <div id="plotContainer" class="container">

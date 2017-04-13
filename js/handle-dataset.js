@@ -7,11 +7,6 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
     // The gloabl variables for this applicaiton
     HANDLE_DATASET =
     {
-        // h5serv has an issue with full hostnames - dumb fix
-        hdf5DataServer: window.location.protocol + '//' +
-                        window.location.hostname.replace('.maxiv.lu.se',
-                        '') + ':5000',
-
 
         // Return a dataset value
         getDatasetValue : function (inputUrl, nodeId) {
@@ -371,16 +366,6 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
     };
-
-
-// Settings used in all ajax requests
-$.ajaxSetup({
-    type:       'GET',
-    dataType:   'json',
-    async:      true,
-    cache:      false,
-    timeout:    2000
-});
 
 
 // This function fires when the page is loaded

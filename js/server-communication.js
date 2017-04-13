@@ -8,7 +8,7 @@ var AJAX_SPINNER, DATA_DISPLAY,
     // The global variables for this applicaiton
     SERVER_COMMUNICATION =
     {
-        // h5serv has an issue with full hostnames - dumb fix
+        // h5serv has an issue with full hostnames - dumb fix here
         hdf5DataServer: window.location.protocol + '//' +
                         window.location.hostname.replace('.maxiv.lu.se',
                         '') + ':6050',
@@ -67,10 +67,6 @@ var AJAX_SPINNER, DATA_DISPLAY,
                 timeout: 20000
             });
 
-        },
-
-        jsonpCallback : function (response) {
-            console.log(response);
         },
 
     };
