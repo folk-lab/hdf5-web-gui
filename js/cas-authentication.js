@@ -8,10 +8,13 @@ var SERVER_COMMUNICATION, Cookies,
     CAS_AUTH =
     {
 
-        logincheckServer : function () {
+        ticketcheckServer : function (queryString) {
 
             var debug = true, loginUrl =
-                SERVER_COMMUNICATION.hdf5DataServer + '/logincheck';
+                SERVER_COMMUNICATION.hdf5DataServer + '/ticketcheck' +
+                '?' + queryString;
+
+            console.log('loginUrl: ' + loginUrl);
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(loginUrl)).then(
                 function (response) {
@@ -140,6 +143,7 @@ var SERVER_COMMUNICATION, Cookies,
 
                 service_url = 'https://w-jasbru-pc-0' +
                     '.maxiv.lu.se/hdf5-web-gui/html/';
+                // loginUrl = 'https://cas.maxiv.lu.se/cas/login';
                 loginUrl = 'https://cas.maxiv.lu.se/cas/login?' +
                     'service=' + encodeURIComponent(service_url);
 
@@ -209,7 +213,7 @@ var SERVER_COMMUNICATION, Cookies,
             console.log('url: ' + url);
 
             // Check if it contains CAS ticket information
-            if (window.location.href.indexOf("?ticket=ST") > -1) {
+            if (url.indexOf("?ticket=ST") > -1) {
 
                 console.log('CAS ticket found');
 
@@ -228,6 +232,12 @@ var SERVER_COMMUNICATION, Cookies,
                 // Clean the url - get rid of eveything after the last /
                 window.history.pushState({}, document.title,
                     window.location.pathname);
+
+                $.when(CAS_AUTH.ticketcheckServer(queryString)).then(
+                    function (isLoggedIn) {
+                        console.log('isLoggedIn:  ' + isLoggedIn);
+                    }
+                );
 
             } else {
                 console.log('No CAS ticket found');
