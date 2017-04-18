@@ -28,7 +28,7 @@
             href="../lib/css/bootstrap/3.3.7/css/bootstrap.min.css?v=201701010000"/>
         <!--
         <link rel="stylesheet"
-            href="../css/jstree/3.2.1/themes/default-dark/style.min.css?v=201701010000"/>
+            href="../lib/css/jstree/3.2.1/themes/default-dark/style.min.css?v=201701010000"/>
         -->
         <link rel="stylesheet"
             href="../lib/css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
@@ -67,6 +67,8 @@
         <script type="text/javascript"
             src="../js/ajax-spinner.js?v=201702241346"></script>
         <script type="text/javascript" defer
+            src="../js/cas-authentication.js?v=201702241346"></script>
+        <script type="text/javascript" defer
             src="../js/server-communication.js?v=201702241346"></script>
         <script type="text/javascript" defer
             src="../js/file-navigation.js?v=201702241346"></script>
@@ -74,8 +76,6 @@
             src="../js/data-display.js?v=201702241346"></script>
         <script type="text/javascript" defer
             src="../js/handle-dataset.js?v=201702241346"></script>
-        <script type="text/javascript" defer
-            src="../js/cas-authentication.js?v=201702241346"></script>
 
     </head>
 
@@ -148,14 +148,6 @@
                         -->
 
                         <div class="col-xs-3 col-xs-offset-2">
-                        <button type="button" class="btn"
-                            id="logPlotButton"
-                            onclick='CAS_AUTH.loginServer()'>
-                            Server
-                        </button>
-                        </div>
-
-                        <div class="col-xs-3">
                         <button type="button" class="btn"
                             id="logPlotButton"
                             onclick='CAS_AUTH.login()'>

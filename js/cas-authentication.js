@@ -8,6 +8,32 @@ var SERVER_COMMUNICATION, Cookies,
     CAS_AUTH =
     {
 
+        cookieCheckServer : function () {
+
+            var debug = true, loginUrl =
+                SERVER_COMMUNICATION.hdf5DataServer + '/cookiecheck';
+
+            console.log('loginUrl: ' + loginUrl);
+
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(loginUrl)).then(
+                function (response) {
+
+                    var key = '';
+
+                    if (debug) {
+                        for (key in response) {
+                            if (response.hasOwnProperty(key)) {
+                                console.log(key + " -> " + response[key]);
+                            }
+                        }
+                    }
+
+                    return response.message;
+                }
+            );
+
+        },
+
         ticketcheckServer : function (queryString) {
 
             var debug = true, loginUrl =
@@ -29,6 +55,32 @@ var SERVER_COMMUNICATION, Cookies,
                         }
                     }
 
+                    return response.message;
+                }
+            );
+
+        },
+
+
+        logoutServer : function () {
+
+            var debug = true, logoutUrl =
+                SERVER_COMMUNICATION.hdf5DataServer + '/logout';
+
+            console.log('logoutUrl: ' + logoutUrl);
+
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(logoutUrl)).then(
+                function (response) {
+
+                    var key = '';
+
+                    if (debug) {
+                        for (key in response) {
+                            if (response.hasOwnProperty(key)) {
+                                console.log(key + " -> " + response[key]);
+                            }
+                        }
+                    }
 
                     return response.message;
                 }
@@ -36,7 +88,6 @@ var SERVER_COMMUNICATION, Cookies,
 
         },
 
-        // When a dataset is selected, display whatever text there is
         loginServer : function () {
 
             var debug = true, loginUrl, service_url;
@@ -124,81 +175,56 @@ var SERVER_COMMUNICATION, Cookies,
         },
 
 
-        // When a dataset is selected, display whatever text there is
         login : function () {
 
-            var userName, cookieSetup, cookieParams, cookieKey, cookieValue,
-                service_url, loginUrl;
+            var service_url, loginUrl;
 
-            cookieSetup = CAS_AUTH.cookieSetup();
-            cookieParams = cookieSetup.cookieParams;
-            cookieKey = cookieSetup.cookieKey;
-            cookieValue = 'jerk';
+            // Check if a CAS cookie created by the HDF5 server exists
+            $.when(CAS_AUTH.cookieCheckServer()).then(
+                function (isLoggedIn) {
 
-            userName = CAS_AUTH.loginCheck();
+                    if (!isLoggedIn) {
 
-            if (!userName) {
+                        // If no cookie has been found, redirect to CAS
+                        // server and log in
 
-                console.log('Need to log in, redirecting to CAS server');
+                        console.log('No CAS cookie from HDF5 server');
+                        console.log('Redirecting to CAS server');
 
-                service_url = 'https://w-jasbru-pc-0' +
-                    '.maxiv.lu.se/hdf5-web-gui/html/';
-                // loginUrl = 'https://cas.maxiv.lu.se/cas/login';
-                loginUrl = 'https://cas.maxiv.lu.se/cas/login?' +
-                    'service=' + encodeURIComponent(service_url);
+                        service_url = 'https://w-jasbru-pc-0' +
+                            '.maxiv.lu.se/hdf5-web-gui/html/';
+                        loginUrl = 'https://cas.maxiv.lu.se/cas/login?' +
+                            'service=' + encodeURIComponent(service_url);
 
-                window.location = loginUrl;
-
-                // Create/overwrite the cookie
-                Cookies.set(cookieKey, cookieValue, cookieParams);
-            } else {
-                console.log('Found CAS cookie');
-            }
+                        window.location = loginUrl;
+                    } else {
+                        console.log('Found CAS cookie from HDF5 server');
+                    }
+                }
+            );
 
         },
 
-        // When a dataset is selected, display whatever text there is
         logout : function () {
 
-            var userName, cookieSetup, cookieParams, cookieKey, service_url,
-                logoutUrl;
+            var service_url, logoutUrl;
 
-            // For cookie removal, the same parameters used in it's creation
-            // are needed
-            cookieSetup = CAS_AUTH.cookieSetup();
-            cookieParams = cookieSetup.cookieParams;
-            cookieKey = cookieSetup.cookieKey;
+            // Remove the cookie created by the HDF5 server
+            $.when(CAS_AUTH.logoutServer()).then(
+                function (response) {
+                    console.log('logout:  ' + response);
+                }
+            );
 
-            userName = CAS_AUTH.loginCheck();
+            // Logout from CAS
+            service_url = 'https://w-jasbru-pc-0' +
+                '.maxiv.lu.se/hdf5-web-gui/html/';
+            logoutUrl = 'https://cas.maxiv.lu.se/cas/logout?service=' +
+                encodeURIComponent(service_url);
 
-            if (userName) {
+            console.log('logoutUrl: ' + logoutUrl);
 
-                // Remove the cookie
-                Cookies.remove(cookieKey, cookieParams);
-
-                console.log('Need to log out, redirecting to CAS server');
-
-                // Logout from CAS
-                service_url = 'https://w-jasbru-pc-0' +
-                    '.maxiv.lu.se/hdf5-web-gui/html/';
-                logoutUrl = 'https://cas.maxiv.lu.se/cas/logout?' +
-                    'service=' + encodeURIComponent(service_url);
-
-                console.log('logoutUrl: ' + logoutUrl);
-
-                window.location = logoutUrl;
-
-                // The inclusion of the 'service' parameter in the logout url
-                // ought to result in a riderect from the CAS server back
-                // to the specified url according to:
-                //    https://apereo.github.io/cas/4.2.x/protocol/
-                //      CAS-Protocol-Specification.html#231-parameters
-                // but, alas, it does not appear to work.  Oh well.
-
-            } else {
-                console.log('No CAS cookie found');
-            }
-
+            window.location = logoutUrl;
         },
 
 
@@ -240,7 +266,7 @@ var SERVER_COMMUNICATION, Cookies,
                 );
 
             } else {
-                console.log('No CAS ticket found');
+                console.log('No CAS ticket found in url');
             }
 
         }

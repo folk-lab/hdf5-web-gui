@@ -70,15 +70,3 @@ var AJAX_SPINNER, DATA_DISPLAY,
         },
 
     };
-
-
-// This function fires when the page is loaded
-$(document).ready(function () {
-
-    var debug = false;
-
-    if (debug) {
-        console.log('document is ready');
-    }
-
-});

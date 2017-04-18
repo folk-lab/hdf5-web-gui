@@ -1141,7 +1141,8 @@ $(document).ready(function () {
     // Set the height of the div containing the file browsing tree
     FILE_NAV.setTreeDivHeight();
 
-    // Fill the uppermost level of the file tree
+    // Communicate with the server, filling the uppermost level of the file
+    // tree
     FILE_NAV.getRootDirectoryContents();
 
     ///////////////////////////////////////////////////////////////////////////

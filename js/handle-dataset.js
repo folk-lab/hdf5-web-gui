@@ -366,15 +366,3 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
     };
-
-
-// This function fires when the page is loaded
-$(document).ready(function () {
-
-    var debug = false;
-
-    if (debug) {
-        console.log('document is ready');
-    }
-
-});

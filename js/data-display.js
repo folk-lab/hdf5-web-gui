@@ -1577,7 +1577,7 @@ $(document).ready(function () {
         $("#plotControls").addClass('debugBlue');
     }
 
-    // Calculate the plot dimensions and save them
+    // Calculate the proper plot dimensions and save them
     DATA_DISPLAY.calculatePlotSize();
 
     // Un-hide the plotting canvas
