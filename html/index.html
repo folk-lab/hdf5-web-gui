@@ -106,13 +106,24 @@
                 </div>
                 -->
 
-                <div class="col-xs-4">
-                    <a class="navmenu-brand visible-md visible-lg" href="#">
+                <div class="col-xs-4" id="loginButton">
+                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
+                        onclick='CAS_AUTH.login();'>
                         <span class="glyphicon glyphicon-log-in">
                             <span class="hidden-xs hidden-sm hidden-md
-                                hidden-lg">Login </span>
+                                hidden-lg">Login</span>
                         </span>
                         Login</a>
+                </div>
+
+                <div class="col-xs-4" id="logoutButton">
+                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
+                        onclick='CAS_AUTH.logout();'>
+                        <span class="glyphicon glyphicon-log-in">
+                            <span class="hidden-xs hidden-sm hidden-md
+                                hidden-lg">Logout</span>
+                        </span>
+                        Logout</a>
                 </div>
 
                 <!-- The file browser-->
@@ -141,36 +152,29 @@
                             <span class="icon-bar">&nbsp;</span>
                         </button>
 
-                        <!--
                         <div class="col-xs-5 col-xs-offset-2">
-                        <a class="navbar-brand" href="#">HDF5 Viewer</a>
-                        </div>
-                        -->
-
-                        <div class="col-xs-3 col-xs-offset-2">
-                        <button type="button" class="btn"
-                            id="logPlotButton"
-                            onclick='CAS_AUTH.login()'>
-                            Login
-                        </button>
+                            <a class="navbar-brand" href="#">HDF5 Viewer</a>
                         </div>
 
-                        <div class="col-xs-3">
-                        <button type="button" class="btn"
-                            id="logPlotButton"
-                            onclick='CAS_AUTH.logout()'>
-                            Logout
-                        </button>
+
+                        <div class="col-xs-4" id="loginButtonMobile">
+                            <a class="navbar-brand menu_links"
+                                onclick='CAS_AUTH.login();'>
+                                <span class="glyphicon glyphicon-log-in">
+                                    <span class="hidden-xs hidden-sm hidden-md
+                                        hidden-lg">Login</span>
+                                </span>
+                                Login</a>
                         </div>
-                        <!--
-                        <a class="navbar-brand"
-                            onclick='DATA_DISPLAY.toggleLogPlot()'>
-                            <span class="glyphicon glyphicon-log-in">
-                                <span class="hidden-xs hidden-sm hidden-md
-                                    hidden-lg">Login </span>
-                            </span>
-                            Login</a>
-                        -->
+
+                        <div class="col-xs-4" id="logoutButtonMobile">
+                            <a class="navbar-brand menu_links"
+                                onclick='CAS_AUTH.logout();'>
+                                <span class="glyphicon glyphicon-log-in">
+                                    <span class="hidden-xs hidden-sm hidden-md
+                                        hidden-lg">Logout</span>
+                                </span>
+                                Logout</a>
                         </div>
 
                     </div>

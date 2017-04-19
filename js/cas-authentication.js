@@ -2,219 +2,108 @@
 'use strict';
 
 // External libraries
-var SERVER_COMMUNICATION, Cookies,
+var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
 
     // The gloabl variables for this applicaiton
     CAS_AUTH =
     {
+        userName : null,
+        isLoggedIn : false,
 
-        cookieCheckServer : function () {
+        executeServerFunction : function (serverUrl) {
 
-            var debug = true, loginUrl =
-                SERVER_COMMUNICATION.hdf5DataServer + '/cookiecheck';
-
-            console.log('loginUrl: ' + loginUrl);
-
-            return $.when(SERVER_COMMUNICATION.ajaxRequest(loginUrl)).then(
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(serverUrl)).then(
                 function (response) {
 
-                    var key = '';
+                    var debug = true, key = '';
 
                     if (debug) {
                         for (key in response) {
                             if (response.hasOwnProperty(key)) {
-                                console.log(key + " -> " + response[key]);
+                                console.log(key + " -> ");
+                                console.log(response[key]);
                             }
                         }
+                    }
+
+                    if (response.hasOwnProperty('attributes')) {
+                        CAS_AUTH.userName = response.attributes.displayName;
+                        console.log('First name: ' + CAS_AUTH.userName);
                     }
 
                     return response.message;
                 }
             );
-
         },
 
-        ticketcheckServer : function (queryString) {
+        // Check if there is a cookie created by the HDF5 server that contains
+        // CAS information. If so, this should mean that the user has logged
+        // in.  Return true or false.
+        cookieCheckServer : function () {
+
+            var debug = true, cookieCheckUrl =
+                SERVER_COMMUNICATION.hdf5DataServer + '/cookiecheck';
+
+            if (debug) {
+                console.log('cookieCheckUrl: ' + cookieCheckUrl);
+            }
+
+            return CAS_AUTH.executeServerFunction(cookieCheckUrl);
+        },
+
+
+        // Send a CAS server ticket to the HDF5 server, which will then
+        // verify the ticket and create a cookie containing CAS information
+        ticketCheckServer : function (queryString) {
 
             var debug = true, loginUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/ticketcheck' +
                 '?' + queryString;
 
-            console.log('loginUrl: ' + loginUrl);
+            if (debug) {
+                console.log('loginUrl: ' + loginUrl);
+            }
 
-            return $.when(SERVER_COMMUNICATION.ajaxRequest(loginUrl)).then(
-                function (response) {
-
-                    var key = '';
-
-                    if (debug) {
-                        for (key in response) {
-                            if (response.hasOwnProperty(key)) {
-                                console.log(key + " -> " + response[key]);
-                            }
-                        }
-                    }
-
-                    return response.message;
-                }
-            );
-
+            return CAS_AUTH.executeServerFunction(loginUrl);
         },
 
 
+        // Removes the cookie created by the HDF5 server
         logoutServer : function () {
 
             var debug = true, logoutUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/logout';
 
-            console.log('logoutUrl: ' + logoutUrl);
-
-            return $.when(SERVER_COMMUNICATION.ajaxRequest(logoutUrl)).then(
-                function (response) {
-
-                    var key = '';
-
-                    if (debug) {
-                        for (key in response) {
-                            if (response.hasOwnProperty(key)) {
-                                console.log(key + " -> " + response[key]);
-                            }
-                        }
-                    }
-
-                    return response.message;
-                }
-            );
-
-        },
-
-        loginServer : function () {
-
-            var debug = true, loginUrl, service_url;
-
-            $.when(CAS_AUTH.logincheckServer()).then(
-                function (isLoggedIn) {
-
-                    if (debug) {
-                        console.log('isLoggedIn:  ' + isLoggedIn);
-                    }
-
-
-                    if (!isLoggedIn) {
-                        // loginUrl = 'https://cas.maxiv.lu.se/cas//login?'
-                        // + 'service=https%3A%2F%2Fw-jasbru-pc-0' +
-                        // '%3A6050%2Flogin';
-                        service_url = 'https://w-jasbru-pc-0' +
-                            '.maxiv.lu.se/hdf5-web-gui/html/';
-                        loginUrl = 'https://cas.maxiv.lu.se/cas/login?' +
-                            'service=' + encodeURIComponent(service_url);
-                        // loginUrl = SERVER_COMMUNICATION.hdf5DataServer +
-                        //     '/login';
-
-
-                        window.location = loginUrl;
-
-                        // return $.when(SERVER_COMMUNICATION.ajaxRequest(
-                        //     loginUrl
-                        // )).then(
-                        //     function (response) {
-                        //         var key = '';
-                        //         if (debug) {
-                        //             for (key in response) {
-                        //                 if (response.hasOwnProperty(key)) {
-                        //                     console.log(key + " -> " +
-                        //                         response[key]);
-                        //                 }
-                        //             }
-                        //         }
-                        //         return response.message;
-                        //     }
-                        // );
-                    }
-                }
-            );
-        },
-
-        loginCheck : function () {
-
-            var userName = false, cookieSetup, cookieKey, readCookies;
-
-            cookieSetup = CAS_AUTH.cookieSetup();
-            cookieKey = cookieSetup.cookieKey;
-
-            readCookies = Cookies.get();
-            console.log('readCookies: ');
-            console.log(readCookies);
-
-            if (readCookies.hasOwnProperty(cookieKey)) {
-                console.log('Found ' + cookieKey + ' in the cookies');
-                userName = readCookies[cookieKey];
-                console.log('userName: ' + userName);
-            } else {
-                console.log('No ' + cookieKey + ' in the cookies');
+            if (debug) {
+                console.log('logoutUrl: ' + logoutUrl);
             }
 
-            return userName;
-        },
-
-        cookieSetup : function () {
-
-            var cookieParams, cookieKey;
-
-            cookieParams = {
-                secure: true,
-                // domain: 'w-jasbru-pc-0',
-                // domain: 'w-jasbru-pc-0.maxiv.lu.se',
-            };
-            cookieKey = 'casUserName';
-
-            return {
-                cookieParams: cookieParams,
-                cookieKey: cookieKey,
-            };
+            return CAS_AUTH.executeServerFunction(logoutUrl);
         },
 
 
-        login : function () {
+        // Log into the CAS server
+        loginCAS : function () {
 
             var service_url, loginUrl;
 
-            // Check if a CAS cookie created by the HDF5 server exists
-            $.when(CAS_AUTH.cookieCheckServer()).then(
-                function (isLoggedIn) {
+            console.log('Redirecting to CAS server');
 
-                    if (!isLoggedIn) {
+            service_url = 'https://w-jasbru-pc-0' +
+                '.maxiv.lu.se/hdf5-web-gui/html/';
+            loginUrl = 'https://cas.maxiv.lu.se/cas/login?service=' +
+                encodeURIComponent(service_url);
 
-                        // If no cookie has been found, redirect to CAS
-                        // server and log in
+            console.log('loginUrl: ' + loginUrl);
 
-                        console.log('No CAS cookie from HDF5 server');
-                        console.log('Redirecting to CAS server');
-
-                        service_url = 'https://w-jasbru-pc-0' +
-                            '.maxiv.lu.se/hdf5-web-gui/html/';
-                        loginUrl = 'https://cas.maxiv.lu.se/cas/login?' +
-                            'service=' + encodeURIComponent(service_url);
-
-                        window.location = loginUrl;
-                    } else {
-                        console.log('Found CAS cookie from HDF5 server');
-                    }
-                }
-            );
-
+            window.location = loginUrl;
         },
 
-        logout : function () {
+
+        // Log out of CAS session
+        logoutCAS : function () {
 
             var service_url, logoutUrl;
-
-            // Remove the cookie created by the HDF5 server
-            $.when(CAS_AUTH.logoutServer()).then(
-                function (response) {
-                    console.log('logout:  ' + response);
-                }
-            );
 
             // Logout from CAS
             service_url = 'https://w-jasbru-pc-0' +
@@ -225,6 +114,48 @@ var SERVER_COMMUNICATION, Cookies,
             console.log('logoutUrl: ' + logoutUrl);
 
             window.location = logoutUrl;
+
+        },
+
+
+        // The function called by the Login button, checks if a cookie created
+        // by the HDF5 server exists, and if not, redirects to the CAS login
+        // page
+        login : function () {
+
+            // Check if a CAS cookie created by the HDF5 server exists
+            $.when(CAS_AUTH.cookieCheckServer()).then(
+                function (isLoggedIn) {
+
+                    if (!isLoggedIn) {
+
+                        console.log('No CAS cookie from HDF5 server');
+
+                        // Redirect to CAS server and log in
+                        CAS_AUTH.loginCAS();
+                    } else {
+                        console.log('Found CAS cookie from HDF5 server');
+                    }
+                }
+            );
+
+        },
+
+
+        // The function called by the Logout button, logs out from the CAS
+        // server and removes the cookie created by the HDF5 server
+        logout : function () {
+
+            // Remove the cookie created by the HDF5 server
+            $.when(CAS_AUTH.logoutServer()).then(
+                function (response) {
+
+                    console.log('logout:  ' + response);
+
+                    // Logout of CAS
+                    CAS_AUTH.logoutCAS();
+                }
+            );
         },
 
 
@@ -259,18 +190,104 @@ var SERVER_COMMUNICATION, Cookies,
                 window.history.pushState({}, document.title,
                     window.location.pathname);
 
-                $.when(CAS_AUTH.ticketcheckServer(queryString)).then(
+                // Send the ticket to the HDF5 server
+                return $.when(CAS_AUTH.ticketCheckServer(queryString)).then(
                     function (isLoggedIn) {
                         console.log('isLoggedIn:  ' + isLoggedIn);
+                        return isLoggedIn;
                     }
                 );
 
-            } else {
-                console.log('No CAS ticket found in url');
             }
 
-        }
+            console.log('No CAS ticket found in url');
+            return undefined;
+        },
 
+
+        // This function is to be called when the page is loaded - it checks
+        // the url for CAS tickets, looks for a cookie created by the HDF5
+        // server, then loads the data tree or displays a message
+        initialPageLoad : function () {
+
+            // Check for a CAS ticket in the url
+            $.when(CAS_AUTH.checkUrlForTicket()).then(
+                function (isLoggedInTicket) {
+
+                    console.log('isLoggedInTicket: ', isLoggedInTicket);
+
+                    // Check if a CAS cookie created by the HDF5 server exists
+                    $.when(CAS_AUTH.cookieCheckServer()).then(
+                        function (isLoggedInCookie) {
+
+                            console.log('isLoggedInCookie: ',
+                                isLoggedInCookie);
+
+                            // Save login information
+                            CAS_AUTH.isLoggedIn = isLoggedInCookie;
+
+                            if (isLoggedInCookie) {
+
+                                // Communicate with the server, filling the
+                                // uppermost level of the file tree
+                                FILE_NAV.getRootDirectoryContents();
+
+                                // Display a message
+                                DATA_DISPLAY.drawText('Welcome ' +
+                                    CAS_AUTH.userName + '!',
+                                    '(click stuff on the left)',
+                                    '#3a74ad');
+
+                            } else {
+
+                                // Display a message
+                                console.log('No CAS cookie from HDF5 server');
+                                DATA_DISPLAY.drawText('Welcome!',
+                                    '(Login to view data)', '#3a74ad');
+
+                            }
+
+                            // Show or hide various items
+                            CAS_AUTH.toggleLoginButton();
+                        }
+                    );
+                }
+            );
+
+
+        },
+
+
+        toggleLoginButton : function () {
+
+            var i, debug = true,
+                whenLoggedInShow = ['#logoutButton', '#logoutButtonMobile',
+                    '#treeSectionDiv'],
+                whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
+
+            if (debug) {
+                console.log('CAS_AUTH.isLoggedIn: ' + CAS_AUTH.isLoggedIn);
+            }
+
+
+            // Show or hide the login & logout related items
+            if (CAS_AUTH.isLoggedIn) {
+                for (i = 0; i < whenLoggedInShow.length; i += 1) {
+                    $(whenLoggedInShow[i]).show();
+                }
+                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
+                    $(whenLoggedOutShow[i]).hide();
+                }
+            } else {
+                for (i = 0; i < whenLoggedInShow.length; i += 1) {
+                    $(whenLoggedInShow[i]).hide();
+                }
+                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
+                    $(whenLoggedOutShow[i]).show();
+                }
+            }
+
+        },
     };
 
 
@@ -283,5 +300,5 @@ $(document).ready(function () {
         console.log('document is ready');
     }
 
-    CAS_AUTH.checkUrlForTicket();
+    CAS_AUTH.initialPageLoad();
 });

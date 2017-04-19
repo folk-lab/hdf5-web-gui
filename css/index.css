@@ -20,6 +20,7 @@ body{
 
 #treeSectionDiv {
     overflow: auto;
+    display: none;
 }
 
 #plotControls {
@@ -43,6 +44,15 @@ body{
     margin-top:-8%;
     display: inline-block;
     vertical-align:middle
+}
+
+/* Login & Logout buttons/links/menus */
+a.menu_links {
+    cursor: pointer;
+}
+
+#loginButton, #logoutButton, #loginButtonMobile, #logoutButtonMobile {
+    display: none;
 }
 
 /* Page loading icon stuff */

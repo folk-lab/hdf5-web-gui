@@ -894,13 +894,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                 console.log(titleList);
                             }
 
-                            // If this is the root diretory, display welcome
-                            // message
-                            if (createNewTree) {
-                                DATA_DISPLAY.drawText('Welcome!',
-                                    '(click stuff on the left)',
-                                    '#3a74ad');
-                            }
                         }
                     );
                 }
@@ -1140,10 +1133,6 @@ $(document).ready(function () {
 
     // Set the height of the div containing the file browsing tree
     FILE_NAV.setTreeDivHeight();
-
-    // Communicate with the server, filling the uppermost level of the file
-    // tree
-    FILE_NAV.getRootDirectoryContents();
 
     ///////////////////////////////////////////////////////////////////////////
     // TESTING //
