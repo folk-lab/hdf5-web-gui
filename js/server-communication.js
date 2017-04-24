@@ -10,8 +10,10 @@ var AJAX_SPINNER, DATA_DISPLAY,
     {
         // h5serv has an issue with full hostnames - dumb fix here
         hdf5DataServer: window.location.protocol + '//' +
-                        window.location.hostname.replace('.maxiv.lu.se',
-                        '') + ':6050',
+                        window.location.hostname + ':6050',
+        // hdf5DataServer: window.location.protocol + '//' +
+        //                 window.location.hostname.replace('.maxiv.lu.se',
+        //                 '') + ':6050',
                         // '') + ':5000',
 
         // Send a request to the HDF5 REST server

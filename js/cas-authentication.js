@@ -254,15 +254,15 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
                 }
             );
 
-
         },
 
 
+        // Depending on login status, show the login or logout buttons and
+        // the file browsing menu
         toggleLoginButton : function () {
 
-            var i, debug = true,
-                whenLoggedInShow = ['#logoutButton', '#logoutButtonMobile',
-                    '#treeSectionDiv'],
+            var i, debug = true, whenLoggedInShow = ['#logoutButton',
+                '#logoutButtonMobile', '#treeSectionDiv'],
                 whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
 
             if (debug) {
@@ -294,11 +294,16 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = false;
+    var debug = true, x;
 
     if (debug) {
         console.log('document is ready');
     }
 
     CAS_AUTH.initialPageLoad();
+
+    x = document.cookie;
+    console.log('cookies: ');
+    console.log(x);
+
 });
