@@ -7,7 +7,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
     // The gloabl variables for this applicaiton
     CAS_AUTH =
     {
-        userName : null,
+        displayName : null,
         isLoggedIn : false,
 
         executeServerFunction : function (serverUrl) {
@@ -26,9 +26,9 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
                         }
                     }
 
-                    if (response.hasOwnProperty('attributes')) {
-                        CAS_AUTH.userName = response.attributes.displayName;
-                        console.log('First name: ' + CAS_AUTH.userName);
+                    if (response.hasOwnProperty('displayName')) {
+                        CAS_AUTH.displayName = response.displayName;
+                        console.log('First name: ' + CAS_AUTH.displayName);
                     }
 
                     return response.message;
@@ -205,52 +205,67 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
         },
 
 
-        // This function is to be called when the page is loaded - it checks
-        // the url for CAS tickets, looks for a cookie created by the HDF5
-        // server, then loads the data tree or displays a message
-        initialPageLoad : function () {
+        // This function is to be called when the page is loaded
+        //  - check the url for CAS tickets
+        //  - redirect to the CAS server to check login status
+        //  - look for a cookie created by the HDF5 server
+        //  - load the data tree or display a message
+        initialPageLoad : function (automaticLogin) {
 
             // Check for a CAS ticket in the url
             $.when(CAS_AUTH.checkUrlForTicket()).then(
                 function (isLoggedInTicket) {
 
+                    console.log('automaticLogin:   ', automaticLogin);
                     console.log('isLoggedInTicket: ', isLoggedInTicket);
 
-                    // Check if a CAS cookie created by the HDF5 server exists
-                    $.when(CAS_AUTH.cookieCheckServer()).then(
-                        function (isLoggedInCookie) {
+                    if (automaticLogin && !isLoggedInTicket) {
 
-                            console.log('isLoggedInCookie: ',
-                                isLoggedInCookie);
+                        // Redirect to CAS server
+                        //   - If not logged into CAS, login form presented
+                        //   - If logged in, immediate redirect back to
+                        //     service with a ticket in the url
+                        CAS_AUTH.loginCAS();
 
-                            // Save login information
-                            CAS_AUTH.isLoggedIn = isLoggedInCookie;
+                    } else {
+                        // Check if a CAS cookie created by the HDF5 server
+                        // exists
+                        $.when(CAS_AUTH.cookieCheckServer()).then(
+                            function (isLoggedInCookie) {
 
-                            if (isLoggedInCookie) {
+                                console.log('isLoggedInCookie: ',
+                                    isLoggedInCookie);
 
-                                // Communicate with the server, filling the
-                                // uppermost level of the file tree
-                                FILE_NAV.getRootDirectoryContents();
+                                // Save login information
+                                CAS_AUTH.isLoggedIn = isLoggedInCookie;
 
-                                // Display a message
-                                DATA_DISPLAY.drawText('Welcome ' +
-                                    CAS_AUTH.userName + '!',
-                                    '(click stuff on the left)',
-                                    '#3a74ad');
+                                // Show or hide various items
+                                CAS_AUTH.toggleLoginButton();
 
-                            } else {
+                                if (isLoggedInCookie) {
 
-                                // Display a message
-                                console.log('No CAS cookie from HDF5 server');
-                                DATA_DISPLAY.drawText('Welcome!',
-                                    '(Login to view data)', '#3a74ad');
+                                    // Communicate with the server, filling the
+                                    // uppermost level of the file tree
+                                    FILE_NAV.getRootDirectoryContents();
 
+                                    // Display a message
+                                    DATA_DISPLAY.drawText('Welcome ' +
+                                        CAS_AUTH.displayName + '!',
+                                        '(click stuff on the left)',
+                                        '#3a74ad');
+
+                                } else {
+
+                                    // Display a message - this will presumably
+                                    // never be shown if the automatic login
+                                    // is being used and is working properly
+                                    console.log('No CAS cookie');
+                                    DATA_DISPLAY.drawText('Welcome!',
+                                        '(Login to view data)', '#3a74ad');
+                                }
                             }
-
-                            // Show or hide various items
-                            CAS_AUTH.toggleLoginButton();
-                        }
-                    );
+                        );
+                    }
                 }
             );
 
@@ -288,22 +303,23 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
             }
 
         },
+
+        hello : function () {
+            console.log('hey there sailor');
+        },
     };
 
 
 // This function fires when the page is loaded
 $(document).ready(function () {
 
-    var debug = true, x;
+    var debug = true;
 
     if (debug) {
         console.log('document is ready');
     }
 
-    CAS_AUTH.initialPageLoad();
-
-    x = document.cookie;
-    console.log('cookies: ');
-    console.log(x);
-
+    CAS_AUTH.initialPageLoad(true);
 });
+
+CAS_AUTH.hello();
