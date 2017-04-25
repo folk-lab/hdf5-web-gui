@@ -116,13 +116,19 @@ var AJAX_SPINNER =
 
 // Start and stop the loading spinner when doing ajax stuff
 $(document).ajaxStart(function () {
+
     if (AJAX_SPINNER.debug) {
         console.log('ajaxStart');
     }
+
     AJAX_SPINNER.showLoadingSpinner(true);
+
 }).ajaxStop(function () {
+
     if (AJAX_SPINNER.debug) {
         console.log('ajaxStop');
     }
+
     AJAX_SPINNER.showLoadingSpinner(false);
+
 });

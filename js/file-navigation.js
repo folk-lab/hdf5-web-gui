@@ -8,10 +8,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
     // Some gloabl variables
     FILE_NAV =
     {
-        // h5serv has an issue with full hostnames - dumb quick fix
-        hdf5DataServer : window.location.protocol + '//' +
-                         window.location.hostname.replace('.maxiv.lu.se', '') +
-                         ':5000',
         jstreeDict : [],
         processSelectNodeEvent : true,
         data : null,
@@ -140,7 +136,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         findH5ObjectUrl : function (filePath, h5Path) {
 
             var debug = false, filePathPieces = [], h5PathPieces,
-                initialUrl = FILE_NAV.hdf5DataServer + '/groups';
+                initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
 
             // Chop off the file name extension
@@ -423,7 +419,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
             var debug = false, topLevelUrl = '';
 
-            return $.when(SERVER_COMMUNICATION.ajaxRequest(initialUrl)).then(
+            return $.when(SERVER_COMMUNICATION.ajaxRequest(initialUrl,
+                    false)).then(
+
                 function (response) {
 
                     var key = '';
@@ -485,6 +483,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             itemList[keyTitle].dataType);
                         console.log(keyTitle + " -> collection: " +
                             itemList[keyTitle].collection);
+                        console.log(keyTitle + " -> readable: " +
+                            itemList[keyTitle].readable);
                     }
 
                     doesNodeExist = false;
@@ -593,7 +593,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     // Do not add MXCube data files, they should be linked to
                     // from the master file
                     if (!doesNodeExist && !dotFile &&
-                            !itemList[keyTitle].mxData) {
+                            !itemList[keyTitle].mxData &&
+                            (itemList[keyTitle].readable ||
+                             itemList[keyTitle].readable === undefined)) {
 
                         FILE_NAV.jstreeDict.push({
 
@@ -749,6 +751,10 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                             linkItem.hasOwnProperty('h5domain')
                                             ? linkItem.h5domain : false
                                         ),
+                                        readable: (
+                                            linkItem.hasOwnProperty('readable')
+                                            ? linkItem.readable : undefined
+                                        ),
                                         collection: (
                                             linkItem.hasOwnProperty(
                                                 'collection'
@@ -888,13 +894,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                 console.log(titleList);
                             }
 
-                            // If this is the root diretory, display welcome
-                            // message
-                            if (createNewTree) {
-                                DATA_DISPLAY.drawText('Welcome!',
-                                    '(click stuff on the left)',
-                                    '#3a74ad');
-                            }
                         }
                     );
                 }
@@ -934,7 +933,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         getRootDirectoryContents : function () {
 
             var debug = false,
-                initialUrl = FILE_NAV.hdf5DataServer + '/groups';
+                initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will give info about the folder contents
             $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs', 'root')).then(
@@ -1134,9 +1133,6 @@ $(document).ready(function () {
 
     // Set the height of the div containing the file browsing tree
     FILE_NAV.setTreeDivHeight();
-
-    // Fill the uppermost level of the file tree
-    FILE_NAV.getRootDirectoryContents();
 
     ///////////////////////////////////////////////////////////////////////////
     // TESTING //

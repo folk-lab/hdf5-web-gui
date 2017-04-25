@@ -25,33 +25,36 @@
 
         <!-- External css -->
         <link rel="stylesheet"
-            href="../css/bootstrap/3.3.7/css/bootstrap.min.css?v=201701010000"/>
+            href="../lib/css/bootstrap/3.3.7/css/bootstrap.min.css?v=201701010000"/>
         <!--
         <link rel="stylesheet"
-            href="../css/jstree/3.2.1/themes/default-dark/style.min.css?v=201701010000"/>
+            href="../lib/css/jstree/3.2.1/themes/default-dark/style.min.css?v=201701010000"/>
         -->
         <link rel="stylesheet"
-            href="../css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
+            href="../lib/css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
         <link rel="stylesheet"
-            href="../css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css?v=201701010000">
+            href="../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css?v=201701010000">
         <link rel="stylesheet"
-            href="../css/bootstrap-slider/9.7.0/bootstrap-slider.min.css?v=201701010000">
+            href="../lib/css/bootstrap-slider/9.7.0/bootstrap-slider.min.css?v=201701010000">
 
         <!-- External javascript -->
         <script type="text/javascript"
-            src="../js/jquery/jquery-3.1.1.min.js?v=201701010000"></script>
+            src="../lib/js/jquery/jquery-3.1.1.min.js?v=201701010000"></script>
         <script type="text/javascript" defer
-            src="../js/plotly/plotly-latest.min.js?v=201701010000"></script>
+            src="../lib/js/plotly/plotly-latest.min.js?v=201701010000"></script>
         <script type="text/javascript" defer
-            src="../js/bootstrap/3.3.7/js/bootstrap.min.js?v=201701010000">
+            src="../lib/js/bootstrap/3.3.7/js/bootstrap.min.js?v=201701010000">
         </script>
         <script type="text/javascript" defer
-            src="../js/jstree/3.2.1/jstree.min.js?v=201701010000">
+            src="../lib/js/jstree/3.2.1/jstree.min.js?v=201701010000">
         </script>
         <script type="text/javascript" defer
-            src="../js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js?v=201701010000"></script>
+            src="../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js?v=201701010000"></script>
         <script type="text/javascript" defer
-            src="../js/bootstrap-slider/9.7.0/bootstrap-slider.min.js?v=201701010000">
+            src="../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js?v=201701010000">
+        </script>
+        <script type="text/javascript" defer
+            src="../lib/js/js-cookie/js.cookie.js?v=201701010000">
         </script>
 
         <!-- css for this page -->
@@ -63,6 +66,8 @@
         <!-- Javascript for this page -->
         <script type="text/javascript"
             src="../js/ajax-spinner.js?v=201702241346"></script>
+        <script type="text/javascript" defer
+            src="../js/cas-authentication.js?v=201702241346"></script>
         <script type="text/javascript" defer
             src="../js/server-communication.js?v=201702241346"></script>
         <script type="text/javascript" defer
@@ -87,16 +92,38 @@
             <div class="navmenu navmenu-default navmenu-fixed-left
                 offcanvas-sm">
 
-                <!-- Brand image and name -->
-                <div class="col-xs-7">
+                <!-- Desktop - Brand image and name -->
+                <div class="col-xs-8">
                     <a class="navmenu-brand visible-md visible-lg"
                         href="#">HDF5 Data Viewer</a>
                 </div>
 
-                <div class="col-xs-5">
-                    <a class="navbar-brand visible-md visible-lg" href="#">
+                <!--
+                <div class="col-xs-2">
+                    <a class="navmenu-brand visible-md visible-lg" href="#">
                         <img alt="Brand" id="logoImage"
-                           src="../images/maxiv-logo-101x35.png"></a>
+                           src="../images/rings-22x22.png"></a>
+                </div>
+                -->
+
+                <div class="col-xs-4" id="loginButton">
+                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
+                        onclick='CAS_AUTH.login();'>
+                        <span class="glyphicon glyphicon-log-in">
+                            <span class="hidden-xs hidden-sm hidden-md
+                                hidden-lg">Login</span>
+                        </span>
+                        Login</a>
+                </div>
+
+                <div class="col-xs-4" id="logoutButton">
+                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
+                        onclick='CAS_AUTH.logout();'>
+                        <span class="glyphicon glyphicon-log-in">
+                            <span class="hidden-xs hidden-sm hidden-md
+                                hidden-lg">Logout</span>
+                        </span>
+                        Logout</a>
                 </div>
 
                 <!-- The file browser-->
@@ -113,27 +140,46 @@
 
             </div>
 
-            <!-- The mobile menu button -->
-            <div class="navbar navbar-default navbar-fixed-top hidden-md
-                hidden-lg">
+            <!-- Mobile toggle menu button & navbar -->
+            <nav class="navbar navbar-default navbar-fixed-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
 
-                <button type="button" class="navbar-toggle"
-                    data-toggle="offcanvas" data-target=".navmenu">
-                    <span class="icon-bar">&nbsp;</span>
-                    <span class="icon-bar">&nbsp;</span>
-                    <span class="icon-bar">&nbsp;</span>
-                </button>
+                        <button type="button" class="navbar-toggle collapsed"
+                            data-toggle="offcanvas" data-target=".navmenu">
+                            <span class="icon-bar">&nbsp;</span>
+                            <span class="icon-bar">&nbsp;</span>
+                            <span class="icon-bar">&nbsp;</span>
+                        </button>
 
-                <div class="col-xs-5 col-xs-offset-2">
-                <a class="navbar-brand" href="#">HDF5 Viewer</a>
+                        <div class="col-xs-5 col-xs-offset-2">
+                            <a class="navbar-brand" href="#">HDF5 Viewer</a>
+                        </div>
+
+
+                        <div class="col-xs-4" id="loginButtonMobile">
+                            <a class="navbar-brand menu_links"
+                                onclick='CAS_AUTH.login();'>
+                                <span class="glyphicon glyphicon-log-in">
+                                    <span class="hidden-xs hidden-sm hidden-md
+                                        hidden-lg">Login</span>
+                                </span>
+                                Login</a>
+                        </div>
+
+                        <div class="col-xs-4" id="logoutButtonMobile">
+                            <a class="navbar-brand menu_links"
+                                onclick='CAS_AUTH.logout();'>
+                                <span class="glyphicon glyphicon-log-in">
+                                    <span class="hidden-xs hidden-sm hidden-md
+                                        hidden-lg">Logout</span>
+                                </span>
+                                Logout</a>
+                        </div>
+
+                    </div>
                 </div>
-
-                <div class="col-xs-5">
-                <a class="navbar-brand" href="#">
-                    <img alt="Brand" id="logoImage"
-                       src="../images/maxiv-logo-101x35.png"></a>
-                </div>
-            </div>
+            </nav>
 
             <!-- Container for plot canvas and controls -->
             <div id="plotContainer" class="container">
