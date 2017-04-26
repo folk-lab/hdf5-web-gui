@@ -56,15 +56,15 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
         // verify the ticket and create a cookie containing CAS information
         ticketCheckServer : function (queryString) {
 
-            var debug = true, loginUrl =
+            var debug = true, ticketCheckUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/ticketcheck' +
                 '?' + queryString;
 
             if (debug) {
-                console.log('loginUrl: ' + loginUrl);
+                console.log('ticketCheckUrl: ' + ticketCheckUrl);
             }
 
-            return CAS_AUTH.executeServerFunction(loginUrl);
+            return CAS_AUTH.executeServerFunction(ticketCheckUrl);
         },
 
 
@@ -89,6 +89,8 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
 
             console.log('Redirecting to CAS server');
 
+            // Construct the login url which contains the service url to which
+            // the browser will be redirected after successfully logging in
             service_url = 'https://w-jasbru-pc-0' +
                 '.maxiv.lu.se/hdf5-web-gui/html/';
             loginUrl = 'https://cas.maxiv.lu.se/cas/login?service=' +
@@ -96,6 +98,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
 
             console.log('loginUrl: ' + loginUrl);
 
+            // Redirect to the CAS server
             window.location = loginUrl;
         },
 
@@ -239,36 +242,67 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
                                 // Save login information
                                 CAS_AUTH.isLoggedIn = isLoggedInCookie;
 
-                                // Show or hide various items
-                                CAS_AUTH.toggleLoginButton();
 
-                                if (isLoggedInCookie) {
+                                $.holdReady(false);
 
-                                    // Communicate with the server, filling the
-                                    // uppermost level of the file tree
-                                    FILE_NAV.getRootDirectoryContents();
+                                $(document).ready(function () {
 
-                                    // Display a message
-                                    DATA_DISPLAY.drawText('Welcome ' +
-                                        CAS_AUTH.displayName + '!',
-                                        '(click stuff on the left)',
-                                        '#3a74ad');
+                                    // Show or hide various items
+                                    CAS_AUTH.toggleLoginButton();
 
-                                } else {
+                                    if (isLoggedInCookie) {
 
-                                    // Display a message - this will presumably
-                                    // never be shown if the automatic login
-                                    // is being used and is working properly
-                                    console.log('No CAS cookie');
-                                    DATA_DISPLAY.drawText('Welcome!',
-                                        '(Login to view data)', '#3a74ad');
-                                }
+                                        // Communicate with the server, filling
+                                        // the uppermost level of the file tree
+                                        FILE_NAV.getRootDirectoryContents();
+                                    }
+
+                                    $.when(CAS_AUTH.loadPlotlyJS()).then(
+                                        function () {
+
+                                            var messageRow1, messageRow2,
+                                                color = '#3a74ad';
+
+                                            if (isLoggedInCookie) {
+
+                                                messageRow1 = 'Welcome ' +
+                                                    CAS_AUTH.displayName + '!';
+                                                messageRow2 = '(click stuff ' +
+                                                    'on the left)';
+
+                                            } else {
+
+                                                messageRow1 = 'Welcome!';
+                                                messageRow2 = '(Login to ' +
+                                                    'view data)';
+
+                                                // This will presumably never
+                                                // be shown if the automatic
+                                                // login is being used and is
+                                                // working properly
+                                                console.log('No CAS cookie');
+                                            }
+
+                                            DATA_DISPLAY.drawText(messageRow1,
+                                                messageRow2, color);
+                                        }
+                                    );
+
+
+                                });
                             }
                         );
                     }
                 }
             );
 
+        },
+
+
+        loadPlotlyJS : function () {
+            return $.getScript(
+                "../lib/js/plotly/plotly-latest.min.js?v=201701010000"
+            );
         },
 
 
@@ -310,7 +344,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
     };
 
 
-// This function fires when the page is loaded
+// This function fires when the page is ready
 $(document).ready(function () {
 
     var debug = true;
@@ -319,7 +353,9 @@ $(document).ready(function () {
         console.log('document is ready');
     }
 
-    CAS_AUTH.initialPageLoad(true);
+    // CAS_AUTH.initialPageLoad(true);
 });
 
+// $.holdReady(true);
 CAS_AUTH.hello();
+// CAS_AUTH.initialPageLoad(true);

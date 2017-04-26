@@ -1121,14 +1121,14 @@ $(window).resize(function () {
 });
 
 
-// This function fires when the page is loaded
+// This function fires when the page is ready
 $(document).ready(function () {
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.log('document is ready');
-        $("#treeSectionDiv").addClass('debugGreen');
+        // $("#treeSectionDiv").addClass('debugGreen');
     }
 
     // Set the height of the div containing the file browsing tree

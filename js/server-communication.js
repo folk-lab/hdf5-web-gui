@@ -56,7 +56,7 @@ var AJAX_SPINNER, DATA_DISPLAY,
                         );
                     } else {
                         console.log("An error occurred: " + status +
-                            "nError: " + error);
+                            "Error: " + error);
                     }
                 },
 
