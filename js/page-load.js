@@ -44,22 +44,17 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
 
                                 PAGE_LOAD.fillBody();
 
+                                if (isLoggedInCookie) {
+                                    FILE_NAV.getRootDirectoryContents();
+                                }
 
                                 $(document).ready(function () {
 
                                     // Show or hide various items
                                     CAS_AUTH.toggleLoginButton();
 
-                                    if (isLoggedInCookie) {
-
-                                        // Communicate with the server, filling
-                                        // the uppermost level of the file tree
-                                        FILE_NAV.getRootDirectoryContents();
-                                    }
-
+                                    // Welcome!
                                     PAGE_LOAD.displayWelcomeMessage();
-
-                                    AJAX_SPINNER.showLoadingSpinner(false, 50);
                                 });
                             }
                         );
@@ -75,7 +70,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                 url: "../html/body.html",
                 success: function (data) {
                     $('body').append(data);
-
                     $.holdReady(false);
                 },
                 dataType: 'html'
@@ -89,8 +83,38 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
         },
 
 
+        loadJavaScriptScripts : function () {
+            var promises = [],
+                scripts = [
+                    "../lib/js/plotly/plotly-latest.min.js",
+                    "../lib/js/bootstrap/3.3.7/js/bootstrap.min.js",
+                    "../lib/js/jstree/3.2.1/jstree.min.js",
+                    "../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js",
+                    "../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js",
+                    "../lib/js/js-cookie/js.cookie.js",
+                    "../js/ajax-spinner.js",
+                    "../js/file-navigation.js",
+                    "../js/data-display.js",
+                    "../js/handle-dataset.js",
+                ];
+
+            scripts.forEach(function (script) {
+                promises.push($.getScript(script));
+            });
+
+            return $.when.apply(null, promises).done(function () {
+                console.log('All Done!');
+            });
+
+        },
+
+
         displayWelcomeMessage : function () {
-            $.when(CAS_AUTH.loadPlotlyJS()).then(
+
+            // PAGE_LOAD.loadJavaScriptScripts();
+
+            // $.when(CAS_AUTH.loadPlotlyJS()).then(
+            $.when(PAGE_LOAD.loadJavaScriptScripts()).then(
                 function () {
 
                     var messageRow1, messageRow2,
@@ -98,21 +122,18 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
 
                     if (CAS_AUTH.isLoggedIn) {
 
-                        messageRow1 = 'Welcome ' +
-                            CAS_AUTH.displayName + '!';
-                        messageRow2 = '(click stuff ' +
-                            'on the left)';
+                        messageRow1 = 'Welcome ' + CAS_AUTH.displayName + '!';
+                        messageRow2 = '(click stuff on the left)';
 
+                        // FILE_NAV.getRootDirectoryContents();
+
+                        AJAX_SPINNER.showLoadingSpinner(false, 50);
                     } else {
-
+                        // This will presumably never be shown if the automatic
+                        // login is being used and is working properly
                         messageRow1 = 'Welcome!';
-                        messageRow2 = '(Login to ' +
-                            'view data)';
+                        messageRow2 = '(Login to view data)';
 
-                        // This will presumably never
-                        // be shown if the automatic
-                        // login is being used and is
-                        // working properly
                         console.log('No CAS cookie');
                     }
 
@@ -122,38 +143,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
             );
         },
 
-
-        // Depending on login status, show the login or logout buttons and
-        // the file browsing menu
-        toggleLoginButton : function () {
-
-            var i, debug = true, whenLoggedInShow = ['#logoutButton',
-                '#logoutButtonMobile', '#treeSectionDiv'],
-                whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
-
-            if (debug) {
-                console.log('CAS_AUTH.isLoggedIn: ' + CAS_AUTH.isLoggedIn);
-            }
-
-
-            // Show or hide the login & logout related items
-            if (CAS_AUTH.isLoggedIn) {
-                for (i = 0; i < whenLoggedInShow.length; i += 1) {
-                    $(whenLoggedInShow[i]).show();
-                }
-                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
-                    $(whenLoggedOutShow[i]).hide();
-                }
-            } else {
-                for (i = 0; i < whenLoggedInShow.length; i += 1) {
-                    $(whenLoggedInShow[i]).hide();
-                }
-                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
-                    $(whenLoggedOutShow[i]).show();
-                }
-            }
-
-        },
 
         hello : function () {
             console.log('hey there sailor');

@@ -869,35 +869,56 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Get a list of items in a folder, then update the jstree object
         getFolderContents : function (topLevelUrl, selectedId, createNewTree) {
 
-            var debug = false;
+            var debug = true, linksUrl;
 
             if (debug) {
                 console.log('topLevelUrl: ' + topLevelUrl);
             }
 
-            // Get the url to the links available
-            $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
-                'links')).then(
+            if (createNewTree) {
+                linksUrl = topLevelUrl + '/links';
 
-                function (linksUrl) {
-
-                    if (debug) {
-                        console.log('linksUrl:  ' + linksUrl);
-                    }
-
-                    // From each link, get its title and target url
-                    $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
-                        createNewTree)).then(
-                        function (titleList) {
-
-                            if (debug) {
-                                console.log(titleList);
-                            }
-
-                        }
-                    );
+                if (debug) {
+                    console.log('linksUrl:  ' + linksUrl);
                 }
-            );
+
+                // From each link, get its title and target url
+                $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
+                    createNewTree)).then(
+                    function (titleList) {
+
+                        if (debug) {
+                            console.log(titleList);
+                        }
+
+                    }
+                );
+
+            } else {
+                // Get the url to the links available
+                $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
+                    'links')).then(
+
+                    function (linksUrl) {
+
+                        if (debug) {
+                            console.log('linksUrl:  ' + linksUrl);
+                        }
+
+                        // From each link, get its title and target url
+                        $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
+                            createNewTree)).then(
+                            function (titleList) {
+
+                                if (debug) {
+                                    console.log(titleList);
+                                }
+
+                            }
+                        );
+                    }
+                );
+            }
 
         },
 
@@ -932,7 +953,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // object
         getRootDirectoryContents : function () {
 
-            var debug = false,
+            var debug = true,
                 initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will give info about the folder contents
