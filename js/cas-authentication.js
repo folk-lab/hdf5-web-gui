@@ -2,7 +2,7 @@
 'use strict';
 
 // External libraries
-var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
+var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
 
     // The gloabl variables for this applicaiton
     CAS_AUTH =
@@ -54,11 +54,11 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
 
         // Send a CAS server ticket to the HDF5 server, which will then
         // verify the ticket and create a cookie containing CAS information
-        ticketCheckServer : function (queryString) {
+        ticketCheckServer : function (casTicket) {
 
             var debug = true, ticketCheckUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/ticketcheck' +
-                '?' + queryString;
+                '?ticket=' + casTicket;
 
             if (debug) {
                 console.log('ticketCheckUrl: ' + ticketCheckUrl);
@@ -166,16 +166,18 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
         // remove that information from the url
         checkUrlForTicket : function () {
 
-            var url, queryString, queryParams = {}, param, params, i;
+            var url, queryString, queryParams = {}, param, params, i,
+                ticketFound = false, casTicket;
 
             // Get the full url
             url = window.location.href;
             console.log('url: ' + url);
 
             // Check if it contains CAS ticket information
-            if (url.indexOf("?ticket=ST") > -1) {
+            // if (url.indexOf("?ticket=ST") > -1) {
+            if (url.indexOf("ticket=ST") > -1) {
 
-                console.log('CAS ticket found');
+                console.log('CAS ticket found?');
 
                 // Get the ticket information
                 queryString = window.location.search.substring(1);
@@ -189,12 +191,29 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
                 }
                 console.log(queryParams);
 
+                // Create a cookie containing the ticket value
+                if (queryParams.hasOwnProperty('ticket')) {
+                    casTicket = queryParams.ticket;
+                    ticketFound = true;
+                }
+
                 // Clean the url - get rid of eveything after the last /
                 window.history.pushState({}, document.title,
                     window.location.pathname);
+            }
+
+            if (ticketFound) {
 
                 // Send the ticket to the HDF5 server
-                return $.when(CAS_AUTH.ticketCheckServer(queryString)).then(
+                // The ticket check is slow (~ 200 to 1000 ms), so get some
+                // other things at the same time
+                return $.when(CAS_AUTH.ticketCheckServer(casTicket),
+                        PAGE_LOAD.loadJavaScriptScripts(2),
+                        PAGE_LOAD.loadCSSFiles(),
+                        PAGE_LOAD.fillBody(),
+                        PAGE_LOAD.loadJavaScriptScripts(1),
+                        PAGE_LOAD.loadJavaScriptScripts(3),
+                        PAGE_LOAD.loadJavaScriptScripts(4)).then(
                     function (isLoggedIn) {
                         console.log('isLoggedIn:  ' + isLoggedIn);
                         return isLoggedIn;
@@ -205,104 +224,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY,
 
             console.log('No CAS ticket found in url');
             return undefined;
-        },
-
-
-        // This function is to be called when the page is loaded
-        //  - check the url for CAS tickets
-        //  - redirect to the CAS server to check login status
-        //  - look for a cookie created by the HDF5 server
-        //  - load the data tree or display a message
-        initialPageLoad : function (automaticLogin) {
-
-            // Check for a CAS ticket in the url
-            $.when(CAS_AUTH.checkUrlForTicket()).then(
-                function (isLoggedInTicket) {
-
-                    console.log('automaticLogin:   ', automaticLogin);
-                    console.log('isLoggedInTicket: ', isLoggedInTicket);
-
-                    if (automaticLogin && !isLoggedInTicket) {
-
-                        // Redirect to CAS server
-                        //   - If not logged into CAS, login form presented
-                        //   - If logged in, immediate redirect back to
-                        //     service with a ticket in the url
-                        CAS_AUTH.loginCAS();
-
-                    } else {
-                        // Check if a CAS cookie created by the HDF5 server
-                        // exists
-                        $.when(CAS_AUTH.cookieCheckServer()).then(
-                            function (isLoggedInCookie) {
-
-                                console.log('isLoggedInCookie: ',
-                                    isLoggedInCookie);
-
-                                // Save login information
-                                CAS_AUTH.isLoggedIn = isLoggedInCookie;
-
-
-                                $.holdReady(false);
-
-                                $(document).ready(function () {
-
-                                    // Show or hide various items
-                                    CAS_AUTH.toggleLoginButton();
-
-                                    if (isLoggedInCookie) {
-
-                                        // Communicate with the server, filling
-                                        // the uppermost level of the file tree
-                                        FILE_NAV.getRootDirectoryContents();
-                                    }
-
-                                    $.when(CAS_AUTH.loadPlotlyJS()).then(
-                                        function () {
-
-                                            var messageRow1, messageRow2,
-                                                color = '#3a74ad';
-
-                                            if (isLoggedInCookie) {
-
-                                                messageRow1 = 'Welcome ' +
-                                                    CAS_AUTH.displayName + '!';
-                                                messageRow2 = '(click stuff ' +
-                                                    'on the left)';
-
-                                            } else {
-
-                                                messageRow1 = 'Welcome!';
-                                                messageRow2 = '(Login to ' +
-                                                    'view data)';
-
-                                                // This will presumably never
-                                                // be shown if the automatic
-                                                // login is being used and is
-                                                // working properly
-                                                console.log('No CAS cookie');
-                                            }
-
-                                            DATA_DISPLAY.drawText(messageRow1,
-                                                messageRow2, color);
-                                        }
-                                    );
-
-
-                                });
-                            }
-                        );
-                    }
-                }
-            );
-
-        },
-
-
-        loadPlotlyJS : function () {
-            return $.getScript(
-                "../lib/js/plotly/plotly-latest.min.js?v=201701010000"
-            );
         },
 
 
@@ -353,9 +274,7 @@ $(document).ready(function () {
         console.log('document is ready');
     }
 
-    // CAS_AUTH.initialPageLoad(true);
 });
 
 // $.holdReady(true);
 CAS_AUTH.hello();
-// CAS_AUTH.initialPageLoad(true);

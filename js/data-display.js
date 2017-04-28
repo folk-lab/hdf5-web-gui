@@ -1479,14 +1479,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     };
 
 
-// Handle image series slider events
-$('#slider').slider().on('slideStop', function (slideEvt) {
-
-    // Get an image from the series
-    HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true, false);
-});
-
-
 // Handle images series button click events
 $('.btn-number').click(function (e) {
 
@@ -1582,4 +1574,12 @@ $(document).ready(function () {
 
     // Un-hide the plotting canvas
     document.getElementById("plotCanvasDiv").style.display = "block";
+
+    // Handle image series slider events
+    $('#slider').slider().on('slideStop', function (slideEvt) {
+
+        // Get an image from the series
+        HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true, false);
+    });
+
 });

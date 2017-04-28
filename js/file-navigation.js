@@ -869,7 +869,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Get a list of items in a folder, then update the jstree object
         getFolderContents : function (topLevelUrl, selectedId, createNewTree) {
 
-            var debug = true, linksUrl;
+            var debug = false, linksUrl;
 
             if (debug) {
                 console.log('topLevelUrl: ' + topLevelUrl);
@@ -953,7 +953,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // object
         getRootDirectoryContents : function () {
 
-            var debug = true,
+            var debug = false,
                 initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will give info about the folder contents
