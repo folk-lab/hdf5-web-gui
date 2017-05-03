@@ -19,8 +19,12 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
             $.when(CAS_AUTH.checkUrlForTicket()).then(
                 function (isLoggedInTicket) {
 
-                    console.log('automaticLogin:   ', automaticLogin);
-                    console.log('isLoggedInTicket: ', isLoggedInTicket);
+                    var debug = false;
+
+                    if (debug) {
+                        console.log('automaticLogin:   ', automaticLogin);
+                        console.log('isLoggedInTicket: ', isLoggedInTicket);
+                    }
 
                     if (automaticLogin && !isLoggedInTicket) {
 
@@ -47,6 +51,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
 
                             // Welcome!
                             PAGE_LOAD.displayWelcomeMessage();
+
                         });
                     }
                 }
@@ -62,7 +67,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                 url: "../html/body.html",
                 success: function (data) {
                     $('body').append(data);
-                    $.holdReady(false);
                 },
                 dataType: 'html',
             });
@@ -70,14 +74,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
 
 
         loadCSS : function (cssFileUrl) {
-            // $.ajax({
-            //     url: "../css/index.css",
-            //     success: function (data) {
-            //         $("head").append("<style>" + data + "</style>");
-            //     },
-            //     dataType: "script",
-            //     async: true,
-            // });
             $('<link>').appendTo('head').attr({
                 type: 'text/css',
                 rel: 'stylesheet',
@@ -113,7 +109,10 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
             }
             if (group === 2) {
                 scripts = [
-                    "../lib/js/plotly/plotly-latest.min.js",
+                    // "../lib/js/plotly/1.21.2/plotly-latest.min.js",
+                    // "../lib/js/plotly/1.26.1/plotly-cartesian.min.js",
+                    // "../lib/js/plotly/1.26.1/plotly-gl3d.min.js",
+                    "../lib/js/plotly/1.26.1/plotly.min.js",
                 ];
             }
             if (group === 3) {
@@ -163,29 +162,21 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                 console.log('No CAS cookie');
             }
 
-            DATA_DISPLAY.drawText(messageRow1,
-                messageRow2, color);
+            // I can't figure out how to delay this enough so that the plotly
+            // libraries are ready, so a dumb timeout is used here.
+            // I also tried:
+            //  - load plotly from a js function - overall longer to download
+            //    and load
+            //  - use window.load instead of document load - does not seem to
+            //    work reliably
+            //  - use DOM listener - does not seem to work reliably
+            setTimeout(function () {
+                DATA_DISPLAY.drawText(messageRow1,
+                    messageRow2, color);
 
-            AJAX_SPINNER.showLoadingSpinner(false, 50);
-        },
-
-
-        hello : function () {
-            console.log('hey there sailor');
+                AJAX_SPINNER.showLoadingSpinner(false, 50);
+            }, 50);
         },
     };
 
-
-// This function fires when the page is ready
-$(document).ready(function () {
-
-    var debug = true;
-
-    if (debug) {
-        console.log('document is ready');
-    }
-});
-
-$.holdReady(true);
-PAGE_LOAD.hello();
 PAGE_LOAD.initialPageLoad(true);

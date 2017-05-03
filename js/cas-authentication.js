@@ -15,7 +15,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
             return $.when(SERVER_COMMUNICATION.ajaxRequest(serverUrl)).then(
                 function (response) {
 
-                    var debug = true, key = '';
+                    var debug = false, key = '';
 
                     if (debug) {
                         for (key in response) {
@@ -28,7 +28,9 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
 
                     if (response.hasOwnProperty('displayName')) {
                         CAS_AUTH.displayName = response.displayName;
-                        console.log('First name: ' + CAS_AUTH.displayName);
+                        if (debug) {
+                            console.log('First name: ' + CAS_AUTH.displayName);
+                        }
                     }
 
                     return response.message;
@@ -56,7 +58,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // verify the ticket and create a cookie containing CAS information
         ticketCheckServer : function (casTicket) {
 
-            var debug = true, ticketCheckUrl =
+            var debug = false, ticketCheckUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/ticketcheck' +
                 '?ticket=' + casTicket;
 
@@ -71,7 +73,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // Removes the cookie created by the HDF5 server
         logoutServer : function () {
 
-            var debug = true, logoutUrl =
+            var debug = false, logoutUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/logout';
 
             if (debug) {
@@ -166,22 +168,29 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // remove that information from the url
         checkUrlForTicket : function () {
 
-            var url, queryString, queryParams = {}, param, params, i,
-                ticketFound = false, casTicket;
+            var debug = false, url, queryString, queryParams = {}, param,
+                params, i, ticketFound = false, casTicket;
 
             // Get the full url
             url = window.location.href;
-            console.log('url: ' + url);
+
+            if (debug) {
+                console.log('url: ' + url);
+            }
 
             // Check if it contains CAS ticket information
             // if (url.indexOf("?ticket=ST") > -1) {
             if (url.indexOf("ticket=ST") > -1) {
 
-                console.log('CAS ticket found?');
+                if (debug) {
+                    console.log('CAS ticket found?');
+                }
 
                 // Get the ticket information
                 queryString = window.location.search.substring(1);
-                console.log('queryString: ' + queryString);
+                if (debug) {
+                    console.log('queryString: ' + queryString);
+                }
 
                 // Look for any parameters, save them
                 params = queryString.split("&");
@@ -189,7 +198,9 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                     param = params[i].split('=');
                     queryParams[param[0]] = param[1];
                 }
-                console.log(queryParams);
+                if (debug) {
+                    console.log(queryParams);
+                }
 
                 // Create a cookie containing the ticket value
                 if (queryParams.hasOwnProperty('ticket')) {
@@ -199,7 +210,9 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
 
                 // Clean the url - get rid of eveything after the last /
                 window.history.pushState({}, document.title,
-                    window.location.pathname);
+                    '/hdf5-web-gui/html/');
+                // window.history.pushState({}, document.title,
+                //     window.location.pathname);
             }
 
             if (ticketFound) {
@@ -207,22 +220,21 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 // Send the ticket to the HDF5 server
                 // The ticket check is slow (~ 200 to 1000 ms), so get some
                 // other things at the same time
-                return $.when(CAS_AUTH.ticketCheckServer(casTicket),
-                        PAGE_LOAD.loadJavaScriptScripts(2),
-                        PAGE_LOAD.loadCSSFiles(),
-                        PAGE_LOAD.fillBody(),
-                        PAGE_LOAD.loadJavaScriptScripts(1),
-                        PAGE_LOAD.loadJavaScriptScripts(3),
-                        PAGE_LOAD.loadJavaScriptScripts(4)).then(
+                return $.when(CAS_AUTH.ticketCheckServer(casTicket)).then(
                     function (isLoggedIn) {
-                        console.log('isLoggedIn:  ' + isLoggedIn);
+
+                        if (debug) {
+                            console.log('isLoggedIn:  ' + isLoggedIn);
+                        }
                         return isLoggedIn;
                     }
                 );
 
             }
 
-            console.log('No CAS ticket found in url');
+            if (debug) {
+                console.log('No CAS ticket found in url');
+            }
             return undefined;
         },
 
@@ -231,7 +243,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // the file browsing menu
         toggleLoginButton : function () {
 
-            var i, debug = true, whenLoggedInShow = ['#logoutButton',
+            var i, debug = false, whenLoggedInShow = ['#logoutButton',
                 '#logoutButtonMobile', '#treeSectionDiv'],
                 whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
 
@@ -258,23 +270,4 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
             }
 
         },
-
-        hello : function () {
-            console.log('hey there sailor');
-        },
     };
-
-
-// This function fires when the page is ready
-$(document).ready(function () {
-
-    var debug = true;
-
-    if (debug) {
-        console.log('document is ready');
-    }
-
-});
-
-// $.holdReady(true);
-CAS_AUTH.hello();

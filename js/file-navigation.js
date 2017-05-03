@@ -890,7 +890,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         if (debug) {
                             console.log(titleList);
                         }
-
                     }
                 );
 
@@ -909,17 +908,14 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
                             createNewTree)).then(
                             function (titleList) {
-
                                 if (debug) {
                                     console.log(titleList);
                                 }
-
                             }
                         );
                     }
                 );
             }
-
         },
 
 
@@ -957,7 +953,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will give info about the folder contents
-            $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs', 'root')).then(
+            return $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs',
+                'root')).then(
                 function (topLevelUrl) {
 
                     if (debug) {
@@ -1145,7 +1142,7 @@ $(window).resize(function () {
 // This function fires when the page is ready
 $(document).ready(function () {
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('document is ready');

@@ -143,7 +143,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Setup the empty data
             mainDataPlot = {
                 z: [],
-                type: 'heatmap',
+                // type: 'heatmap',
                 colorscale: DATA_DISPLAY.colorScale,
             };
 
@@ -1560,8 +1560,9 @@ $(window).resize(function () {
 
 // This function fires when the page is ready
 $(document).ready(function () {
+// $(window).on('load', function () {
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         console.log('document is ready');
