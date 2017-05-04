@@ -9,6 +9,9 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
     {
         displayName : null,
         isLoggedIn : false,
+        casServer : 'https://cas.maxiv.lu.se/cas',
+        serviceUrl : window.location.protocol + '//' + window.location.hostname
+            + '/hdf5-web-gui/html/app.html',
 
         executeServerFunction : function (serverUrl) {
 
@@ -87,16 +90,14 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // Log into the CAS server
         loginCAS : function () {
 
-            var service_url, loginUrl;
+            var loginUrl;
 
             console.log('Redirecting to CAS server');
 
             // Construct the login url which contains the service url to which
             // the browser will be redirected after successfully logging in
-            service_url = 'https://w-jasbru-pc-0' +
-                '.maxiv.lu.se/hdf5-web-gui/html/';
-            loginUrl = 'https://cas.maxiv.lu.se/cas/login?service=' +
-                encodeURIComponent(service_url);
+            loginUrl = CAS_AUTH.casServer + '/login?service=' +
+                encodeURIComponent(CAS_AUTH.serviceUrl);
 
             console.log('loginUrl: ' + loginUrl);
 
@@ -108,13 +109,11 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // Log out of CAS session
         logoutCAS : function () {
 
-            var service_url, logoutUrl;
+            var logoutUrl;
 
             // Logout from CAS
-            service_url = 'https://w-jasbru-pc-0' +
-                '.maxiv.lu.se/hdf5-web-gui/html/';
-            logoutUrl = 'https://cas.maxiv.lu.se/cas/logout?service=' +
-                encodeURIComponent(service_url);
+            logoutUrl = CAS_AUTH.casServer + '/logout?service=' +
+                encodeURIComponent(CAS_AUTH.serviceUrl);
 
             console.log('logoutUrl: ' + logoutUrl);
 

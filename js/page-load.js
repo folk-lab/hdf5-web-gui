@@ -15,11 +15,12 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
         //  - load the data tree or display a message
         initialPageLoad : function (automaticLogin) {
 
+            var debug = false;
+
             // Check for a CAS ticket in the url
             $.when(CAS_AUTH.checkUrlForTicket()).then(
+                // function (isLoggedInTicket, doneLoading) {
                 function (isLoggedInTicket) {
-
-                    var debug = false;
 
                     if (debug) {
                         console.log('automaticLogin:   ', automaticLogin);
@@ -45,13 +46,11 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                         // Wait until DOM items are in place before doing a few
                         // things
                         $(document).ready(function () {
-
                             // Show or hide various items
                             CAS_AUTH.toggleLoginButton();
 
                             // Welcome!
                             PAGE_LOAD.displayWelcomeMessage();
-
                         });
                     }
                 }
@@ -171,8 +170,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
             //    work reliably
             //  - use DOM listener - does not seem to work reliably
             setTimeout(function () {
-                DATA_DISPLAY.drawText(messageRow1,
-                    messageRow2, color);
+                DATA_DISPLAY.drawText(messageRow1, messageRow2, color);
 
                 AJAX_SPINNER.showLoadingSpinner(false, 50);
             }, 50);

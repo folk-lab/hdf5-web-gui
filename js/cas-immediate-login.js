@@ -3,10 +3,14 @@
 // The gloabl variables for this applicaiton
 var CAS_IMMEDIATE =
     {
+        casServer : 'https://cas.maxiv.lu.se/cas',
+        serviceUrl : window.location.protocol + '//' + window.location.hostname
+            + '/hdf5-web-gui/html/app.html',
+
         // Log into the CAS server
         loginCAS : function () {
 
-            var debug = false, service_url, loginUrl;
+            var debug = false, loginUrl;
 
             if (debug) {
                 console.log('Redirecting to CAS server');
@@ -14,10 +18,8 @@ var CAS_IMMEDIATE =
 
             // Construct the login url which contains the service url to which
             // the browser will be redirected after successfully logging in
-            service_url = 'https://w-jasbru-pc-0' +
-                '.maxiv.lu.se/hdf5-web-gui/html/app.html';
-            loginUrl = 'https://cas.maxiv.lu.se/cas/login?service=' +
-                encodeURIComponent(service_url);
+            loginUrl = CAS_IMMEDIATE.casServer + '/login?service=' +
+                encodeURIComponent(CAS_IMMEDIATE.serviceUrl);
 
             if (debug) {
                 console.log('loginUrl: ' + loginUrl);
