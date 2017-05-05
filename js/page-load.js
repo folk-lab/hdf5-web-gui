@@ -74,7 +74,15 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                 console.log('Not logged in?');
             }
 
-            DATA_DISPLAY.drawText(messageRow1, messageRow2, color);
+            // // Un-hide the plotting canvas, write a welcome message
+            // document.getElementById("plotCanvasDiv").style.display = "block";
+            // DATA_DISPLAY.drawText(messageRow1, messageRow2, color);
+
+            // document.getElementById("welcomeDiv").style.display = "block";
+            // document.getElementById("test").style.display = "block";
+            document.getElementById("welcomeDiv1").innerHTML = messageRow1;
+            document.getElementById("welcomeDiv2").innerHTML = messageRow2;
+            $("#welcomeRow").addClass('row');
 
             AJAX_SPINNER.showLoadingSpinner(false, 50);
         },

@@ -44,6 +44,13 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
 
+        showPlotCanvas : function () {
+
+            document.getElementById("plotCanvasDiv").style.display = "block";
+            document.getElementById("welcomeDiv").style.display = "none";
+
+        },
+
         // Enable or disable various image and image series controls
         enableImagePlotControls : function (enableImageControls,
             enableSeriesControls) {
@@ -113,6 +120,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         // Draw an empty plot when there is no data yet selected
         drawText : function (itemTitle, itemValue, fontColor) {
+
+            DATA_DISPLAY.showPlotCanvas();
 
             DATA_DISPLAY.enableImagePlotControls(false, false);
 
@@ -1060,6 +1069,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.displayType = 'line';
 
+            DATA_DISPLAY.showPlotCanvas();
+
             DATA_DISPLAY.calculatePlotSize();
 
             DATA_DISPLAY.drawLine(value, nodeTitle);
@@ -1071,6 +1082,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         plotData : function () {
 
             DATA_DISPLAY.displayType = 'image';
+
+            DATA_DISPLAY.showPlotCanvas();
 
             DATA_DISPLAY.calculatePlotSize();
 
@@ -1572,9 +1585,6 @@ $(document).ready(function () {
 
     // Calculate the proper plot dimensions and save them
     DATA_DISPLAY.calculatePlotSize();
-
-    // Un-hide the plotting canvas
-    document.getElementById("plotCanvasDiv").style.display = "block";
 
     // Handle image series slider events
     $('#slider').slider().on('slideStop', function (slideEvt) {
