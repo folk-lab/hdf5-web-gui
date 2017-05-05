@@ -9,6 +9,7 @@ var AJAX_SPINNER =
         loadingData : false,
         loaderVisible : false,
         ajaxLoaderTimeOut : null,
+        hideLoader : false,
 
 
         showLoadingSpinner : function (showSpinner, timeout) {
@@ -27,7 +28,7 @@ var AJAX_SPINNER =
             }
 
             // Start the loading spinner
-            if (showSpinner) {
+            if (showSpinner && !AJAX_SPINNER.hideLoader) {
 
                 if (!AJAX_SPINNER.loaderVisible) {
 

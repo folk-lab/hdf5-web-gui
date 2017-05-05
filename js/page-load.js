@@ -40,18 +40,36 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                         CAS_AUTH.isLoggedIn = isLoggedInTicket;
 
                         // Get data directory contents
-                        FILE_NAV.getRootDirectoryContents();
+                        $.when(FILE_NAV.getRootDirectoryContents()).then(
+                            function (retVal) {
 
-                        // Best tot wait until DOM items are in place before
-                        // doing a few things
-                        $(document).ready(function () {
+                                if (debug) {
+                                    console.log('getRootDirectoryContents: ' +
+                                        retVal);
+                                }
 
-                            // Show or hide various items
-                            CAS_AUTH.toggleLoginButton();
+                                // Best to wait until DOM items are in place
+                                // before doing a few things
+                                $(document).ready(function () {
 
-                            // Welcome!
-                            PAGE_LOAD.displayWelcomeMessage();
-                        });
+                                    // Show or hide various items
+                                    CAS_AUTH.toggleLoginButton();
+
+                                    // Welcome!
+                                    PAGE_LOAD.displayWelcomeMessage();
+
+                                    // Load the plotly libraries after all the
+                                    // hard stuff is done - it takes a while
+                                    // and is not needed immediately. Also add
+                                    // an extra time delay to account for the
+                                    // fancy loading animation.
+                                    setTimeout(function () {
+                                        PAGE_LOAD.loadJavaScriptScripts();
+                                    }, 600);
+                                });
+                            }
+                        );
+
                     }
                 }
             );
@@ -74,18 +92,44 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                 console.log('Not logged in?');
             }
 
-            // // Un-hide the plotting canvas, write a welcome message
-            // document.getElementById("plotCanvasDiv").style.display = "block";
-            // DATA_DISPLAY.drawText(messageRow1, messageRow2, color);
-
-            // document.getElementById("welcomeDiv").style.display = "block";
-            // document.getElementById("test").style.display = "block";
+            // Un-hide the welcome message
+            document.getElementById("welcomeRow").style.display = "block";
             document.getElementById("welcomeDiv1").innerHTML = messageRow1;
             document.getElementById("welcomeDiv2").innerHTML = messageRow2;
-            $("#welcomeRow").addClass('row');
 
+            // Stop the loader
             AJAX_SPINNER.showLoadingSpinner(false, 50);
+
+            // Keep the loader from being displayed while javascript is being
+            // secretly downloaded - shh!
+            AJAX_SPINNER.hideLoader = true;
         },
+
+
+        // Load javascript files on-demand
+        loadJavaScriptScripts : function () {
+
+            var debug = false, promises = [], scripts = [];
+
+            scripts = ["../lib/js/plotly/1.26.1/plotly.min.js"];
+
+            scripts.forEach(function (script) {
+                promises.push($.getScript(script));
+            });
+
+            return $.when.apply(null, promises).done(function () {
+                if (debug) {
+                    console.log('All done loading javascript!');
+                }
+
+                // Allow the loader to be shown again
+                AJAX_SPINNER.hideLoader = false;
+
+                return true;
+            });
+
+        },
+
     };
 
 PAGE_LOAD.initialPageLoad(true);

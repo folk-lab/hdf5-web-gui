@@ -875,6 +875,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 console.log('topLevelUrl: ' + topLevelUrl);
             }
 
+            // For the initial page load (and normal folders in general) just
+            // add '/link' to the url as it's slightly faster
             if (createNewTree) {
                 linksUrl = topLevelUrl + '/links';
 
@@ -883,17 +885,20 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 }
 
                 // From each link, get its title and target url
-                $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
+                return $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
                     createNewTree)).then(
                     function (titleList) {
 
                         if (debug) {
                             console.log(titleList);
                         }
+
+                        return true;
                     }
                 );
 
             } else {
+
                 // Get the url to the links available
                 $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
                     'links')).then(
@@ -962,7 +967,13 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
 
                     // Get the contents of this folder
-                    FILE_NAV.getFolderContents(topLevelUrl, false, true);
+                    // FILE_NAV.getFolderContents(topLevelUrl, false, true);
+                    return $.when(FILE_NAV.getFolderContents(topLevelUrl,
+                        false, true)).then(
+                        function () {
+                            return true;
+                        }
+                    );
                 }
             );
 

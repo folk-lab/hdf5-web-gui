@@ -62,7 +62,7 @@ a.menu_links {
     top: 50%;
     z-index: 1;
     width: 150px;
-        height: 150px;
+    height: 150px;
     margin: -75px 0 0 -75px;
     border: 16px solid #f3f3f3;
     border-radius: 50%;
@@ -87,9 +87,9 @@ a.menu_links {
 .animate-bottom {
     position: relative;
     -webkit-animation-name: animatebottom;
-    -webkit-animation-duration: 1s;
+    -webkit-animation-duration: 0.5s;
     animation-name: animatebottom;
-    animation-duration: 1s
+    animation-duration: 0.5s
 }
 
 @-webkit-keyframes animatebottom {
@@ -105,8 +105,8 @@ a.menu_links {
 /* Center the welcome message */
 .flex-container {
     height: 100%;
-    padding: 0;
-    margin: 0;
+    padding: 10px;
+    margin: 10px;
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;

@@ -47,32 +47,26 @@
 
         <!-- Javascript to load first -->
         <script type="text/javascript" defer
-            src="../js/server-communication.js?v=201705051255"></script>
+            src="../js/server-communication.js?v=201705052153"></script>
         <script type="text/javascript" defer
-            src="../js/file-navigation.js?v=201705051255"></script>
+            src="../js/file-navigation.js?v=201705052153"></script>
         <script type="text/javascript" defer
-            src="../js/data-display.js?v=201705051255"></script>
+            src="../js/data-display.js?v=201705052153"></script>
         <script type="text/javascript" defer
-            src="../js/ajax-spinner.js?v=201705051255"></script>
+            src="../js/ajax-spinner.js?v=201705052153"></script>
         <script type="text/javascript" defer
-            src="../js/cas-authentication.js?v=201705051255"></script>
+            src="../js/cas-authentication.js?v=201705052153"></script>
 
         <!-- page-load.js requires several libraries to be loaded first -->
         <script type="text/javascript" defer
-            src="../js/page-load.js?v=201705051255"></script>
-
-        <!-- Plotly.js is kinda big and slow to load, so start early, but after
-            page-load.js seems to work best overall -->
-        <script type="text/javascript" defer
-            src="../lib/js/plotly/1.26.1/plotly.min.js?v=201705010000"></script>
+            src="../js/page-load.js?v=201705052153"></script>
 
         <!-- More javascript for this page -->
         <script type="text/javascript" defer
-            src="../js/handle-dataset.js?v=201705051255"></script>
+            src="../js/handle-dataset.js?v=201705052153"></script>
 
         <!-- For some strange reason, loading the css AFTER all the javascript
-            seems to result in slightly faster page loads, and allows the
-            plotly libraries to be consistenly loaded faster -->
+            seems to result in slightly faster page loads -->
         <link rel="stylesheet" type="text/css"
             href="../lib/css/bootstrap/3.3.7/css/bootstrap.min.css?v=201705010000">
         <link rel="stylesheet" type="text/css"
@@ -82,9 +76,9 @@
         <link rel="stylesheet" type="text/css"
             href="../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css?v=201705010000">
         <link rel="stylesheet" type="text/css"
-            href="../css/index.css?v=201705051255">
+            href="../css/index.css?v=201705052153">
         <link rel="stylesheet" type="text/css"
-            href="../css/navmenu.css?v=201705051255">
+            href="../css/navmenu.css?v=201705052153">
 
     </head>
 
@@ -248,9 +242,9 @@
 
 
                 <!-- A simple welcome message -->
-                <div id="welcomeDiv"
-                    class="flex-container">
-                    <div id="welcomeRow">
+                <div id="welcomeDiv" class="flex-container">
+                    <div id="welcomeRow" style="display:none;"
+                        class="row animate-bottom">
                         <div id="welcomeDiv1" class="flex-item"> </div>
                         <div id="welcomeDiv2" class="flex-item"> </div>
                     </div>
