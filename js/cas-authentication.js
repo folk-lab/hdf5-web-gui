@@ -178,7 +178,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
             }
 
             // Check if it contains CAS ticket information
-            // if (url.indexOf("?ticket=ST") > -1) {
             if (url.indexOf("ticket=ST") > -1) {
 
                 if (debug) {
@@ -210,21 +209,18 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 // Clean the url - get rid of eveything after the last /
                 window.history.pushState({}, document.title,
                     '/hdf5-web-gui/html/');
-                // window.history.pushState({}, document.title,
-                //     window.location.pathname);
             }
 
             if (ticketFound) {
 
                 // Send the ticket to the HDF5 server
-                // The ticket check is slow (~ 200 to 1000 ms), so get some
-                // other things at the same time
                 return $.when(CAS_AUTH.ticketCheckServer(casTicket)).then(
                     function (isLoggedIn) {
 
                         if (debug) {
                             console.log('isLoggedIn:  ' + isLoggedIn);
                         }
+
                         return isLoggedIn;
                     }
                 );
@@ -234,6 +230,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
             if (debug) {
                 console.log('No CAS ticket found in url');
             }
+
             return undefined;
         },
 
