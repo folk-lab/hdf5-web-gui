@@ -76,14 +76,55 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
 
         },
 
+
+        initialPageLoad2 : function () {
+
+            var debug = false;
+
+            // Get data directory contents
+            $.when(FILE_NAV.getRootDirectoryContents()).then(
+                function (retVal) {
+
+                    if (debug) {
+                        console.log('getRootDirectoryContents: ' +
+                            retVal);
+                    }
+
+                    // Best to wait until DOM items are in place
+                    // before doing a few things
+                    $(document).ready(function () {
+
+                        // Show or hide various items
+                        CAS_TICKET.toggleLoginButton();
+
+                        // Welcome!
+                        PAGE_LOAD.displayWelcomeMessage();
+
+                        // Load the plotly libraries after all the
+                        // hard stuff is done - it takes a while
+                        // and is not needed immediately. Also add
+                        // an extra time delay to account for the
+                        // fancy loading animation.
+                        setTimeout(function () {
+                            PAGE_LOAD.loadJavaScriptScripts();
+                        }, 600);
+                    });
+                }
+            );
+
+        },
+
+
         // Say hello!
         displayWelcomeMessage : function () {
 
             var messageRow1, messageRow2,
                 color = '#3a74ad';
 
-            if (CAS_AUTH.isLoggedIn) {
-                messageRow1 = 'Welcome ' + CAS_AUTH.displayName + '!';
+            // if (CAS_AUTH.isLoggedIn) {
+            //     messageRow1 = 'Welcome ' + CAS_AUTH.displayName + '!';
+            if (CAS_TICKET.isLoggedIn) {
+                messageRow1 = 'Welcome ' + CAS_TICKET.displayName + '!';
                 messageRow2 = '(click stuff on the left)';
             } else {
                 messageRow1 = 'Welcome!';
@@ -132,4 +173,4 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
 
     };
 
-PAGE_LOAD.initialPageLoad(true);
+// PAGE_LOAD.initialPageLoad(true);

@@ -28,11 +28,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0,
             maximum-scale=1.0, user-scalable=no">
 
+
         <!-- jQuery is need by most things, load it first -->
-        <script type="text/javascript" defer
+        <script type="text/javascript"
             src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
 
+        <!-- Load scripts need to verify CAS ticket -->
+        <script type="text/javascript"
+            src="../js/server-communication.js?v=201705052153"></script>
+        <script type="text/javascript"
+            src="../js/cas-handle-ticket.js?v=201705052153"></script>
+
+
+        <!-- jQuery is need by most things, load it first -->
+        <!--
+        <script type="text/javascript" defer
+            src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
+        -->
         <!-- Other external javascript -->
+        <!--
         <script type="text/javascript" defer
             src="../lib/js/bootstrap/3.3.7/js/bootstrap.min.js?v=201705010000">
         </script>
@@ -44,8 +58,10 @@
         <script type="text/javascript" defer
             src="../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js?v=201705010000">
         </script>
+        -->
 
         <!-- Javascript to load first -->
+        <!--
         <script type="text/javascript" defer
             src="../js/server-communication.js?v=201705052153"></script>
         <script type="text/javascript" defer
@@ -56,17 +72,23 @@
             src="../js/ajax-spinner.js?v=201705052153"></script>
         <script type="text/javascript" defer
             src="../js/cas-authentication.js?v=201705052153"></script>
+        -->
 
         <!-- page-load.js requires several libraries to be loaded first -->
+        <!--
         <script type="text/javascript" defer
             src="../js/page-load.js?v=201705052153"></script>
+        -->
 
         <!-- More javascript for this page -->
+        <!--
         <script type="text/javascript" defer
             src="../js/handle-dataset.js?v=201705052153"></script>
+        -->
 
         <!-- For some strange reason, loading the css AFTER all the javascript
             seems to result in slightly faster page loads -->
+        <!--
         <link rel="stylesheet" type="text/css"
             href="../lib/css/bootstrap/3.3.7/css/bootstrap.min.css?v=201705010000">
         <link rel="stylesheet" type="text/css"
@@ -79,6 +101,7 @@
             href="../css/index.css?v=201705052153">
         <link rel="stylesheet" type="text/css"
             href="../css/navmenu.css?v=201705052153">
+        -->
 
     </head>
 
