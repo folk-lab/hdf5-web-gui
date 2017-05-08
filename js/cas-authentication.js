@@ -13,33 +13,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         serviceUrl : window.location.protocol + '//' + window.location.hostname
             + '/hdf5-web-gui/html/app.html',
 
-        executeServerFunction : function (serverUrl) {
-
-            return $.when(SERVER_COMMUNICATION.ajaxRequest(serverUrl)).then(
-                function (response) {
-
-                    var debug = false, key = '';
-
-                    if (debug) {
-                        for (key in response) {
-                            if (response.hasOwnProperty(key)) {
-                                console.log(key + " -> ");
-                                console.log(response[key]);
-                            }
-                        }
-                    }
-
-                    if (response.hasOwnProperty('displayName')) {
-                        CAS_AUTH.displayName = response.displayName;
-                        if (debug) {
-                            console.log('First name: ' + CAS_AUTH.displayName);
-                        }
-                    }
-
-                    return response.message;
-                }
-            );
-        },
 
         // Check if there is a cookie created by the HDF5 server that contains
         // CAS information. If so, this should mean that the user has logged
@@ -53,7 +26,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 console.log('cookieCheckUrl: ' + cookieCheckUrl);
             }
 
-            return CAS_AUTH.executeServerFunction(cookieCheckUrl);
+            return SERVER_COMMUNICATION.ajaxRequest(cookieCheckUrl);
         },
 
 
@@ -69,7 +42,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 console.log('ticketCheckUrl: ' + ticketCheckUrl);
             }
 
-            return CAS_AUTH.executeServerFunction(ticketCheckUrl);
+            return SERVER_COMMUNICATION.ajaxRequest(ticketCheckUrl);
         },
 
 
@@ -83,7 +56,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 console.log('logoutUrl: ' + logoutUrl);
             }
 
-            return CAS_AUTH.executeServerFunction(logoutUrl);
+            return SERVER_COMMUNICATION.ajaxRequest(logoutUrl);
         },
 
 
@@ -127,9 +100,21 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // page
         login : function () {
 
+            var isLoggedIn;
+
             // Check if a CAS cookie created by the HDF5 server exists
             $.when(CAS_AUTH.cookieCheckServer()).then(
-                function (isLoggedIn) {
+                function (response) {
+
+                    if (response.hasOwnProperty('displayName')) {
+                        CAS_AUTH.displayName = response.displayName;
+                        if (debug) {
+                            console.log('First name: ' +
+                                CAS_AUTH.displayName);
+                        }
+                    }
+
+                    isLoggedIn = response.message;
 
                     if (!isLoggedIn) {
 
@@ -168,7 +153,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         checkUrlForTicket : function () {
 
             var debug = false, url, queryString, queryParams = {}, param,
-                params, i, ticketFound = false, casTicket;
+                params, i, ticketFound = false, casTicket, isLoggedIn;
 
             // Get the full url
             url = window.location.href;
@@ -215,7 +200,17 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
 
                 // Send the ticket to the HDF5 server
                 return $.when(CAS_AUTH.ticketCheckServer(casTicket)).then(
-                    function (isLoggedIn) {
+                    function (response) {
+
+                        if (response.hasOwnProperty('displayName')) {
+                            CAS_AUTH.displayName = response.displayName;
+                            if (debug) {
+                                console.log('First name: ' +
+                                    CAS_AUTH.displayName);
+                            }
+                        }
+
+                        isLoggedIn = response.message;
 
                         if (debug) {
                             console.log('isLoggedIn:  ' + isLoggedIn);
