@@ -80,31 +80,38 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
 
             if (ticketFound) {
 
-                // Send the ticket to the HDF5 server
+                // Sending the ticket to the HDF5 server and having it
+                // verified can be slow, so at the same time laod some
+                // javascript.
                 return $.when(
                     CAS_TICKET.ticketCheckServer(casTicket),
                     CAS_TICKET.loadJavaScriptScripts(),
                 ).then(
                     function (response) {
 
+                        // For multiple function in $.when, the responses
+                        // are saved into an array - take the right one!
                         var ticektCheckResponse = response[0];
 
+                        // Save the login name
                         if (ticektCheckResponse.hasOwnProperty('displayName')) {
                             CAS_TICKET.displayName =
                                 ticektCheckResponse.displayName;
-                            if (debug) {
-                                console.log('First name: ' +
-                                    CAS_TICKET.displayName);
-                            }
                         }
 
-                        CAS_TICKET.isLoggedIn = ticektCheckResponse.message;
+                        // Save the login status
+                        if (ticektCheckResponse.hasOwnProperty('displayName')) {
+                            CAS_TICKET.isLoggedIn = ticektCheckResponse.message;
+                        }
 
                         if (debug) {
                             console.log('CAS_TICKET.isLoggedIn:  ' +
                                 CAS_TICKET.isLoggedIn);
+                            console.log('First name: ' +
+                                CAS_TICKET.displayName);
                         }
 
+                        // Continue with loading the rest of the page
                         if (CAS_TICKET.isLoggedIn) {
                             PAGE_LOAD.initialPageLoad2(true);
                             CAS_TICKET.loadCSSFiles();
@@ -189,14 +196,21 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // the file browsing menu
         toggleLoginButton : function () {
 
-            var i, debug = false, whenLoggedInShow = ['#logoutButton',
-                '#logoutButtonMobile', '#treeSectionDiv'],
+            var i, debug = false, alwaysShow = ['#navMenu', '#navMenuMobile'],
+                whenLoggedInShow = ['#logoutButton', '#logoutButtonMobile',
+                '#treeSectionDiv', '#plotContainer'],
                 whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
 
             if (debug) {
                 console.log('CAS_TICKET.isLoggedIn: ' + CAS_TICKET.isLoggedIn);
             }
 
+
+            // Some thigs are initially hidden, as they look ugly without
+            // the proper js and css loaded, but they should be shown
+            for (i = 0; i < alwaysShow.length; i += 1) {
+                $(alwaysShow[i]).show();
+            }
 
             // Show or hide the login & logout related items
             if (CAS_TICKET.isLoggedIn) {
