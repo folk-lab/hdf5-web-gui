@@ -2,7 +2,8 @@
 'use strict';
 
 // External libraries
-var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
+var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, AJAX_SPINNER,
+    Cookies,
 
     // The gloabl variables for this applicaiton
     CAS_TICKET =
@@ -18,7 +19,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // verify the ticket and create a cookie containing CAS information
         ticketCheckServer : function (casTicket) {
 
-            var debug = true, ticketCheckUrl =
+            var debug = false, ticketCheckUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/ticketcheck' +
                 '?ticket=' + casTicket;
 
@@ -26,7 +27,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 console.log('ticketCheckUrl: ' + ticketCheckUrl);
             }
 
-            return SERVER_COMMUNICATION.ajaxRequest(ticketCheckUrl, true);
+            return SERVER_COMMUNICATION.ajaxRequest(ticketCheckUrl, false);
         },
 
 
@@ -34,7 +35,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // remove that information from the url
         checkUrlForTicket : function () {
 
-            var debug = true, url, queryString, queryParams = {}, param,
+            var debug = false, url, queryString, queryParams = {}, param,
                 params, i, ticketFound = false, casTicket;
 
             // Get the full url
@@ -85,23 +86,22 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 // javascript.
                 return $.when(
                     CAS_TICKET.ticketCheckServer(casTicket),
-                    CAS_TICKET.loadJavaScriptScripts(),
+                    CAS_TICKET.loadJavaScriptScripts(0)
                 ).then(
                     function (response) {
 
                         // For multiple function in $.when, the responses
                         // are saved into an array - take the right one!
-                        var ticektCheckResponse = response[0];
+                        var ticketCheck = response[0];
 
                         // Save the login name
-                        if (ticektCheckResponse.hasOwnProperty('displayName')) {
-                            CAS_TICKET.displayName =
-                                ticektCheckResponse.displayName;
+                        if (ticketCheck.hasOwnProperty('displayName')) {
+                            CAS_TICKET.displayName = ticketCheck.displayName;
                         }
 
                         // Save the login status
-                        if (ticektCheckResponse.hasOwnProperty('displayName')) {
-                            CAS_TICKET.isLoggedIn = ticektCheckResponse.message;
+                        if (ticketCheck.hasOwnProperty('message')) {
+                            CAS_TICKET.isLoggedIn = ticketCheck.message;
                         }
 
                         if (debug) {
@@ -114,7 +114,6 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                         // Continue with loading the rest of the page
                         if (CAS_TICKET.isLoggedIn) {
                             PAGE_LOAD.initialPageLoad2(true);
-                            CAS_TICKET.loadCSSFiles();
                         }
 
                         return CAS_TICKET.isLoggedIn;
@@ -132,25 +131,37 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
 
 
         // Load javascript files on-demand
-        loadJavaScriptScripts : function () {
+        loadJavaScriptScripts : function (group) {
 
-            var debug = false, promises = [], scripts = [];
+            var debug = false, promises = [], scripts = [],
+                version = '?v=201705082129';
 
-            scripts = [
-                "../lib/js/bootstrap/3.3.7/js/bootstrap.min.js",
-                "../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js",
-                "../lib/js/jstree/3.2.1/jstree.min.js",
-                "../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js",
-                "../js/file-navigation.js",
-                "../js/data-display.js",
-                "../js/ajax-spinner.js",
-                "../js/cas-authentication.js",
-                "../js/page-load.js",
-                "../js/handle-dataset.js",
-            ];
+            if (group === 0) {
+                scripts = [
+                    "../lib/js/bootstrap/3.3.7/js/bootstrap.min.js",
+                    "../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js",
+                    "../lib/js/jstree/3.2.1/jstree.min.js",
+                    "../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js",
+                    "../js/file-navigation.js",
+                    "../js/data-display.js",
+                    "../js/page-load.js",
+                    "../js/ajax-spinner.js",
+                ];
+            }
+
+            if (group === 1) {
+                scripts = [
+                    "../js/cas-authentication.js",
+                    "../js/handle-dataset.js",
+                ];
+            }
+
+            if (group === 2) {
+                scripts = ["../lib/js/plotly/1.26.1/plotly.min.js"];
+            }
 
             scripts.forEach(function (script) {
-                promises.push($.getScript(script));
+                promises.push($.getScript(script + version));
             });
 
             return $.when.apply(null, promises).done(function () {
@@ -159,7 +170,9 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
                 }
 
                 // Allow the loader to be shown again
-                // AJAX_SPINNER.hideLoader = false;
+                if (group === 2) {
+                    AJAX_SPINNER.hideLoader = false;
+                }
 
                 return true;
             });
@@ -174,19 +187,29 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
             });
         },
 
-        loadCSSFiles : function () {
+        loadCSSFiles : function (group) {
 
-            var cssFiles = [
-                '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
-                '../lib/css/jstree/3.2.1/themes/default/style.min.css',
-                '../lib/css/bootstrap-slider/9.7.0/bootstrap-slider.min.css',
-                '../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css',
-                '../css/index.css',
-                '../css/navmenu.css'
-            ];
+            var cssFiles, version = '?v=201705082129';
+
+            if (group === 0) {
+                cssFiles = [
+                    '../lib/css/jstree/3.2.1/themes/default/style.min.css',
+                    '../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css',
+                    '../css/index.css',
+                    '../css/navmenu.css',
+                ];
+            }
+
+            if (group === 1) {
+                cssFiles = [
+                    '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
+                    '../lib/css/bootstrap-slider/9.7.0/' +
+                        'bootstrap-slider.min.css',
+                ];
+            }
 
             cssFiles.forEach(function (file) {
-                CAS_TICKET.loadCSS(file);
+                CAS_TICKET.loadCSS(file + version);
             });
 
         },
@@ -194,11 +217,11 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         //
         // Depending on login status, show the login or logout buttons and
         // the file browsing menu
-        toggleLoginButton : function () {
+        toggleLoginItems : function () {
 
             var i, debug = false, alwaysShow = ['#navMenu', '#navMenuMobile'],
                 whenLoggedInShow = ['#logoutButton', '#logoutButtonMobile',
-                '#treeSectionDiv', '#plotContainer'],
+                    '#treeSectionDiv', '#plotContainer'],
                 whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
 
             if (debug) {
@@ -213,19 +236,19 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
             }
 
             // Show or hide the login & logout related items
-            if (CAS_TICKET.isLoggedIn) {
-                for (i = 0; i < whenLoggedInShow.length; i += 1) {
+            for (i = 0; i < whenLoggedInShow.length; i += 1) {
+                if (CAS_TICKET.isLoggedIn) {
                     $(whenLoggedInShow[i]).show();
-                }
-                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
-                    $(whenLoggedOutShow[i]).hide();
-                }
-            } else {
-                for (i = 0; i < whenLoggedInShow.length; i += 1) {
+                } else {
                     $(whenLoggedInShow[i]).hide();
                 }
-                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
+            }
+
+            for (i = 0; i < whenLoggedOutShow.length; i += 1) {
+                if (!CAS_TICKET.isLoggedIn) {
                     $(whenLoggedOutShow[i]).show();
+                } else {
+                    $(whenLoggedOutShow[i]).hide();
                 }
             }
 

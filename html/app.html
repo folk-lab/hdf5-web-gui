@@ -28,16 +28,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0,
             maximum-scale=1.0, user-scalable=no">
 
-
         <!-- jQuery is need by most things, load it first -->
         <script type="text/javascript"
             src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
 
+        <!-- Start the loader -->
+        <script type="text/javascript"
+            src="../js/ajax-spinner.js?v=201705082129"></script>
+        <link type="text/css" rel="stylesheet"
+            href="../css/loader.css?v=201705082129">
+
         <!-- Load scripts need to verify CAS ticket -->
         <script type="text/javascript"
-            src="../js/server-communication.js?v=201705052153"></script>
+            src="../js/server-communication.js?v=201705082129"></script>
         <script type="text/javascript"
-            src="../js/cas-handle-ticket.js?v=201705052153"></script>
+            src="../js/cas-handle-ticket.js?v=201705082129"></script>
 
     </head>
 
@@ -150,8 +155,9 @@
 
 
                 <!-- Image Plot Controls -->
-                <form id="plotControls" class="container navbar-form navbar-left
-                    hidden-xs hidden-sm hidden-md hidden-lg">
+                <form id="plotControls"
+                    class="container navbar-form navbar-left"
+                    style="display:none;">
 
                     <div id="plotTypeButtonDiv" class="col-xs-4 col-md-5
                         form-group">
@@ -215,8 +221,7 @@
 
                 <!-- Image Series Control -->
                 <div id='imageSeriesControl' class="col-xs-12
-                    col-md-6 col-md-offset-2
-                    hidden-xs hidden-sm hidden-md hidden-lg" >
+                    col-md-6 col-md-offset-2" style="display:none;">
 
                     <div class="input-group col-xs-12">
 
@@ -285,12 +290,13 @@
 
                 </div>
 
-                <!-- Process loading icon -->
-                <div id="loader" ></div>
-
             </div>
 
         </div>
+
+
+        <!-- Process loading icon -->
+        <div id="loader" style="display:none;"></div>
 
     </body>
 

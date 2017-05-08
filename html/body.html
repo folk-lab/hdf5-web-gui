@@ -3,12 +3,13 @@
 
     <body>
 
+
         <!-- Use the Bootstrap layout library to set up the html -->
         <div class="container-fluid fill-height fill-width"
             id="applicationContainer">
 
-            <div class="navmenu navmenu-default navmenu-fixed-left
-                offcanvas-sm">
+            <div id="navMenu" class="navmenu navmenu-default navmenu-fixed-left
+                offcanvas-sm" style="display:none;">
 
                 <!-- Desktop - Brand image and name -->
                 <div class="col-xs-8">
@@ -45,7 +46,8 @@
                 </div>
 
                 <!-- The file browser-->
-                <div id="treeSectionDiv" class="col-xs-12">
+                <div id="treeSectionDiv" class="col-xs-12"
+                    style="display:none;">
 
                     <div class="col-xs-12 ">
                         <div class="glyphicon glyphicon-hdd">&nbsp;</div>
@@ -59,7 +61,9 @@
             </div>
 
             <!-- Mobile toggle menu button & navbar -->
-            <nav class="navbar navbar-default navbar-fixed-top">
+            <nav id="navMenuMobile"
+                class="navbar navbar-default navbar-fixed-top"
+                style="display:none;">
                 <div class="container-fluid">
                     <div class="navbar-header">
 
@@ -99,8 +103,10 @@
                 </div>
             </nav>
 
+
             <!-- Container for plot canvas and controls -->
-            <div id="plotContainer" class="container">
+            <div id="plotContainer" class="container" style="display:none;">
+
 
                 <!-- Image Plot Controls -->
                 <form id="plotControls" class="container navbar-form navbar-left
@@ -150,9 +156,21 @@
 
                 </form>
 
+
                 <!-- The plotting canvas -->
-                <div id="plotCanvasDiv" class="container col-xs-12
-                    animate-bottom" style="display:none;"></div>
+                <div id="plotCanvasDiv" class="container col-xs-12"
+                    style="display:none;"></div>
+
+
+                <!-- A simple welcome message -->
+                <div id="welcomeDiv" class="flex-container">
+                    <div id="welcomeRow" style="display:none;"
+                        class="row animate-bottom">
+                        <div id="welcomeDiv1" class="flex-item"> </div>
+                        <div id="welcomeDiv2" class="flex-item"> </div>
+                    </div>
+                </div>
+
 
                 <!-- Image Series Control -->
                 <div id='imageSeriesControl' class="col-xs-12
@@ -226,8 +244,6 @@
 
                 </div>
 
-                <!-- Process loading icon -->
-                <div id="loader" ></div>
             </div>
 
         </div>

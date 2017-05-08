@@ -19,7 +19,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // in.  Return true or false.
         cookieCheckServer : function () {
 
-            var debug = true, cookieCheckUrl =
+            var debug = false, cookieCheckUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/cookiecheck';
 
             if (debug) {
@@ -100,7 +100,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // page
         login : function () {
 
-            var isLoggedIn;
+            var debug = false, isLoggedIn;
 
             // Check if a CAS cookie created by the HDF5 server exists
             $.when(CAS_AUTH.cookieCheckServer()).then(
@@ -135,11 +135,15 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
         // server and removes the cookie created by the HDF5 server
         logout : function () {
 
+            var debug = false;
+
             // Remove the cookie created by the HDF5 server
             $.when(CAS_AUTH.logoutServer()).then(
                 function (response) {
 
-                    console.log('logout:  ' + response);
+                    if (debug) {
+                        console.log('logout:  ' + response);
+                    }
 
                     // Logout of CAS
                     CAS_AUTH.logoutCAS();

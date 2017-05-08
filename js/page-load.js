@@ -2,7 +2,8 @@
 'use strict';
 
 // External libraries
-var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
+var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, CAS_TICKET,
+    AJAX_SPINNER,
 
     // The gloabl variables for this applicaiton
     PAGE_LOAD =
@@ -64,7 +65,7 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                                     // an extra time delay to account for the
                                     // fancy loading animation.
                                     setTimeout(function () {
-                                        PAGE_LOAD.loadJavaScriptScripts();
+                                        CAS_TICKET.loadJavaScriptScripts(2);
                                     }, 600);
                                 });
                             }
@@ -90,15 +91,20 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                             retVal);
                     }
 
+                    // Load bootstrap css a bit later than the other css files,
+                    // as it seems to mess with my oh so pretty loading icon
+                    PAGE_LOAD.displayWelcomeMessage();
+                    CAS_TICKET.loadCSSFiles(1);
+
                     // Best to wait until DOM items are in place
                     // before doing a few things
                     $(document).ready(function () {
 
                         // Show or hide various items
-                        CAS_TICKET.toggleLoginButton();
+                        CAS_TICKET.toggleLoginItems();
 
                         // Welcome!
-                        PAGE_LOAD.displayWelcomeMessage();
+                        // PAGE_LOAD.displayWelcomeMessage();
 
                         // Load the plotly libraries after all the
                         // hard stuff is done - it takes a while
@@ -106,20 +112,46 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
                         // an extra time delay to account for the
                         // fancy loading animation.
                         setTimeout(function () {
-                            PAGE_LOAD.loadJavaScriptScripts();
-                        }, 600);
+                            CAS_TICKET.loadJavaScriptScripts(2);
+                        }, 550);
                     });
                 }
             );
 
+            // While the data directory contents are being fetched, get the
+            // rest of the javascript and css files
+            CAS_TICKET.loadJavaScriptScripts(1);
+            CAS_TICKET.loadCSSFiles(0);
+
+        },
+
+
+        // Get the body contents from a separate file - might save a little
+        // time? → Not much as it turns out.
+        fillBody : function () {
+            $.ajax({
+                url: "../html/body.html",
+                success: function (data) {
+                    $('body').append(data);
+                    $.holdReady(false);
+                },
+                dataType: 'html',
+            });
         },
 
 
         // Say hello!
         displayWelcomeMessage : function () {
 
-            var messageRow1, messageRow2,
-                color = '#3a74ad';
+            var messageRow1, messageRow2;
+
+            // Stop the loader
+            // AJAX_SPINNER.showLoadingSpinner(false, 50);
+            AJAX_SPINNER.doneLoadingData();
+
+            // Keep the loader from being displayed while javascript is being
+            // secretly downloaded - shh!
+            AJAX_SPINNER.hideLoader = true;
 
             // if (CAS_AUTH.isLoggedIn) {
             //     messageRow1 = 'Welcome ' + CAS_AUTH.displayName + '!';
@@ -134,40 +166,9 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, CAS_AUTH, AJAX_SPINNER,
             }
 
             // Un-hide the welcome message
-            document.getElementById("welcomeRow").style.display = "block";
             document.getElementById("welcomeDiv1").innerHTML = messageRow1;
             document.getElementById("welcomeDiv2").innerHTML = messageRow2;
-
-            // Stop the loader
-            AJAX_SPINNER.showLoadingSpinner(false, 50);
-
-            // Keep the loader from being displayed while javascript is being
-            // secretly downloaded - shh!
-            AJAX_SPINNER.hideLoader = true;
-        },
-
-
-        // Load javascript files on-demand
-        loadJavaScriptScripts : function () {
-
-            var debug = false, promises = [], scripts = [];
-
-            scripts = ["../lib/js/plotly/1.26.1/plotly.min.js"];
-
-            scripts.forEach(function (script) {
-                promises.push($.getScript(script));
-            });
-
-            return $.when.apply(null, promises).done(function () {
-                if (debug) {
-                    console.log('All done loading javascript!');
-                }
-
-                // Allow the loader to be shown again
-                AJAX_SPINNER.hideLoader = false;
-
-                return true;
-            });
+            document.getElementById("welcomeRow").style.display = "block";
 
         },
 

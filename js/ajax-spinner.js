@@ -108,7 +108,7 @@ var AJAX_SPINNER =
 
             AJAX_SPINNER.loadingData = false;
 
-            AJAX_SPINNER.showLoadingSpinner(false, 50);
+            AJAX_SPINNER.showLoadingSpinner(false, 0);
         },
 
 
@@ -133,3 +133,6 @@ $(document).ajaxStart(function () {
     AJAX_SPINNER.showLoadingSpinner(false);
 
 });
+
+// Start the spinner immediately
+AJAX_SPINNER.startLoadingData();

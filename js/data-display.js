@@ -55,27 +55,25 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         enableImagePlotControls : function (enableImageControls,
             enableSeriesControls) {
 
-            var i, debug = false,
-                classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
+            var i, debug = false, seriesMax = 0, endButtonWidth = '50px',
                 imageControlDiv = ['#plotControls'],
-                seriesControlDiv = ['#imageSeriesControl'], seriesMax = 0,
-                endButtonWidth = '50px';
+                seriesControlDiv = ['#imageSeriesControl'];
 
             // General plotting controls - show, hide
             for (i = 0; i < imageControlDiv.length; i += 1) {
                 if (enableImageControls) {
-                    $(imageControlDiv[i]).removeClass(classNames);
+                    $(imageControlDiv[i]).show();
                 } else {
-                    $(imageControlDiv[i]).addClass(classNames);
+                    $(imageControlDiv[i]).hide();
                 }
             }
 
             // Image series controls - show, hide
             for (i = 0; i < seriesControlDiv.length; i += 1) {
                 if (enableSeriesControls) {
-                    $(seriesControlDiv[i]).removeClass(classNames);
+                    $(seriesControlDiv[i]).show();
                 } else {
-                    $(seriesControlDiv[i]).addClass(classNames);
+                    $(seriesControlDiv[i]).hide();
                 }
             }
 
