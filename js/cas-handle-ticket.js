@@ -108,7 +108,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
 
                         // Continue with loading the rest of the page
                         if (CAS_TICKET.isLoggedIn) {
-                            PAGE_LOAD.initialPageLoad2(true);
+                            PAGE_LOAD.initialPageLoad(true);
                         }
 
                         return CAS_TICKET.isLoggedIn;
@@ -129,7 +129,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705090948';
+                version = '?v=201705091026';
 
             if (group === 0) {
                 scripts = [

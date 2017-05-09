@@ -2,81 +2,10 @@
 'use strict';
 
 // External libraries
-var FILE_NAV, CAS_AUTH, CAS_TICKET, AJAX_SPINNER,
+var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
 
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
-
-        // This function is to be called when the page is loaded
-        //  - check the url for CAS tickets
-        //  - redirect to the CAS server to check login status
-        //  - look for a cookie created by the HDF5 server
-        //  - load the data tree or display a message
-        //  - display a welcome message
-        //  - show hidden items
-        //  - load additional css and js in the background
-        initialPageLoad : function (automaticLogin) {
-
-            var debug = false;
-
-            // Check for a CAS ticket in the url
-            $.when(CAS_AUTH.checkUrlForTicket()).then(
-                function (isLoggedInTicket) {
-
-                    if (debug) {
-                        console.log('automaticLogin:   ', automaticLogin);
-                        console.log('isLoggedInTicket: ', isLoggedInTicket);
-                    }
-
-                    if (automaticLogin && !isLoggedInTicket) {
-
-                        // Redirect to CAS server
-                        //   - If not logged into CAS, login form presented
-                        //   - If logged in, immediate redirect back to
-                        //     service with a ticket in the url
-                        CAS_AUTH.loginCAS();
-
-                    } else {
-
-                        // Save login status
-                        CAS_AUTH.isLoggedIn = isLoggedInTicket;
-
-                        // Get data directory contents
-                        $.when(FILE_NAV.getRootDirectoryContents()).then(
-                            function (returnValue) {
-
-                                if (debug) {
-                                    console.log('getRootDirectoryContents: ' +
-                                        returnValue);
-                                }
-
-                                // Best to wait until DOM items are in place
-                                // before doing a few things
-                                $(document).ready(function () {
-
-                                    // Show or hide various items
-                                    CAS_AUTH.toggleLoginButton();
-
-                                    // Welcome!
-                                    PAGE_LOAD.displayWelcomeMessage();
-
-                                    // Load the plotly libraries after all the
-                                    // hard stuff is done - it takes a while
-                                    // and is not needed immediately. Also add
-                                    // an extra time delay to account for the
-                                    // fancy loading animation.
-                                    setTimeout(function () {
-                                        PAGE_LOAD.loadJavaScriptScripts(2);
-                                    }, 600);
-                                });
-                            }
-                        );
-
-                    }
-                }
-            );
-
-        },
 
 
         // This function is to be called when the page is loaded
@@ -85,7 +14,7 @@ var FILE_NAV, CAS_AUTH, CAS_TICKET, AJAX_SPINNER,
         //  - display a welcome message
         //  - show hidden items
         //  - load additional css and js in the background
-        initialPageLoad2 : function () {
+        initialPageLoad : function () {
 
             var debug = false;
 
@@ -149,7 +78,7 @@ var FILE_NAV, CAS_AUTH, CAS_TICKET, AJAX_SPINNER,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705090948';
+                version = '?v=201705091026';
 
             if (group === 0) {
                 scripts = [
@@ -164,7 +93,7 @@ var FILE_NAV, CAS_AUTH, CAS_TICKET, AJAX_SPINNER,
                     "../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js",
                     "../lib/js/jstree/3.2.1/jstree.min.js",
                     "../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js",
-                    "../js/cas-authentication.js",
+                    "../js/cas-login-logout.js",
                     "../js/data-display.js",
                     "../js/handle-dataset.js",
                 ];
@@ -208,7 +137,7 @@ var FILE_NAV, CAS_AUTH, CAS_TICKET, AJAX_SPINNER,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201705090948';
+            var cssFiles, version = '?v=201705091026';
 
             if (group === 0) {
                 cssFiles = [
@@ -303,5 +232,3 @@ var FILE_NAV, CAS_AUTH, CAS_TICKET, AJAX_SPINNER,
 
         },
     };
-
-// PAGE_LOAD.initialPageLoad(true);
