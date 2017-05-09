@@ -897,30 +897,31 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
                 );
 
-            } else {
-
-                // Get the url to the links available
-                $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
-                    'links')).then(
-
-                    function (linksUrl) {
-
-                        if (debug) {
-                            console.log('linksUrl:  ' + linksUrl);
-                        }
-
-                        // From each link, get its title and target url
-                        $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
-                            createNewTree)).then(
-                            function (titleList) {
-                                if (debug) {
-                                    console.log(titleList);
-                                }
-                            }
-                        );
-                    }
-                );
             }
+
+            // Get the url to the links available
+            $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
+                'links')).then(
+
+                function (linksUrl) {
+
+                    if (debug) {
+                        console.log('linksUrl:  ' + linksUrl);
+                    }
+
+                    // From each link, get its title and target url
+                    $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
+                        createNewTree)).then(
+                        function (titleList) {
+                            if (debug) {
+                                console.log(titleList);
+                            }
+
+                            return true;
+                        }
+                    );
+                }
+            );
         },
 
 

@@ -5,8 +5,8 @@
 var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
 
     // The gloabl variables for this applicaiton
-    CAS_AUTH =
-    {
+    CAS_AUTH = {
+
         displayName : null,
         isLoggedIn : false,
         casServer : 'https://cas.maxiv.lu.se/cas',
@@ -233,36 +233,4 @@ var SERVER_COMMUNICATION, FILE_NAV, DATA_DISPLAY, PAGE_LOAD, Cookies,
             return undefined;
         },
 
-
-        // Depending on login status, show the login or logout buttons and
-        // the file browsing menu
-        toggleLoginButton : function () {
-
-            var i, debug = false, whenLoggedInShow = ['#logoutButton',
-                '#logoutButtonMobile', '#treeSectionDiv'],
-                whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
-
-            if (debug) {
-                console.log('CAS_AUTH.isLoggedIn: ' + CAS_AUTH.isLoggedIn);
-            }
-
-
-            // Show or hide the login & logout related items
-            if (CAS_AUTH.isLoggedIn) {
-                for (i = 0; i < whenLoggedInShow.length; i += 1) {
-                    $(whenLoggedInShow[i]).show();
-                }
-                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
-                    $(whenLoggedOutShow[i]).hide();
-                }
-            } else {
-                for (i = 0; i < whenLoggedInShow.length; i += 1) {
-                    $(whenLoggedInShow[i]).hide();
-                }
-                for (i = 0; i < whenLoggedOutShow.length; i += 1) {
-                    $(whenLoggedOutShow[i]).show();
-                }
-            }
-
-        },
     };
