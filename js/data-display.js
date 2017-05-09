@@ -44,31 +44,36 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
 
+        showPlotCanvas : function () {
+
+            document.getElementById("plotCanvasDiv").style.display = "block";
+            document.getElementById("welcomeDiv").style.display = "none";
+
+        },
+
         // Enable or disable various image and image series controls
         enableImagePlotControls : function (enableImageControls,
             enableSeriesControls) {
 
-            var i, debug = false,
-                classNames = 'hidden-xs hidden-sm hidden-md hidden-lg',
+            var i, debug = false, seriesMax = 0, endButtonWidth = '50px',
                 imageControlDiv = ['#plotControls'],
-                seriesControlDiv = ['#imageSeriesControl'], seriesMax = 0,
-                endButtonWidth = '50px';
+                seriesControlDiv = ['#imageSeriesControl'];
 
             // General plotting controls - show, hide
             for (i = 0; i < imageControlDiv.length; i += 1) {
                 if (enableImageControls) {
-                    $(imageControlDiv[i]).removeClass(classNames);
+                    $(imageControlDiv[i]).show();
                 } else {
-                    $(imageControlDiv[i]).addClass(classNames);
+                    $(imageControlDiv[i]).hide();
                 }
             }
 
             // Image series controls - show, hide
             for (i = 0; i < seriesControlDiv.length; i += 1) {
                 if (enableSeriesControls) {
-                    $(seriesControlDiv[i]).removeClass(classNames);
+                    $(seriesControlDiv[i]).show();
                 } else {
-                    $(seriesControlDiv[i]).addClass(classNames);
+                    $(seriesControlDiv[i]).hide();
                 }
             }
 
@@ -114,6 +119,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Draw an empty plot when there is no data yet selected
         drawText : function (itemTitle, itemValue, fontColor) {
 
+            DATA_DISPLAY.showPlotCanvas();
+
             DATA_DISPLAY.enableImagePlotControls(false, false);
 
             var debug = false, data, layout, options, mainDataPlot, string1,
@@ -143,7 +150,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Setup the empty data
             mainDataPlot = {
                 z: [],
-                type: 'heatmap',
+                // type: 'heatmap',
                 colorscale: DATA_DISPLAY.colorScale,
             };
 
@@ -1060,6 +1067,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.displayType = 'line';
 
+            DATA_DISPLAY.showPlotCanvas();
+
             DATA_DISPLAY.calculatePlotSize();
 
             DATA_DISPLAY.drawLine(value, nodeTitle);
@@ -1071,6 +1080,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         plotData : function () {
 
             DATA_DISPLAY.displayType = 'image';
+
+            DATA_DISPLAY.showPlotCanvas();
 
             DATA_DISPLAY.calculatePlotSize();
 
@@ -1479,14 +1490,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     };
 
 
-// Handle image series slider events
-$('#slider').slider().on('slideStop', function (slideEvt) {
-
-    // Get an image from the series
-    HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true, false);
-});
-
-
 // Handle images series button click events
 $('.btn-number').click(function (e) {
 
@@ -1566,20 +1569,26 @@ $(window).resize(function () {
 });
 
 
-// This function fires when the page is loaded
+// This function fires when the page is ready
 $(document).ready(function () {
+// $(window).on('load', function () {
 
     var debug = false;
 
     if (debug) {
         console.log('document is ready');
-        $("#plotCanvasDiv").addClass('debugRed');
-        $("#plotControls").addClass('debugBlue');
+        // ($("#plotCanvasDiv").addClass('debugRed');
+        // ($("#plotControls").addClass('debugBlue');
     }
 
     // Calculate the proper plot dimensions and save them
     DATA_DISPLAY.calculatePlotSize();
 
-    // Un-hide the plotting canvas
-    document.getElementById("plotCanvasDiv").style.display = "block";
+    // Handle image series slider events
+    $('#slider').slider().on('slideStop', function (slideEvt) {
+
+        // Get an image from the series
+        HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true, false);
+    });
+
 });

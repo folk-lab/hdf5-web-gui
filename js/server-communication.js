@@ -3,18 +3,15 @@
 
 
 // External libraries
-var AJAX_SPINNER, DATA_DISPLAY,
+var DATA_DISPLAY,
 
     // The global variables for this applicaiton
-    SERVER_COMMUNICATION =
-    {
-        // h5serv has an issue with full hostnames - dumb fix here
+    SERVER_COMMUNICATION = {
+
+        // Assume that h5serv is running on the same server, and ssl is
+        // enabled, running on a specific port
         hdf5DataServer: window.location.protocol + '//' +
-                        window.location.hostname + ':6050',
-        // hdf5DataServer: window.location.protocol + '//' +
-        //                 window.location.hostname.replace('.maxiv.lu.se',
-        //                 '') + ':6050',
-                        // '') + ':5000',
+            window.location.hostname + ':6050',
 
         // Send a request to the HDF5 REST server
         ajaxRequest : function (url, debug) {
@@ -44,6 +41,8 @@ var AJAX_SPINNER, DATA_DISPLAY,
 
 
                 error: function (x, status, error) {
+
+                    // Unauthorized access error
                     if (x.status === 403) {
                         DATA_DISPLAY.enableImagePlotControls(false, false);
                         DATA_DISPLAY.drawText(
@@ -54,9 +53,11 @@ var AJAX_SPINNER, DATA_DISPLAY,
                         console.log(
                             'HTTP 403: Forbidden (Access is not permitted)'
                         );
+
+                    // Other errors
                     } else {
                         console.log("An error occurred: " + status +
-                            "nError: " + error);
+                            "Error: " + error);
                     }
                 },
 

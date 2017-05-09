@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <title>MAX IV HDF5 Data Viewer</title>
+
+        <!-- Basic stuff -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+        <!-- Favicon!!! -->
+        <link rel="icon" href="../images/favicon.ico?v=201705010000" >
+        <link rel="shortcut icon" type="image/x-icon"
+            href="../images/favicon.ico?v=201705010000" >
+
+        <!-- No Caching -->
+        <meta http-equiv="Cache-Control"
+            content="no-cache, no-store, must-revalidate"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <meta http-equiv="Expires" content="0"/>
+
+        <!-- Make the app fullscreen on a smartphone. -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="icon" href="../images/rings.png?v=201705010000">
+        <link rel="apple-touch-icon"
+            href="../images/rings.png?v=201705010000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0,
+            maximum-scale=1.0, user-scalable=no">
+
+        <!-- jQuery is need by most things, load it first -->
+        <script type="text/javascript"
+            src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
+
+        <!-- Load scripts need to verify CAS ticket -->
+        <script type="text/javascript"
+            src="../js/server-communication.js?v=201705091026"></script>
+        <script type="text/javascript"
+            src="../js/cas-handle-ticket.js?v=201705091026"></script>
+
+        <!-- Start the loader -->
+        <script type="text/javascript" defer
+            src="../js/ajax-spinner.js?v=201705091026"></script>
+        <link type="text/css" rel="stylesheet"
+            href="../css/loader.css?v=201705091026">
+
+    </head>
+
+
+    <body>
+
+
+        <!-- Use the Bootstrap layout library to set up the html -->
+        <div class="container-fluid fill-height fill-width"
+            id="applicationContainer">
+
+            <div id="navMenu" class="navmenu navmenu-default navmenu-fixed-left
+                offcanvas-sm" style="display:none;">
+
+                <!-- Desktop - Brand image and name -->
+                <div class="col-xs-8">
+                    <a class="navmenu-brand visible-md visible-lg"
+                        href="#">HDF5 Data Viewer</a>
+                </div>
+
+                <!--
+                <div class="col-xs-2">
+                    <a class="navmenu-brand visible-md visible-lg" href="#">
+                        <img alt="Brand" id="logoImage"
+                           src="../images/rings-22x22.png"></a>
+                </div>
+                -->
+
+                <div class="col-xs-4" id="loginButton">
+                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
+                        onclick='CAS_LOGIN_LOGOUT.login();'>
+                        <span class="glyphicon glyphicon-log-in">
+                            <span class="hidden-xs hidden-sm hidden-md
+                                hidden-lg">Login</span>
+                        </span>
+                        Login</a>
+                </div>
+
+                <div class="col-xs-4" id="logoutButton">
+                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
+                        onclick='CAS_LOGIN_LOGOUT.logout();'>
+                        <span class="glyphicon glyphicon-log-in">
+                            <span class="hidden-xs hidden-sm hidden-md
+                                hidden-lg">Logout</span>
+                        </span>
+                        Logout</a>
+                </div>
+
+                <!-- The file browser-->
+                <div id="treeSectionDiv" class="col-xs-12"
+                    style="display:none;">
+
+                    <div class="col-xs-12 ">
+                        <div class="glyphicon glyphicon-hdd">&nbsp;</div>
+                        <b>Data Storage</b>
+                    </div>
+
+                    <div class="col-xs-12 " id="jstree_div"></div>
+
+                </div>
+
+            </div>
+
+            <!-- Mobile toggle menu button & navbar -->
+            <nav id="navMenuMobile"
+                class="navbar navbar-default navbar-fixed-top"
+                style="display:none;">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+
+                        <button type="button" class="navbar-toggle collapsed"
+                            data-toggle="offcanvas" data-target=".navmenu">
+                            <span class="icon-bar">&nbsp;</span>
+                            <span class="icon-bar">&nbsp;</span>
+                            <span class="icon-bar">&nbsp;</span>
+                        </button>
+
+                        <div class="col-xs-5 col-xs-offset-2">
+                            <a class="navbar-brand" href="#">HDF5 Viewer</a>
+                        </div>
+
+
+                        <div class="col-xs-4" id="loginButtonMobile">
+                            <a class="navbar-brand menu_links"
+                                onclick='CAS_LOGIN_LOGOUT.login();'>
+                                <span class="glyphicon glyphicon-log-in">
+                                    <span class="hidden-xs hidden-sm hidden-md
+                                        hidden-lg">Login</span>
+                                </span>
+                                Login</a>
+                        </div>
+
+                        <div class="col-xs-4" id="logoutButtonMobile">
+                            <a class="navbar-brand menu_links"
+                                onclick='CAS_LOGIN_LOGOUT.logout();'>
+                                <span class="glyphicon glyphicon-log-in">
+                                    <span class="hidden-xs hidden-sm hidden-md
+                                        hidden-lg">Logout</span>
+                                </span>
+                                Logout</a>
+                        </div>
+
+                    </div>
+                </div>
+            </nav>
+
+
+            <!-- Container for plot canvas and controls -->
+            <div id="plotContainer" class="container" style="display:none;">
+
+
+                <!-- Image Plot Controls -->
+                <form id="plotControls"
+                    class="container navbar-form navbar-left"
+                    style="display:none;">
+
+                    <div id="plotTypeButtonDiv" class="col-xs-4 col-md-5
+                        form-group">
+                        <select class="form-control col-xs-12"
+                            id="selectPlotType"
+                            onchange="DATA_DISPLAY.changeType(value);" >
+                            <option value=""
+                                disabled>Plot Type</option>
+                            <option class="hidden-xs hidden-sm" value="heatmap"
+                                selected> 2D + profiles </option>
+                            <option class="hidden-md hidden-lg" value="heatmap"
+                                > 2D</option>
+                            <option value="surface">3D</option>
+                        </select>
+                    </div>
+
+                    <div id="logButtonDiv" class="col-xs-4 col-md-3">
+                        <button type="button" class="btn"
+                            id="logPlotButton"
+                            onclick='DATA_DISPLAY.toggleLogPlot()'>
+                            Log Plot?
+                        </button>
+                    </div>
+
+                    <div id="colorButtonDiv" class="form-group col-xs-4">
+                        <select id="selectColorScheme"
+                            class="form-control"
+                            onchange="DATA_DISPLAY.changeColor(value);" >
+                            <option value="" disabled>Color Scale </option>
+                            <option value="Blackbody">Blackbod</option>
+                            <option value="Bluered"  >Bluered </option>
+                            <option value="Earth"    >Earth   </option>
+                            <option value="Electric" >Electric</option>
+                            <option value="Greens"   >Greens  </option>
+                            <option value="Greys"    >Greys   </option>
+                            <option value="Hot"      >Hot     </option>
+                            <option value="Jet" selected> Jet </option>
+                            <option value="Picnic"   >Picnic  </option>
+                            <option value="Portland" >Portland</option>
+                            <option value="RdBu"     >RdBu    </option>
+                        </select>
+                    </div>
+
+                </form>
+
+
+                <!-- The plotting canvas -->
+                <div id="plotCanvasDiv" class="container col-xs-12"
+                    style="display:none;"></div>
+
+
+                <!-- A simple welcome message -->
+                <div id="welcomeDiv" class="flex-container">
+                    <div id="welcomeRow" style="display:none;"
+                        class="row animate-bottom">
+                        <div id="welcomeDiv1" class="flex-item"> </div>
+                        <div id="welcomeDiv2" class="flex-item"> </div>
+                    </div>
+                </div>
+
+
+                <!-- Image Series Control -->
+                <div id='imageSeriesControl' class="col-xs-12
+                    col-md-6 col-md-offset-2" style="display:none;">
+
+                    <div class="input-group col-xs-12">
+
+                        <!-- Start button -->
+                        <div class="input-group-btn">
+                            <button type="button" id='startButton'
+                                class="btn-labels-large btn btn-primary
+                                btn-number"  data-type="minus"
+                                onclick='HANDLE_DATASET.imageSeriesInput(0,
+                                    true, true, false);'>
+                                <span id='startButtonValue' >0</span>
+                                <div class="glyphicon glyphicon-step-backward">
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Minus button -->
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-info
+                                btn-number"  data-type="minus"
+                                data-field="quant[0]">
+                                <div class="glyphicon glyphicon-triangle-left">
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Display and enter values -->
+                        <input id="inputNumberDiv"  type="text" name="quant[0]"
+                            class="form-control input-number"
+                            value="0" min="0" max="1" maxlength="7"
+                            size="7"
+                            onchange='HANDLE_DATASET.imageSeriesInput(value,
+                                true, true, false);'>
+
+                        <!-- Plus button -->
+                        <div class="input-group-btn">
+                            <button type="button"
+                                class="btn btn-info btn-number"
+                                data-type="plus" data-field="quant[0]">
+                                <div class="glyphicon glyphicon-triangle-right">
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- End button -->
+                        <div class="input-group-btn">
+                            <button type="button" id='endButton'
+                                class="btn btn-primary btn-number"
+                                data-type="plus"
+                                onclick='HANDLE_DATASET.imageSeriesInput(
+                                    10000000, true, true, false);'>
+                                <div class="glyphicon glyphicon-step-forward">
+                                </div>
+                                <span id='endButtonValue' >0</span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div id='sliderDiv' class="col-xs-12">
+                        <input id="slider" type='text'
+                            data-slider-id='imageSeriesSlider'
+                            data-slider-tooltip='hide'
+                            data-slider-handle='square' />
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Process loading icon -->
+        <div id="loader" style="display:none;"></div>
+
+    </body>
+
+</html>

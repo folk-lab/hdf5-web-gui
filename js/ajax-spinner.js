@@ -3,14 +3,17 @@
 
 
 // The global variables for this applicaiton
-var AJAX_SPINNER =
-    {
+var AJAX_SPINNER = {
+
         debug : false,
         loadingData : false,
         loaderVisible : false,
         ajaxLoaderTimeOut : null,
+        hideLoader : false,
 
 
+        // show or hide the spinner.  Use timeouts and other tricks to try
+        // and avoid jerkiness or quick flashes of the loader
         showLoadingSpinner : function (showSpinner, timeout) {
 
             if (timeout === undefined) {
@@ -27,7 +30,7 @@ var AJAX_SPINNER =
             }
 
             // Start the loading spinner
-            if (showSpinner) {
+            if (showSpinner && !AJAX_SPINNER.hideLoader) {
 
                 if (!AJAX_SPINNER.loaderVisible) {
 
@@ -107,7 +110,7 @@ var AJAX_SPINNER =
 
             AJAX_SPINNER.loadingData = false;
 
-            AJAX_SPINNER.showLoadingSpinner(false, 50);
+            AJAX_SPINNER.showLoadingSpinner(false, 0);
         },
 
 
@@ -132,3 +135,7 @@ $(document).ajaxStart(function () {
     AJAX_SPINNER.showLoadingSpinner(false);
 
 });
+
+
+// Start the spinner immediately when this file is loaded
+AJAX_SPINNER.startLoadingData();

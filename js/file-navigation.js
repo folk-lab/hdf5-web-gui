@@ -869,10 +869,34 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Get a list of items in a folder, then update the jstree object
         getFolderContents : function (topLevelUrl, selectedId, createNewTree) {
 
-            var debug = false;
+            var debug = false, linksUrl;
 
             if (debug) {
                 console.log('topLevelUrl: ' + topLevelUrl);
+            }
+
+            // For the initial page load (and normal folders in general) just
+            // add '/link' to the url as it's slightly faster
+            if (createNewTree) {
+                linksUrl = topLevelUrl + '/links';
+
+                if (debug) {
+                    console.log('linksUrl:  ' + linksUrl);
+                }
+
+                // From each link, get its title and target url
+                return $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
+                    createNewTree)).then(
+                    function (titleList) {
+
+                        if (debug) {
+                            console.log(titleList);
+                        }
+
+                        return true;
+                    }
+                );
+
             }
 
             // Get the url to the links available
@@ -889,16 +913,15 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     $.when(FILE_NAV.getListOfLinks(linksUrl, selectedId,
                         createNewTree)).then(
                         function (titleList) {
-
                             if (debug) {
                                 console.log(titleList);
                             }
 
+                            return true;
                         }
                     );
                 }
             );
-
         },
 
 
@@ -936,7 +959,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will give info about the folder contents
-            $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs', 'root')).then(
+            return $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs',
+                'root')).then(
                 function (topLevelUrl) {
 
                     if (debug) {
@@ -944,7 +968,13 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
 
                     // Get the contents of this folder
-                    FILE_NAV.getFolderContents(topLevelUrl, false, true);
+                    // FILE_NAV.getFolderContents(topLevelUrl, false, true);
+                    return $.when(FILE_NAV.getFolderContents(topLevelUrl,
+                        false, true)).then(
+                        function () {
+                            return true;
+                        }
+                    );
                 }
             );
 
@@ -1121,14 +1151,14 @@ $(window).resize(function () {
 });
 
 
-// This function fires when the page is loaded
+// This function fires when the page is ready
 $(document).ready(function () {
 
     var debug = false;
 
     if (debug) {
         console.log('document is ready');
-        $("#treeSectionDiv").addClass('debugGreen');
+        // $("#treeSectionDiv").addClass('debugGreen');
     }
 
     // Set the height of the div containing the file browsing tree

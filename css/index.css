@@ -55,41 +55,13 @@ a.menu_links {
     display: none;
 }
 
-/* Page loading icon stuff */
-#loader {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 1;
-    width: 150px;
-        height: 150px;
-    margin: -75px 0 0 -75px;
-    border: 16px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 16px solid #3498db;
-    width: 120px;
-    height: 120px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-}
-
-@-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Add animation to "page content" */
+/* Add animation to welcome message */
 .animate-bottom {
     position: relative;
     -webkit-animation-name: animatebottom;
-    -webkit-animation-duration: 1s;
+    -webkit-animation-duration: 0.5s;
     animation-name: animatebottom;
-    animation-duration: 1s
+    animation-duration: 0.5s
 }
 
 @-webkit-keyframes animatebottom {
@@ -102,7 +74,39 @@ a.menu_links {
     to{ bottom:0; opacity:1 }
 }
 
-/* input range */
+/* Center the welcome message */
+.flex-container {
+    height: 100%;
+    padding: 10px;
+    margin: 10px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.row {
+    width: auto;
+    border: solid #3a74ad 5px;
+}
+
+.flex-item {
+    padding: 5px;
+    width: 300px;
+    height: 40px;
+    margin: 10px;
+    line-height: 40px;
+    font-weight: bold;
+    font-size: 1.5em;
+    text-align: center;
+    color: #3a74ad;
+}
+
+
+/* image series input range */
 #imageSeriesSlider .slider-selection {
     background: #8283FF;
 }
@@ -134,6 +138,8 @@ a.menu_links {
     text-align:         left;
     width:              100px;
 }
+
+/* navbar stuff */
 @media (max-width: 978px) {
     .container, .container-fluid {
         padding:0;
