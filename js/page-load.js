@@ -2,11 +2,12 @@
 'use strict';
 
 // External libraries
-var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
+var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
 
+        useDarkTheme : false,
 
         // This function is to be called when the page is loaded
         //  - assumes the url has already been checked for a CAS ticket
@@ -96,6 +97,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
                     "../js/cas-login-logout.js",
                     "../js/data-display.js",
                     "../js/handle-dataset.js",
+                    "../js/theme-toggle.js",
                 ];
             }
 
@@ -153,6 +155,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
             if (group === 1) {
                 cssFiles = [
                     '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
+                    '../css/theme-toggle.css',
                 ];
             }
 
@@ -231,4 +234,5 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
             }
 
         },
+
     };
