@@ -144,6 +144,8 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
             if (group === 0) {
                 cssFiles = [
                     '../lib/css/jstree/3.2.1/themes/default/style.min.css',
+                    '../lib/css/jstree/3.2.1/themes/default-dark/' +
+                        'style.min.css',
                     '../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css',
                     '../lib/css/bootstrap-slider/9.7.0/' +
                         'bootstrap-slider.min.css',

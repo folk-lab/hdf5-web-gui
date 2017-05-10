@@ -464,7 +464,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
@@ -633,11 +633,11 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     {
                         'core' : {
                             'data' : FILE_NAV.jstreeDict,
-                            "themes": {
+                            'themes' : {
                                 name : (FILE_NAV.useDarkTheme === true ?
                                         'default-dark' : 'default'),
-                                "dots": true,
-                                "icons": true
+                                'dots' : true,
+                                'icons' : true
                             },
                         },
                         // "plugins": ["checkbox"],
