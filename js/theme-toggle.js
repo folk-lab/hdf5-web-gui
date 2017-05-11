@@ -31,7 +31,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
             // Toggle the theme for various parts of the application
             THEME_TOGGLE.pageElementsThemeToggle(THEME_TOGGLE.useDarkTheme);
             THEME_TOGGLE.fileTreeThemeToggle(THEME_TOGGLE.useDarkTheme);
-            // THEME_TOGGLE.plottingThemeToggle(THEME_TOGGLE.useDarkTheme);
+            THEME_TOGGLE.plottingThemeToggle(THEME_TOGGLE.useDarkTheme);
 
         },
 
@@ -96,12 +96,19 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
             DATA_DISPLAY.useDarkTheme = useDarkTheme;
 
             // Restyle the plot, if necessary
-            Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-                "paper_bgcolor" : (useDarkTheme === true ? "#333333" :
-                        "#ffffff"),
-                "plot_bgcolor" : (useDarkTheme === true ? "#333333" :
-                        "#ffffff"),
-            });
+
+            if (DATA_DISPLAY.plotCanvasDiv.layout) {
+                if (debug) {
+                    console.log('calling Plotly.relayout');
+                }
+
+                Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                    "paper_bgcolor" : (useDarkTheme === true ? "#181817" :
+                            "#ffffff"),
+                    "plot_bgcolor" : (useDarkTheme === true ? "#181817" :
+                            "#ffffff"),
+                });
+            }
 
         }
 

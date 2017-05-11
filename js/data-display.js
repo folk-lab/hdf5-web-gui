@@ -159,15 +159,15 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             // The layout of the plotting canvas and axes.
             layout = {
-                title: '',
-                showlegend: false,
-                autosize: false,
-                width: DATA_DISPLAY.plotWidth,
-                height: 300,
-                paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
-                plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                "title" : '',
+                "showlegend" : false,
+                "autosize" : false,
+                "width" : DATA_DISPLAY.plotWidth,
+                "height" : 300,
+                "paper_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
+                        '#181817' : '#ffffff'),
+                "plot_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
+                        '#181817' : '#ffffff'),
 
                 xaxis: {
                     title: '',
@@ -264,9 +264,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 hovermode: 'closest',
                 bargap: 0,
                 paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 margin: {
                     l: 65,
                     r: 50,
@@ -363,9 +363,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 hovermode: 'closest',
                 bargap: 0,
                 paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 margin: plotMargins,
                 scene: {
                     xaxis: {
@@ -932,9 +932,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 hovermode: 'closest',
                 bargap: 0,
                 paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
 
                 xaxis: {
                     title: 'x',
@@ -1571,14 +1571,11 @@ $(window).resize(function () {
 
 // This function fires when the page is ready
 $(document).ready(function () {
-// $(window).on('load', function () {
 
     var debug = false;
 
     if (debug) {
         console.log('document is ready');
-        // ($("#plotCanvasDiv").addClass('debugRed');
-        // ($("#plotControls").addClass('debugBlue');
     }
 
     // Calculate the proper plot dimensions and save them
