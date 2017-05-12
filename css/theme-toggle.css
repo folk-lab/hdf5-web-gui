@@ -1,7 +1,16 @@
 .darkTheme {
     background: #181817;
+    color: #999;
 }
 
+.navmenu-inverse {
+    color: #999;
+}
+
+.jstree-default-dark {
+    background: #222;
+    color: #999;
+}
 .modebar {
     background: #181817;
 }
