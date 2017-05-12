@@ -1,35 +1,44 @@
-.darkTheme {
-    background: #181817;
-    color: #999;
-}
-
-.navmenu-inverse {
-    color: #999;
-}
-
-.jstree-default-dark {
-    background: #222;
-    color: #999;
-}
-.modebar {
-    background: #181817;
-}
-/*
-body {
-    -webkit-transition: all 1s ease;
-    -moz-transition: all 1s ease;
-    -o-transition: all 1s ease;
-    -ms-transition: all 1s ease;
-    transition: all 1s ease;
-}
-*/
-/*
-body, #jstree_div {
-*/
+/* Animate the theme transitions */
 * {
     -webkit-transition: background-color 0.5s ease;
     -moz-transition: background-color 0.5s ease;
     -o-transition: background-color 0.5s ease;
     -ms-transition: background-color 0.5s ease;
     transition: background-color 0.5s ease;
+}
+
+/* For the page body and general items */
+.darkTheme {
+    background: #181817;
+    color: #999;
+}
+
+/* For buttons */
+.btn-darkTheme {
+    color: #ffffff;
+    background-color: #777;
+    border-color: #555;
+ }
+
+.btn-darkTheme:hover, .btn-darkTheme:focus, .btn-darkTheme:active,
+.btn-darkTheme.active, .open .dropdown-toggle.btn-darkTheme {
+    color: #ffffff;
+    background-color: #888;
+    border-color: #444;
+}
+
+/* Modify the navmenu dark theme */
+.navmenu-inverse {
+    color: #999;
+}
+
+/* Modify the jstree dark theme */
+.jstree-default-dark {
+    background: #222;
+    color: #999;
+}
+
+/* For the plotly plotting canvas */
+.modebar {
+    background: #181817;
 }

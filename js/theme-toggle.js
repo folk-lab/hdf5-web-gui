@@ -48,12 +48,22 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
             if (useDarkTheme) {
 
                 $("body").addClass('darkTheme');
+
+                $("#logPlotButton").addClass('btn-darkTheme');
+                $("#selectColorScheme").addClass('btn-darkTheme');
+                $("#selectPlotType").addClass('btn-darkTheme');
+
                 $("#navMenu").addClass('navmenu-inverse');
                 $("#navMenu").removeClass('navmenu-default');
 
             } else {
 
                 $("body").removeClass('darkTheme');
+
+                $("#logPlotButton").removeClass('btn-darkTheme');
+                $("#selectColorScheme").removeClass('btn-darkTheme');
+                $("#selectPlotType").removeClass('btn-darkTheme');
+
                 $("#navMenu").removeClass('navmenu-inverse');
                 $("#navMenu").addClass('navmenu-default');
 
