@@ -275,9 +275,25 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 },
                 xaxis: {
                     title: 'array index',
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
                 yaxis: {
                     title: 'values',
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 }
             };
 
@@ -368,14 +384,40 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         '#181817' : '#ffffff'),
                 margin: plotMargins,
                 scene: {
-                    xaxis: {
-                        title: 'x',
+                    "xaxis" : {
+                        "title" : "x",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
                     },
-                    zaxis: {
-                        title: 'z blah',
-                        type: 'linear',
-                        // type: 'log',
-                        autorange: true
+                    "yaxis" : {
+                        "title" : "y",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                    },
+                    "zaxis" : {
+                        "title" : "z",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "type" : "linear",
+                        "autorange" : true
                     }
                 }
             };
@@ -936,31 +978,63 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
 
-                xaxis: {
-                    title: 'x',
+                "xaxis" : {
+                    "title" : "x",
                     domain: [0, 0.85],
                     showgrid: false,
                     zeroline: false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
 
-                yaxis: {
-                    title: 'y',
+                "yaxis" : {
+                    "title" : "y",
                     domain: [0, 0.85],
                     showgrid: false,
                     // autorange : "reversed",
                     zeroline: false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
 
-                xaxis2: {
+                "xaxis2" : {
                     domain: [0.85, 1],
                     showgrid: false,
-                    zeroline: false
+                    zeroline: false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
 
-                yaxis2: {
+                "yaxis2" : {
                     domain: [0.85, 1],
                     showgrid: false,
-                    zeroline: false
+                    zeroline: false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
             };
 
