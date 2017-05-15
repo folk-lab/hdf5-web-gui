@@ -34,6 +34,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         imageZoomSection : false,
         usingOriginalImage : true,
 
+        lineValues : [],
+        lineTitle : '',
+
         loadedImageRange : undefined,
         loadedImageRangeSize : [0, 0],
         loadedImageSize : undefined,
@@ -356,9 +359,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     zauto : true,
 
                     colorbar : {
-                        title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
-                        titleside : 'bottom',
-                        exponentformat : 'power',
+                        "title" : (DATA_DISPLAY.plotLogValues ? "10^" : ""),
+                        "titleside" : "bottom",
+                        "exponentformat" : "power",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
                     },
                 }
             ];
@@ -383,7 +394,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
                 margin: plotMargins,
-                scene: {
+                "scene" : {
                     "xaxis" : {
                         "title" : "x",
                         "titlefont" : {
@@ -606,7 +617,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Check if an event is a zoom event
         isZoomEvent : function (eventdata) {
 
-            var debug = false, i = 0, zoomEvent = false,
+            var debug = true, i = 0, zoomEvent = false,
                 rangeKeys = ['xaxis.range[0]', 'xaxis.range[1]',
                     'yaxis.range[0]', 'yaxis.range[1]'],
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
@@ -794,7 +805,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 2D image
         handle2DZoom : function (eventdata) {
 
-            var debug = false, i = 0, ranges = [-1, -1, -1, -1],
+            var debug = true, i = 0, ranges = [-1, -1, -1, -1],
                 promises = [], newImageFetched = false, resetZoomEvent = false,
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
 
@@ -921,9 +932,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 colorscale: DATA_DISPLAY.colorScale,
                 showscale : !DATA_DISPLAY.mobileDisplay,
                 colorbar : {
-                    title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
-                    titleside : 'bottom',
-                    exponentformat : 'power',
+                    "title" : (DATA_DISPLAY.plotLogValues ? "10^" : ""),
+                    "titleside" : "bottom",
+                    "exponentformat" : "power",
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
             };
 
@@ -980,9 +999,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
                 "xaxis" : {
                     "title" : "x",
-                    domain: [0, 0.85],
-                    showgrid: false,
-                    zeroline: false,
+                    "domain" : [0, 0.85],
+                    "showgrid" : false,
+                    "zeroline" : false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
                                 "#999" : "#000000"),
@@ -995,10 +1014,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
                 "yaxis" : {
                     "title" : "y",
-                    domain: [0, 0.85],
-                    showgrid: false,
-                    // autorange : "reversed",
-                    zeroline: false,
+                    "domain" : [0, 0.85],
+                    "showgrid" : false,
+                    "zeroline": false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
                                 "#999" : "#000000"),
@@ -1010,9 +1028,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 },
 
                 "xaxis2" : {
-                    domain: [0.85, 1],
-                    showgrid: false,
-                    zeroline: false,
+                    "domain" : [0.85, 1],
+                    "showgrid" : false,
+                    "zeroline" : false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
                                 "#999" : "#000000"),
@@ -1024,9 +1042,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 },
 
                 "yaxis2" : {
-                    domain: [0.85, 1],
-                    showgrid: false,
-                    zeroline: false,
+                    "domain" : [0.85, 1],
+                    "showgrid" : false,
+                    "zeroline" : false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
                                 "#999" : "#000000"),
@@ -1145,7 +1163,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.calculatePlotSize();
 
-            DATA_DISPLAY.drawLine(value, nodeTitle);
+            DATA_DISPLAY.lineValues = value;
+            DATA_DISPLAY.lineTitle = nodeTitle;
+
+            DATA_DISPLAY.drawLine(DATA_DISPLAY.lineValues,
+                DATA_DISPLAY.lineTitle);
 
         },
 
@@ -1209,9 +1231,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     zmin: [profiles.zMin],
                     zmax: [profiles.zMax],
                     colorbar : [{
-                        title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
-                        titleside : 'bottom',
-                        exponentformat : 'power',
+                        "title" : (DATA_DISPLAY.plotLogValues ? "10^" : ""),
+                        "titleside" : "bottom",
+                        "exponentformat" : "power",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
                     }],
                 }, [0]);
 
@@ -1230,18 +1260,18 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         // Also, the domain needs to be set again, not sure
                         // why...
                         Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-                            xaxis: {
-                                range : [
+                            "xaxis" : {
+                                "range" : [
                                     DATA_DISPLAY.imageZoomSection[0] - 0.5,
-                                    DATA_DISPLAY.imageZoomSection[1]] - 0.5,
-                                domain : [0, 0.85]
+                                    DATA_DISPLAY.imageZoomSection[1] - 0.5],
+                                "domain" : [0, 0.85]
                             },
 
-                            yaxis: {
-                                range : [
+                            "yaxis": {
+                                "range" : [
                                     DATA_DISPLAY.imageZoomSection[2] - 0.5,
-                                    DATA_DISPLAY.imageZoomSection[3]] - 0.5,
-                                domain : [0, 0.85]
+                                    DATA_DISPLAY.imageZoomSection[3] - 0.5],
+                                "domain" : [0, 0.85]
                             },
                         });
                     }
@@ -1305,6 +1335,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         // Change the color map
         changeColor : function (colorscale) {
+
+            var debug = false;
+
+            if (debug) {
+                console.log('colorscale: ' + colorscale);
+            }
 
             if (colorscale !== '') {
 
