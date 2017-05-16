@@ -7,24 +7,24 @@
     transition: background-color 0.5s ease;
 }
 
-/* For the page body and general items */
+/* Page body and general items */
 .darkTheme {
-    background: #181817;
     color: #999;
+    background: #181817;
 }
 
-/* For buttons */
+/* buttons */
 .btn-darkTheme {
-    color: #ffffff;
-    background-color: #777;
-    border-color: #555;
+    color: #a9a9a9;
+    border-color: #080808;
+    background-color: #2f2f2f;
  }
 
 .btn-darkTheme:hover, .btn-darkTheme:focus, .btn-darkTheme:active,
 .btn-darkTheme.active, .open .dropdown-toggle.btn-darkTheme {
     color: #ffffff;
-    background-color: #888;
-    border-color: #444;
+    border-color: #080808;
+    background-color: #222;
 }
 
 /* Modify the navmenu dark theme */
