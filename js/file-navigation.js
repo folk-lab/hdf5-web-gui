@@ -639,7 +639,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                 "dots" : true,
                                 "icons" : true,
 
-                                "responsive" : true,
+                                // "responsive" : true,
                                 "ellipsis" : true,
                             },
 

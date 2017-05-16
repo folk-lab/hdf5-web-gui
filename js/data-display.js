@@ -9,6 +9,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     DATA_DISPLAY =
     {
         plotCanvasDiv : document.getElementById('plotCanvasDiv'),
+        plotExists : false,
         colorScale : 'Jet',
         plotLogValues : false,
         plotType : 'heatmap',
@@ -48,10 +49,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         showPlotCanvas : function () {
-
             document.getElementById("plotCanvasDiv").style.display = "block";
             document.getElementById("welcomeDiv").style.display = "none";
-
         },
 
         // Enable or disable various image and image series controls
@@ -231,6 +230,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 ).then(
                 AJAX_SPINNER.doneLoadingData()
             );
+            DATA_DISPLAY.plotExists = true;
 
         },
 
@@ -324,6 +324,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             Plotly.newPlot(DATA_DISPLAY.plotCanvasDiv, data, layout,
                 options).then(AJAX_SPINNER.doneLoadingData()
                 );
+            DATA_DISPLAY.plotExists = true;
 
         },
 
@@ -458,6 +459,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 options).then(
                 AJAX_SPINNER.doneLoadingData()
             );
+            DATA_DISPLAY.plotExists = true;
 
             // Refill the profile histograms when a zoom event occurs
             // Why isn't this properly done already in the plotly library?!
@@ -1080,6 +1082,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 options).then(
                 AJAX_SPINNER.doneLoadingData()
             );
+            DATA_DISPLAY.plotExists = true;
 
             // Refill the profile histograms when a zoom event occurs
             // Why isn't this properly done already in the plotly library?!

@@ -122,7 +122,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
             // Set theme for plotting canvases
             DATA_DISPLAY.useDarkTheme = useDarkTheme;
 
-            // Changec color choice - Hot looks nicer in a dark theme I think
+            // Changec color choice - 'Hot' looks nicer in a dark theme I think
             if (DATA_DISPLAY.useDarkTheme) {
                 DATA_DISPLAY.colorScale = 'Hot';
             } else {
@@ -130,9 +130,10 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
             }
             $('#selectColorScheme').val(DATA_DISPLAY.colorScale);
 
-            // The easiest solution seems to be just to redraw everything -
-            // slower, but it avoids many issues..
+            // The easiest solution for images and lines seems to be just to
+            // redraw everything - slower, but it avoids many issues..
             if (DATA_DISPLAY.displayType === 'image') {
+
                 DATA_DISPLAY.showPlotCanvas();
                 DATA_DISPLAY.calculatePlotSize();
                 if (DATA_DISPLAY.plotDimension === 2) {
@@ -140,22 +141,29 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 } else {
                     DATA_DISPLAY.draw3DPlot();
                 }
-
+            // Lines
             } else if (DATA_DISPLAY.displayType === 'line') {
+
                 DATA_DISPLAY.showPlotCanvas();
                 DATA_DISPLAY.calculatePlotSize();
                 DATA_DISPLAY.drawLine(DATA_DISPLAY.lineValues,
                     DATA_DISPLAY.lineTitle);
+            // Text
             } else {
-                Plotly.relayout(DATA_DISPLAY.plotCanvasDiv,
-                    {
-                        // Plotting canvas colors
-                        "paper_bgcolor" : (useDarkTheme === true ? "#181817" :
-                                "#ffffff"),
-                        "plot_bgcolor" : (useDarkTheme === true ? "#181817" :
-                                "#ffffff"),
-                    }
+
+                if (DATA_DISPLAY.plotExists) {
+                    Plotly.relayout(
+                        DATA_DISPLAY.plotCanvasDiv,
+                        {
+                            // Plotting canvas colors
+                            "paper_bgcolor" : (useDarkTheme === true ?
+                                    "#181817" : "#ffffff"),
+                            "plot_bgcolor" : (useDarkTheme === true ? "#181817"
+                                : "#ffffff"),
+                        }
                     );
+                }
+
             }
 
         },
