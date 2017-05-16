@@ -58,6 +58,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#endButton").addClass('btn-darkTheme');
                 $("#plusButton").addClass('btn-darkTheme');
                 $("#minusButton").addClass('btn-darkTheme');
+                $("#inputNumberDiv").addClass('btn-darkTheme');
 
                 // Side menu
                 $("#navMenu").addClass('navmenu-inverse');
@@ -77,6 +78,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#endButton").removeClass('btn-darkTheme');
                 $("#plusButton").removeClass('btn-darkTheme');
                 $("#minusButton").removeClass('btn-darkTheme');
+                $("#inputNumberDiv").removeClass('btn-darkTheme');
 
                 // Side menu
                 $("#navMenu").removeClass('navmenu-inverse');
