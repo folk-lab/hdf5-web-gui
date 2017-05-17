@@ -1646,39 +1646,44 @@ $('.btn-number').click(function (e) {
 // This function fires when the browser window is resized
 $(window).resize(function () {
 
-    var debug = false, plotHeight = DATA_DISPLAY.plotHeight;
+    var debug = true, plotHeight = DATA_DISPLAY.plotHeight;
 
     if (debug) {
         console.log('wait for it...');
     }
 
-    // During a window resize event, the resize function will be called several
-    // times per second, on the order of 15 Hz! Best to wait a bit try to just
-    // resize once, as it's a bit costly for plotly to execute relyout
-    clearTimeout(DATA_DISPLAY.resizeTimer);
+    if (DATA_DISPLAY.plotExists) {
 
-    DATA_DISPLAY.resizeTimer = setTimeout(function () {
+        // During a window resize event, the resize function will be called
+        // several times per second, on the order of 15 Hz! Best to wait a bit
+        // try to just resize once, as it's a bit costly for plotly to execute
+        // relyout
+        clearTimeout(DATA_DISPLAY.resizeTimer);
 
-        if (debug) {
-            console.log('about to run Plotly.relayout');
-        }
+        DATA_DISPLAY.resizeTimer = setTimeout(function () {
 
-        // Calculate the plot dimensions and save them
-        DATA_DISPLAY.calculatePlotSize();
+            if (debug) {
+                console.log('about to run Plotly.relayout');
+            }
 
-        // Use smaller canvas when displaying text instead of images
-        if (DATA_DISPLAY.displayType === 'text') {
-            plotHeight = 300;
-        } else {
-            plotHeight = DATA_DISPLAY.plotHeight;
-        }
+            // Calculate the plot dimensions and save them
+            DATA_DISPLAY.calculatePlotSize();
 
-        Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-            width: DATA_DISPLAY.plotWidth,
-            height: plotHeight,
-        });
+            // Use smaller canvas when displaying text instead of images
+            if (DATA_DISPLAY.displayType === 'text') {
+                plotHeight = 300;
+            } else {
+                plotHeight = DATA_DISPLAY.plotHeight;
+            }
 
-    }, 200);
+            Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                width: DATA_DISPLAY.plotWidth,
+                height: plotHeight,
+            });
+
+        }, 200);
+
+    }
 });
 
 

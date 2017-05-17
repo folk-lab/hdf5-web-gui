@@ -79,7 +79,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705161440';
+                version = '?v=201705171221';
 
             if (group === 0) {
                 scripts = [
@@ -139,7 +139,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201705161440';
+            var cssFiles, version = '?v=201705171221';
 
             if (group === 0) {
                 cssFiles = [

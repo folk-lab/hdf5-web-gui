@@ -464,7 +464,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
@@ -992,8 +992,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         setTreeDivHeight : function () {
 
             var window_height = $(window).height(),
-                content_height = window_height - 110;
-                // content_height = window_height - 80;
+                // content_height = window_height - 110;
+                content_height = window_height - 80;
 
             $('#treeSectionDiv').height(content_height);
 
