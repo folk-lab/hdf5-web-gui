@@ -2,6 +2,9 @@
 <html>
     <head>
 
+        <script type="text/javascript"
+            src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
+
         <script type="text/javascript" defer
             src="../js/nav-menu-test.js?v=201705171221"></script>
 
@@ -16,15 +19,17 @@
     <body>
 
         <div id="mySidenav" class="sidenav">
-            <span class="closebtn" onclick="NAV_MENU_TEST.closeNav()">&#9776;
-                Data
+
+            <span class="closebtn" onclick="NAV_MENU_TEST.closeNav()">
+                &#9776; Data
             </span>
 
             <a href="javascript:void(0)" class="pinbtn"
                 onclick="NAV_MENU_TEST.pinNav()">
-                <i class="fa fa-thumb-tack fa-rotate-90" aria-hidden="true">
-                &nbsp;</i>
+                <i class="fa fa-thumb-tack fa-rotate-90 rotate"
+                    aria-hidden="true">&nbsp;</i>
             </a>
+
 
             <a href="#">About</a>
             <a href="#">Services</a>
@@ -33,10 +38,11 @@
 
         </div>
 
+
         <div id="main">
 
-            <span class="openbtn" onclick="NAV_MENU_TEST.openNav()">&#9776;
-                Data
+            <span class="openbtn" onclick="NAV_MENU_TEST.openNav()">
+                &#9776; Data
             </span>
 
         </div>

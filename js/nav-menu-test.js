@@ -33,3 +33,9 @@ var NAV_MENU_TEST = {
         },
 
     };
+
+
+$(".rotate").click(function () {
+    $(this).toggleClass("down");
+});
+

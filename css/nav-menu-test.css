@@ -15,8 +15,9 @@ body {
     padding-top: 60px;
 }
 
-.sidenav a {
-    padding: 8px 8px 8px 32px;
+.sidenav a,
+.sidenav span {
+    padding: 8px 8px 8px 8px;
     text-decoration: none;
     font-size: 25px;
     color: #818181;
@@ -24,7 +25,8 @@ body {
     transition: 0.3s;
 }
 
-.sidenav a:hover, .offcanvas a:focus{
+.sidenav a:hover,
+.offcanvas a:focus{
     color: #f1f1f1;
 }
 
@@ -35,6 +37,32 @@ body {
     font-size:30px;
     cursor:pointer;
 }
+
+.sidenav .pinbtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 30px;
+    margin-left: 50px;
+    cursor:pointer;
+}
+
+
+/*
+ *  http://jsfiddle.net/koala_dev/3v2egwfs/7/
+ */
+.rotate {
+    -moz-transition: all 1s linear;
+    -webkit-transition: all 1s linear;
+    transition: all 1s linear;
+}
+
+.rotate.down {
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(90deg);
+}
+
 
 .openbtn {
     font-size:30px;
