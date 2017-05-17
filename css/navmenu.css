@@ -35,13 +35,13 @@ body {
 
 @media (min-width: 992px) {
   body {
-    padding: 0 0 0 300px;
+    padding: 0 0 0 350px;
   }
   .navmenu {
     padding-top: 0;
   }
   .navbar {
-    display: none !important; /* IE8 fix */
+    display: none !important;
   }
 }
 
@@ -51,7 +51,7 @@ body {
 /*******************/
 
 .navmenu, .navbar-offcanvas {
-    min-width: 330px;
+    min-width: 380px;
 }
 
 .navmenu-brand {

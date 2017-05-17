@@ -2,11 +2,12 @@
 'use strict';
 
 // External libraries
-var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
+var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
 
+        useDarkTheme : false,
 
         // This function is to be called when the page is loaded
         //  - assumes the url has already been checked for a CAS ticket
@@ -78,7 +79,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705091026';
+                version = '?v=201705171221';
 
             if (group === 0) {
                 scripts = [
@@ -96,6 +97,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
                     "../js/cas-login-logout.js",
                     "../js/data-display.js",
                     "../js/handle-dataset.js",
+                    "../js/theme-toggle.js",
                 ];
             }
 
@@ -137,11 +139,13 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201705091026';
+            var cssFiles, version = '?v=201705171221';
 
             if (group === 0) {
                 cssFiles = [
                     '../lib/css/jstree/3.2.1/themes/default/style.min.css',
+                    '../lib/css/jstree/3.2.1/themes/default-dark/' +
+                        'style.min.css',
                     '../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css',
                     '../lib/css/bootstrap-slider/9.7.0/' +
                         'bootstrap-slider.min.css',
@@ -153,6 +157,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
             if (group === 1) {
                 cssFiles = [
                     '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
+                    '../css/theme-toggle.css',
                 ];
             }
 
@@ -231,4 +236,5 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER,
             }
 
         },
+
     };

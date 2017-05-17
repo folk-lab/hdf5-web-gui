@@ -9,6 +9,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     DATA_DISPLAY =
     {
         plotCanvasDiv : document.getElementById('plotCanvasDiv'),
+        plotExists : false,
         colorScale : 'Jet',
         plotLogValues : false,
         plotType : 'heatmap',
@@ -34,6 +35,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         imageZoomSection : false,
         usingOriginalImage : true,
 
+        lineValues : [],
+        lineTitle : '',
+
         loadedImageRange : undefined,
         loadedImageRangeSize : [0, 0],
         loadedImageSize : undefined,
@@ -45,10 +49,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         showPlotCanvas : function () {
-
             document.getElementById("plotCanvasDiv").style.display = "block";
             document.getElementById("welcomeDiv").style.display = "none";
-
         },
 
         // Enable or disable various image and image series controls
@@ -159,15 +161,15 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             // The layout of the plotting canvas and axes.
             layout = {
-                title: '',
-                showlegend: false,
-                autosize: false,
-                width: DATA_DISPLAY.plotWidth,
-                height: 300,
-                paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
-                plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                "title" : '',
+                "showlegend" : false,
+                "autosize" : false,
+                "width" : DATA_DISPLAY.plotWidth,
+                "height" : 300,
+                "paper_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
+                        '#181817' : '#ffffff'),
+                "plot_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
+                        '#181817' : '#ffffff'),
 
                 xaxis: {
                     title: '',
@@ -228,6 +230,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 ).then(
                 AJAX_SPINNER.doneLoadingData()
             );
+            DATA_DISPLAY.plotExists = true;
 
         },
 
@@ -264,9 +267,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 hovermode: 'closest',
                 bargap: 0,
                 paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 margin: {
                     l: 65,
                     r: 50,
@@ -275,9 +278,25 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 },
                 xaxis: {
                     title: 'array index',
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
                 yaxis: {
                     title: 'values',
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 }
             };
 
@@ -305,6 +324,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             Plotly.newPlot(DATA_DISPLAY.plotCanvasDiv, data, layout,
                 options).then(AJAX_SPINNER.doneLoadingData()
                 );
+            DATA_DISPLAY.plotExists = true;
 
         },
 
@@ -340,9 +360,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     zauto : true,
 
                     colorbar : {
-                        title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
-                        titleside : 'bottom',
-                        exponentformat : 'power',
+                        "title" : (DATA_DISPLAY.plotLogValues ? "10^" : ""),
+                        "titleside" : "bottom",
+                        "exponentformat" : "power",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
                     },
                 }
             ];
@@ -363,19 +391,45 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 hovermode: 'closest',
                 bargap: 0,
                 paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 margin: plotMargins,
-                scene: {
-                    xaxis: {
-                        title: 'x',
+                "scene" : {
+                    "xaxis" : {
+                        "title" : "x",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
                     },
-                    zaxis: {
-                        title: 'z blah',
-                        type: 'linear',
-                        // type: 'log',
-                        autorange: true
+                    "yaxis" : {
+                        "title" : "y",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                    },
+                    "zaxis" : {
+                        "title" : "z",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "type" : "linear",
+                        "autorange" : true
                     }
                 }
             };
@@ -405,6 +459,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 options).then(
                 AJAX_SPINNER.doneLoadingData()
             );
+            DATA_DISPLAY.plotExists = true;
 
             // Refill the profile histograms when a zoom event occurs
             // Why isn't this properly done already in the plotly library?!
@@ -564,7 +619,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Check if an event is a zoom event
         isZoomEvent : function (eventdata) {
 
-            var debug = false, i = 0, zoomEvent = false,
+            var debug = true, i = 0, zoomEvent = false,
                 rangeKeys = ['xaxis.range[0]', 'xaxis.range[1]',
                     'yaxis.range[0]', 'yaxis.range[1]'],
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
@@ -752,7 +807,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 2D image
         handle2DZoom : function (eventdata) {
 
-            var debug = false, i = 0, ranges = [-1, -1, -1, -1],
+            var debug = true, i = 0, ranges = [-1, -1, -1, -1],
                 promises = [], newImageFetched = false, resetZoomEvent = false,
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
 
@@ -879,9 +934,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 colorscale: DATA_DISPLAY.colorScale,
                 showscale : !DATA_DISPLAY.mobileDisplay,
                 colorbar : {
-                    title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
-                    titleside : 'bottom',
-                    exponentformat : 'power',
+                    "title" : (DATA_DISPLAY.plotLogValues ? "10^" : ""),
+                    "titleside" : "bottom",
+                    "exponentformat" : "power",
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
             };
 
@@ -932,35 +995,66 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 hovermode: 'closest',
                 bargap: 0,
                 paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
                 plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
-                        '#333333' : '#ffffff'),
+                        '#181817' : '#ffffff'),
 
-                xaxis: {
-                    title: 'x',
-                    domain: [0, 0.85],
-                    showgrid: false,
-                    zeroline: false,
+                "xaxis" : {
+                    "title" : "x",
+                    "domain" : [0, 0.85],
+                    "showgrid" : false,
+                    "zeroline" : false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
 
-                yaxis: {
-                    title: 'y',
-                    domain: [0, 0.85],
-                    showgrid: false,
-                    // autorange : "reversed",
-                    zeroline: false,
+                "yaxis" : {
+                    "title" : "y",
+                    "domain" : [0, 0.85],
+                    "showgrid" : false,
+                    "zeroline": false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
 
-                xaxis2: {
-                    domain: [0.85, 1],
-                    showgrid: false,
-                    zeroline: false
+                "xaxis2" : {
+                    "domain" : [0.85, 1],
+                    "showgrid" : false,
+                    "zeroline" : false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
 
-                yaxis2: {
-                    domain: [0.85, 1],
-                    showgrid: false,
-                    zeroline: false
+                "yaxis2" : {
+                    "domain" : [0.85, 1],
+                    "showgrid" : false,
+                    "zeroline" : false,
+                    "titlefont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
+                    "tickfont" : {
+                        "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                "#999" : "#000000"),
+                    },
                 },
             };
 
@@ -988,6 +1082,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 options).then(
                 AJAX_SPINNER.doneLoadingData()
             );
+            DATA_DISPLAY.plotExists = true;
 
             // Refill the profile histograms when a zoom event occurs
             // Why isn't this properly done already in the plotly library?!
@@ -1071,7 +1166,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.calculatePlotSize();
 
-            DATA_DISPLAY.drawLine(value, nodeTitle);
+            DATA_DISPLAY.lineValues = value;
+            DATA_DISPLAY.lineTitle = nodeTitle;
+
+            DATA_DISPLAY.drawLine(DATA_DISPLAY.lineValues,
+                DATA_DISPLAY.lineTitle);
 
         },
 
@@ -1135,9 +1234,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     zmin: [profiles.zMin],
                     zmax: [profiles.zMax],
                     colorbar : [{
-                        title : (DATA_DISPLAY.plotLogValues ? '10^' : ''),
-                        titleside : 'bottom',
-                        exponentformat : 'power',
+                        "title" : (DATA_DISPLAY.plotLogValues ? "10^" : ""),
+                        "titleside" : "bottom",
+                        "exponentformat" : "power",
+                        "titlefont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
+                        "tickfont" : {
+                            "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                                    "#999" : "#000000"),
+                        },
                     }],
                 }, [0]);
 
@@ -1156,18 +1263,18 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         // Also, the domain needs to be set again, not sure
                         // why...
                         Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-                            xaxis: {
-                                range : [
+                            "xaxis" : {
+                                "range" : [
                                     DATA_DISPLAY.imageZoomSection[0] - 0.5,
-                                    DATA_DISPLAY.imageZoomSection[1]] - 0.5,
-                                domain : [0, 0.85]
+                                    DATA_DISPLAY.imageZoomSection[1] - 0.5],
+                                "domain" : [0, 0.85]
                             },
 
-                            yaxis: {
-                                range : [
+                            "yaxis": {
+                                "range" : [
                                     DATA_DISPLAY.imageZoomSection[2] - 0.5,
-                                    DATA_DISPLAY.imageZoomSection[3]] - 0.5,
-                                domain : [0, 0.85]
+                                    DATA_DISPLAY.imageZoomSection[3] - 0.5],
+                                "domain" : [0, 0.85]
                             },
                         });
                     }
@@ -1231,6 +1338,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         // Change the color map
         changeColor : function (colorscale) {
+
+            var debug = false;
+
+            if (debug) {
+                console.log('colorscale: ' + colorscale);
+            }
 
             if (colorscale !== '') {
 
@@ -1533,52 +1646,54 @@ $('.btn-number').click(function (e) {
 // This function fires when the browser window is resized
 $(window).resize(function () {
 
-    var debug = false, plotHeight = DATA_DISPLAY.plotHeight;
+    var debug = true, plotHeight = DATA_DISPLAY.plotHeight;
 
     if (debug) {
         console.log('wait for it...');
     }
 
-    // During a window resize event, the resize function will be called several
-    // times per second, on the order of 15 Hz! Best to wait a bit try to just
-    // resize once, as it's a bit costly for plotly to execute relyout
-    clearTimeout(DATA_DISPLAY.resizeTimer);
+    if (DATA_DISPLAY.plotExists) {
 
-    DATA_DISPLAY.resizeTimer = setTimeout(function () {
+        // During a window resize event, the resize function will be called
+        // several times per second, on the order of 15 Hz! Best to wait a bit
+        // try to just resize once, as it's a bit costly for plotly to execute
+        // relyout
+        clearTimeout(DATA_DISPLAY.resizeTimer);
 
-        if (debug) {
-            console.log('about to run Plotly.relayout');
-        }
+        DATA_DISPLAY.resizeTimer = setTimeout(function () {
 
-        // Calculate the plot dimensions and save them
-        DATA_DISPLAY.calculatePlotSize();
+            if (debug) {
+                console.log('about to run Plotly.relayout');
+            }
 
-        // Use smaller canvas when displaying text instead of images
-        if (DATA_DISPLAY.displayType === 'text') {
-            plotHeight = 300;
-        } else {
-            plotHeight = DATA_DISPLAY.plotHeight;
-        }
+            // Calculate the plot dimensions and save them
+            DATA_DISPLAY.calculatePlotSize();
 
-        Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-            width: DATA_DISPLAY.plotWidth,
-            height: plotHeight,
-        });
+            // Use smaller canvas when displaying text instead of images
+            if (DATA_DISPLAY.displayType === 'text') {
+                plotHeight = 300;
+            } else {
+                plotHeight = DATA_DISPLAY.plotHeight;
+            }
 
-    }, 200);
+            Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                width: DATA_DISPLAY.plotWidth,
+                height: plotHeight,
+            });
+
+        }, 200);
+
+    }
 });
 
 
 // This function fires when the page is ready
 $(document).ready(function () {
-// $(window).on('load', function () {
 
     var debug = false;
 
     if (debug) {
         console.log('document is ready');
-        // ($("#plotCanvasDiv").addClass('debugRed');
-        // ($("#plotControls").addClass('debugBlue');
     }
 
     // Calculate the proper plot dimensions and save them

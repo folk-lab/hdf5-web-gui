@@ -129,7 +129,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705091026';
+                version = '?v=201705161440';
 
             if (group === 0) {
                 scripts = [

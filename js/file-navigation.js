@@ -631,15 +631,22 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
             if (createNewTree) {
                 $('#jstree_div').jstree(
                     {
-                        'core' : {
-                            'data' : FILE_NAV.jstreeDict,
-                            "themes": {
-                                name : (FILE_NAV.useDarkTheme === true ?
-                                        'default-dark' : 'default'),
-                                "dots": true,
-                                "icons": true
+                        "core" : {
+                            "data" : FILE_NAV.jstreeDict,
+                            "themes" : {
+                                "name" : (FILE_NAV.useDarkTheme === true ?
+                                        "default-dark" : "default"),
+                                "dots" : true,
+                                "icons" : true,
+
+                                // "responsive" : true,
+                                "ellipsis" : true,
                             },
+
+                            "expand_selected_onload" : true,
                         },
+
+                        // "plugins": ["contextmenu"],
                         // "plugins": ["checkbox"],
                         // "plugins": ["themes", "html_data", "checkbox",
                         //                         "ui", "crrm", "hotkeys"]
@@ -985,6 +992,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         setTreeDivHeight : function () {
 
             var window_height = $(window).height(),
+                // content_height = window_height - 110;
                 content_height = window_height - 80;
 
             $('#treeSectionDiv').height(content_height);
