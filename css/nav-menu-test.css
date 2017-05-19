@@ -1,7 +1,9 @@
 body {
     font-family: "Lato", sans-serif;
+    font-size: 18px;
 }
 
+/* The nav menu */
 .sidenav {
     height: 100%;
     width: 0;
@@ -11,8 +13,13 @@ body {
     left: 0;
     background-color: #111;
     overflow-x: hidden;
-    transition: 0.5s;
+    transition: 0.3s;
     padding-top: 60px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
 }
 
 .sidenav a,
@@ -26,50 +33,46 @@ body {
 }
 
 .sidenav a:hover,
-.offcanvas a:focus{
+.offcanvas a:focus,
+.sidenav span:hover,
+.offcanvas span:focus{
     color: #f1f1f1;
 }
 
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-size:30px;
-    cursor:pointer;
-}
-
+/* Buttons in the nav menu */
+.sidenav .closebtn,
 .sidenav .pinbtn {
     position: absolute;
     top: 0;
-    right: 25px;
-    font-size: 30px;
-    margin-left: 50px;
-    cursor:pointer;
-}
-
-
-/*
- *  http://jsfiddle.net/koala_dev/3v2egwfs/7/
- */
-.rotate {
-    -moz-transition: all 1s linear;
-    -webkit-transition: all 1s linear;
-    transition: all 1s linear;
-}
-
-.rotate.down {
-    -moz-transform: rotate(180deg);
-    -webkit-transform: rotate(180deg);
-    transform: rotate(90deg);
-}
-
-
-.openbtn {
     font-size:30px;
     cursor:pointer;
 }
+.sidenav .closebtn {
+    left: 0;
+}
 
-@media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
+.sidenav .pinbtn {
+    right: 25px;
+    margin-left: 50px;
+}
+
+
+/* The pin button */
+.openbtn {
+    color: white;
+    font-size:20px;
+    cursor:pointer;
+}
+
+/* Rotate the pin button when clicked */
+.rotate {
+    -moz-transition: all 0.3s linear;
+    -webkit-transition: all 0.3s linear;
+    transition: all 0.3s linear;
+}
+
+.rotate.down {
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
 }

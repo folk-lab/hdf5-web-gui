@@ -5,37 +5,64 @@
 // The global variables for this applicaiton
 var NAV_MENU_TEST = {
 
+        sideNavWidth : "350px",
         menuIsPinned : false,
+        menuIsOpen : false,
 
         openNav : function () {
-            document.getElementById("mySidenav").style.width = "250px";
+            document.getElementById("sideNav").style.width =
+                NAV_MENU_TEST.sideNavWidth;
+
+            if (NAV_MENU_TEST.menuIsPinned) {
+
+                // Slide page content out so that it is not hidden my the menu
+                document.getElementById("main").style.marginLeft =
+                    NAV_MENU_TEST.sideNavWidth;
+
+            }
+
+            NAV_MENU_TEST.menuIsOpen = true;
         },
 
         closeNav : function () {
-            document.getElementById("mySidenav").style.width = "0";
 
-            if (NAV_MENU_TEST.menuIsPinned) {
-                document.getElementById("main").style.marginLeft = "0px";
-                NAV_MENU_TEST.menuIsPinned = !NAV_MENU_TEST.menuIsPinned;
-            }
+            // Hide the menu
+            document.getElementById("sideNav").style.width = "0";
+
+            // Set page content to the left
+            document.getElementById("main").style.marginLeft = "0px";
+
+            NAV_MENU_TEST.menuIsOpen = false;
         },
 
         pinNav : function () {
-            document.getElementById("main").style.marginLeft = "250px";
 
-            if (NAV_MENU_TEST.menuIsPinned) {
-                NAV_MENU_TEST.closeNav();
+            var pinMenu;
+
+            console.log('NAV_MENU_TEST.menuIsPinned: ' +
+                NAV_MENU_TEST.menuIsPinned);
+
+            // If not pinned, pin it.
+            pinMenu = !NAV_MENU_TEST.menuIsPinned;
+
+            /// Change the state of the pin
+            NAV_MENU_TEST.menuIsPinned = !NAV_MENU_TEST.menuIsPinned;
+            $('#pinBtn').toggleClass("down");
+
+            if (pinMenu) {
+
+                // Slide page content out so that it is not hidden my the menu
+                document.getElementById("main").style.marginLeft =
+                    NAV_MENU_TEST.sideNavWidth;
+
+            } else {
+
                 document.getElementById("main").style.marginLeft = "0px";
+                // NAV_MENU_TEST.closeNav();
+
             }
 
-            NAV_MENU_TEST.menuIsPinned = !NAV_MENU_TEST.menuIsPinned;
-
+            console.log('pinMenu: ' + pinMenu);
         },
 
     };
-
-
-$(".rotate").click(function () {
-    $(this).toggleClass("down");
-});
-

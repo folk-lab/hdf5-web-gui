@@ -10,6 +10,8 @@
 
         <link type="text/css" rel="stylesheet"
             href="../css/nav-menu-test.css?v=201705171221">
+        <link type="text/css" rel="stylesheet"
+            href="../css/nav-bar-test.css?v=201705171221">
 
         <link type="text/css" rel="stylesheet"
             href="../lib/css/font-awesome/font-awesome-4.7.0/css/font-awesome.min.css?v=201705171221">
@@ -18,19 +20,23 @@
 
     <body>
 
-        <div id="mySidenav" class="sidenav">
 
+        <!-- Side navigation menu -->
+        <div id="sideNav" class="sidenav">
+
+
+            <!-- A cople buttons on top of the menu -->
             <span class="closebtn" onclick="NAV_MENU_TEST.closeNav()">
-                &#9776; Data
+                &#9776; Data Storage
             </span>
 
-            <a href="javascript:void(0)" class="pinbtn"
-                onclick="NAV_MENU_TEST.pinNav()">
+            <span class="pinbtn" onclick="NAV_MENU_TEST.pinNav()">
                 <i class="fa fa-thumb-tack fa-rotate-90 rotate"
+                    id="pinBtn" title="Pin Menu"
                     aria-hidden="true">&nbsp;</i>
-            </a>
+            </span>
 
-
+            <!-- The contents of the menu -->
             <a href="#">About</a>
             <a href="#">Services</a>
             <a href="#">Clients</a>
@@ -38,12 +44,29 @@
 
         </div>
 
-
+        <!-- The main page content -->
         <div id="main">
 
-            <span class="openbtn" onclick="NAV_MENU_TEST.openNav()">
-                &#9776; Data
-            </span>
+
+            <!-- The navigation bar -->
+            <ul>
+                <!-- A button to open the side navigation menu -->
+                <li><a href="#home" onclick="NAV_MENU_TEST.openNav()" >
+                    &#9776; Data Storage</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#blah"><img id="logoImage" alt="Brand"
+                       src="../images/maxiv-logo-20x63.png"></a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li style="float:right" class="dropdown">
+                    <a href="javascript:void(0)"
+                    class="active dropbtn">Dropdown</a>
+                    <div class="dropdown-content">
+                        <a href="#">Link 1</a>
+                        <a href="#">Link 2</a>
+                        <a href="#">Link 3</a>
+                    </div>
+                </li>
+            </ul>
 
         </div>
 
