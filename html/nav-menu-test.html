@@ -1,20 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
     <head>
 
+        <title>MAX IV HDF5 Data Viewer</title>
+
+        <!-- Basic stuff -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0,
+            maximum-scale=1.0, user-scalable=no">
+
+        <!-- Favicon!!! -->
+        <link rel="icon" href="../images/favicon.ico?v=201705010000" >
+        <link rel="shortcut icon" type="image/x-icon"
+            href="../images/favicon.ico?v=201705010000" >
+
+        <!-- No Caching -->
+        <meta http-equiv="Cache-Control"
+            content="no-cache, no-store, must-revalidate"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <meta http-equiv="Expires" content="0"/>
+
+        <!-- Make the app fullscreen on a smartphone. -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="icon" href="../images/rings.png?v=201705010000">
+        <link rel="apple-touch-icon"
+            href="../images/rings.png?v=201705010000">
+
+        <!-- jQuery is need by most things, load it first -->
         <script type="text/javascript"
             src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
 
+        <!-- Load scripts for the page -->
         <script type="text/javascript" defer
             src="../js/nav-menu-test.js?v=201705171221"></script>
 
+        <!-- Load internal css -->
         <link type="text/css" rel="stylesheet"
             href="../css/nav-menu-test.css?v=201705171221">
         <link type="text/css" rel="stylesheet"
             href="../css/nav-bar-test.css?v=201705171221">
 
+        <!-- Load external css -->
         <link type="text/css" rel="stylesheet"
-            href="../lib/css/font-awesome/font-awesome-4.7.0/css/font-awesome.min.css?v=201705171221">
+            href="../lib/css/font-awesome/4.7.0/css/font-awesome.min.css?v=201705171221">
+
     </head>
 
 
@@ -25,15 +56,14 @@
         <div id="sideNav" class="sidenav">
 
 
-            <!-- A cople buttons on top of the menu -->
-            <span class="closebtn" onclick="NAV_MENU_TEST.closeNav()">
-                &#9776; Data Storage
+            <!-- A couple buttons on top of the menu -->
+            <span class="closebtn fa-bars" onclick="NAV_MENU_TEST.closeNav()">
+                Data Storage
             </span>
 
             <span class="pinbtn" onclick="NAV_MENU_TEST.pinNav()">
-                <i class="fa fa-thumb-tack fa-rotate-90 rotate"
-                    id="pinBtn" title="Pin Menu"
-                    aria-hidden="true">&nbsp;</i>
+                <a class="fa-thumb-tack fa-rotate-90 rotate"
+                    id="pinBtn" title="Pin Menu">&nbsp;</a>
             </span>
 
             <!-- The contents of the menu -->
@@ -50,22 +80,35 @@
 
             <!-- The navigation bar -->
             <ul>
+
                 <!-- A button to open the side navigation menu -->
-                <li><a href="#home" onclick="NAV_MENU_TEST.openNav()" >
-                    &#9776; Data Storage</a></li>
-                <li><a href="#news">News</a></li>
-                <li><a href="#blah"><img id="logoImage" alt="Brand"
-                       src="../images/maxiv-logo-20x63.png"></a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li>
+                    <a class="fa-bars" onclick="NAV_MENU_TEST.openNav()">
+                        Data Storage</a></li>
+
+                <!-- A mobile dropdown menu -->
                 <li style="float:right" class="dropdown">
-                    <a href="javascript:void(0)"
-                    class="active dropbtn">Dropdown</a>
+                    <a class="dropbtn fa-caret-down"> Options </a>
+
+                    <!-- Settings buttons -->
                     <div class="dropdown-content">
-                        <a href="#">Link 1</a>
-                        <a href="#">Link 2</a>
-                        <a href="#">Link 3</a>
+                        <a class="fa-lightbulb-o"> Theme</a>
+                        <a class="fa-sign-out"> Logout</a>
                     </div>
+
                 </li>
+
+                <!-- Logo -->
+                <li class="navbarbtnimg"> <a class="barimage">
+                    <img alt="max-iv-logo"
+                        src="../images/maxiv-logo-20x63.png"></a></li>
+
+                <!-- Settings buttons -->
+                <li class="navbarbtn">
+                    <a class="fa-sign-out"> Logout</a></li>
+                <li class="navbarbtn">
+                    <a class="fa-lightbulb-o"> Theme</a></li>
+
             </ul>
 
         </div>

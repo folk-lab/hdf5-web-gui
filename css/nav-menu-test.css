@@ -1,6 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
 body {
     font-family: "Lato", sans-serif;
     font-size: 18px;
+    margin: 0px;
 }
 
 /* The nav menu */
@@ -17,16 +28,13 @@ body {
     padding-top: 60px;
 }
 
-@media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
-}
-
 .sidenav a,
 .sidenav span {
-    padding: 8px 8px 8px 8px;
+    padding-top: 14px;
+    padding-right: 16px;
+    padding-bottom: 14px;
+    padding-left: 16px;
     text-decoration: none;
-    font-size: 25px;
     color: #818181;
     display: block;
     transition: 0.3s;
@@ -44,7 +52,6 @@ body {
 .sidenav .pinbtn {
     position: absolute;
     top: 0;
-    font-size:30px;
     cursor:pointer;
 }
 .sidenav .closebtn {
@@ -52,6 +59,10 @@ body {
 }
 
 .sidenav .pinbtn {
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
     right: 25px;
     margin-left: 50px;
 }
@@ -60,7 +71,6 @@ body {
 /* The pin button */
 .openbtn {
     color: white;
-    font-size:20px;
     cursor:pointer;
 }
 
