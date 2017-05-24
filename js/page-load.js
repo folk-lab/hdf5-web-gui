@@ -90,14 +90,14 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
             if (group === 1) {
                 scripts = [
-                    "../lib/js/bootstrap/3.3.7/js/bootstrap.min.js",
+                    // "../lib/js/bootstrap/3.3.7/js/bootstrap.min.js",
                     "../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js",
                     "../lib/js/jstree/3.2.1/jstree.min.js",
-                    "../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js",
                     "../js/cas-login-logout.js",
                     "../js/data-display.js",
                     "../js/handle-dataset.js",
                     "../js/theme-toggle.js",
+                    '../js/nav-menu.js',
                 ];
             }
 
@@ -146,17 +146,20 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
                     '../lib/css/jstree/3.2.1/themes/default/style.min.css',
                     '../lib/css/jstree/3.2.1/themes/default-dark/' +
                         'style.min.css',
-                    '../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css',
                     '../lib/css/bootstrap-slider/9.7.0/' +
-                        'bootstrap-slider.min.css',
+                         'bootstrap-slider.min.css',
                     '../css/index.css',
-                    '../css/navmenu.css',
+                    '../css/plot-controls.css',
+                    // '../css/navmenu.css',
+                    '../css/nav-menu.css',
+                    '../css/nav-bar.css',
+                    '../lib/css/font-awesome/4.7.0/css/font-awesome.min.css',
                 ];
             }
 
             if (group === 1) {
                 cssFiles = [
-                    '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
+                    // '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
                     '../css/theme-toggle.css',
                 ];
             }

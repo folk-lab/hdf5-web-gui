@@ -32,13 +32,13 @@
         <script type="text/javascript"
             src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
 
-        <!-- Load scripts need to verify CAS ticket -->
+        <!-- Scripts need to verify CAS ticket -->
         <script type="text/javascript"
             src="../js/server-communication.js?v=201705171221"></script>
         <script type="text/javascript"
             src="../js/cas-handle-ticket.js?v=201705171221"></script>
 
-        <!-- Start the loader -->
+        <!-- Start the loading icon -->
         <script type="text/javascript" defer
             src="../js/ajax-spinner.js?v=201705171221"></script>
         <link type="text/css" rel="stylesheet"
@@ -49,272 +49,241 @@
 
     <body>
 
+        <!-- The main page content -->
+        <div id="main">
 
-        <!-- Use the Bootstrap layout library to set up the html -->
-        <div class="container-fluid fill-height fill-width"
-            id="applicationContainer">
+            <!-- The navigation bar -->
+            <div id="navbar" class="navbar">
+                <ul>
 
-            <nav id="navMenu" class="navmenu navmenu-default navmenu-fixed-left
-                offcanvas-sm" role="navigation" style="display:none;">
+                    <!-- A button to open the side navigation menu -->
+                    <li class="navbarbtn" style="float:left">
+                        <a class="fa-bars"
+                            onclick="NAV_MENU_TEST.menuButton()">
+                            Data Storage</a></li>
 
-                <!-- Desktop - Brand image and name -->
-                <div class="col-xs-6">
-                    <a class="navmenu-brand visible-md visible-lg"
-                        href="#">HDF5 Viewer</a>
-                </div>
+                    <!-- A mobile dropdown menu -->
+                    <li style="float:right" class="dropdown">
+                        <a class="dropbtn fa-caret-down"> Options </a>
 
+                        <!-- Settings buttons -->
+                        <div class="dropdown-content">
+                            <a class="fa-lightbulb-o"
+                                onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
+                            <a class="fa-sign-out"
+                                onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
+                        </div>
+
+                    </li>
+
+                    <!-- Logo -->
+                    <li class="navbarbtnimg"> <a class="barimage">
+                        <img alt="max-iv-logo"
+                            src="../images/maxiv-logo-20x63.png"></a></li>
+
+                    <!-- Settings buttons -->
+                    <li class="navbarbtn">
+                        <a class="fa-sign-out"
+                            onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
+                    </li>
+
+                    <li class="navbarbtn">
+                        <a class="fa-lightbulb-o"
+                            onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <!-- Side navigation menu -->
+            <div id="sideNav" class="sidenav">
+
+                <!-- A couple buttons on top of the menu -->
                 <!--
-                <div class="col-xs-2">
-                    <a class="navmenu-brand visible-md visible-lg" href="#">
-                        <img alt="Brand" id="logoImage"
-                           src="../images/rings-22x22.png"></a>
-                </div>
+                <span class="closebtn fa fa-bars"
+                    onclick="NAV_MENU_TEST.closeNav()">
+                    Data Storage
+                </span>
+
+                <span class="pinbtn" onclick="NAV_MENU_TEST.pinNav()">
+                    <a class="fa fa-thumb-tack fa-rotate-90 rotate"
+                        id="pinBtn" title="Pin Menu">&nbsp;</a>
+                </span>
                 -->
 
-                <div class="col-xs-4" id="loginButton">
-                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
-                        onclick='CAS_LOGIN_LOGOUT.login();'>
-                        <span class="glyphicon glyphicon-log-in">
-                            <span class="hidden-xs hidden-sm hidden-md
-                                hidden-lg">Login</span>
-                        </span>
-                        Login</a>
-                </div>
-
-                <div class="col-xs-4" id="logoutButton">
-                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
-                        onclick='CAS_LOGIN_LOGOUT.logout();'>
-                        <span class="glyphicon glyphicon-log-out">
-                            <span class="hidden-xs hidden-sm hidden-md
-                                hidden-lg">Logout</span>
-                        </span>
-                        Logout</a>
-                </div>
-
-                <div class="col-xs-2 col-xs-offset-0" id="themeToggleButton">
-                    <a class="navmenu-brand menu_links hidden-xs hidden-sm"
-                        onclick='THEME_TOGGLE.toggleTheme();'>
-                        <span class="glyphicon glyphicon-lamp">
-                            <span class="hidden-xs hidden-sm hidden-md
-                                hidden-lg">Theme</span>
-                        </span>
-                        </a>
-                </div>
-
-
-
-                <!-- The file browser-->
-                <div id="treeSectionDiv" class="col-xs-12"
-                    style="display:none;">
-
-                    <div class="col-xs-12">
-                        <div class="glyphicon glyphicon-hdd">&nbsp;</div>
-                        <b>Data Storage</b>
-                    </div>
-
-                    <div class="col-xs-12 " id="jstree_div"></div>
-
-                </div>
-
-            </nav>
-
-            <!-- Mobile toggle menu button & navbar -->
-            <div id="navMenuMobile" style="display:none;"
-                class="navbar navbar-default navbar-fixed-top">
-
-                <div class="container-fluid">
-                    <div class="navbar-header">
-
-                        <button type="button" class="navbar-toggle collapsed"
-                            data-toggle="offcanvas" data-target=".navmenu">
-                            <span class="icon-bar">&nbsp;</span>
-                            <span class="icon-bar">&nbsp;</span>
-                            <span class="icon-bar">&nbsp;</span>
-                        </button>
-
-                        <div class="col-xs-4 col-xs-offset-0">
-                            <a class="navbar-brand" href="#">HDF5 Viewer</a>
-                        </div>
-
-
-                        <div class="col-xs-2" id="loginButtonMobile">
-                            <a class="navbar-brand menu_links"
-                                onclick='CAS_LOGIN_LOGOUT.login();'>
-                                <span class="glyphicon glyphicon-log-in">
-                                    <span class="hidden-xs hidden-sm hidden-md
-                                        hidden-lg">Login</span>
-                                </span>
-                                </a>
-                        </div>
-
-                        <div class="col-xs-2" id="logoutButtonMobile">
-                            <a class="navbar-brand menu_links"
-                                onclick='CAS_LOGIN_LOGOUT.logout();'>
-                                <span class="glyphicon glyphicon-log-in">
-                                    <span class="hidden-xs hidden-sm hidden-md
-                                        hidden-lg">Logout</span>
-                                </span>
-                                </a>
-                        </div>
-
-                        <div class="col-xs-2 col-xs-offset-0"
-                            id="themeToggleButton">
-                            <a class="navbar-brand menu_links"
-                                onclick='THEME_TOGGLE.toggleTheme();'>
-                                <span class="glyphicon glyphicon-lamp">
-                                    <span class="hidden-xs hidden-sm hidden-md
-                                        hidden-lg">Theme</span>
-                                </span>
-                                </a>
-                        </div>
-
-                    </div>
-                </div>
+                <div id="jstree_div"></div>
 
             </div>
 
 
-            <!-- Container for plot canvas and controls -->
-            <div id="plotContainer" class="container" style="display:none;">
+            <!-- Use the Bootstrap layout library to set up the html -->
+            <div class="container-fluid fill-height fill-width"
+                id="applicationContainer">
 
-
-                <!-- Image Plot Controls -->
-                <form id="plotControls"
-                    class="container navbar-form navbar-left"
+                <!-- Container for plot canvas and controls -->
+                <div id="plotContainer" class="container"
                     style="display:none;">
 
-                    <div id="plotTypeButtonDiv" class="col-xs-4 col-md-5
-                        form-group">
-                        <select class="form-control col-xs-12"
-                            id="selectPlotType"
-                            onchange="DATA_DISPLAY.changeType(value);" >
-                            <option value=""
-                                disabled>Plot Type</option>
-                            <option class="hidden-xs hidden-sm" value="heatmap"
-                                selected> 2D + profiles </option>
-                            <option class="hidden-md hidden-lg" value="heatmap"
-                                > 2D</option>
-                            <option value="surface">3D</option>
-                        </select>
+                    <!-- Image Plot Controls -->
+                    <div id="plotControls" style="display:none;" class="navbar">
+                        <ul>
+
+                        <li class="navbarbtn" style="float:left">
+                        <div id="plotTypeButtonDiv" class="col-xs-4 col-md-5
+                            form-group">
+                            <select class="form-control col-xs-12"
+                                id="selectPlotType"
+                                onchange="DATA_DISPLAY.changeType(value);" >
+                                <option value=""
+                                    disabled>Plot Type</option>
+                                <option class="hidden-xs hidden-sm"
+                                    value="heatmap"
+                                    selected> 2D + profiles </option>
+                                <option class="hidden-md hidden-lg"
+                                    value="heatmap"
+                                    > 2D</option>
+                                <option value="surface">3D</option>
+                            </select>
+                        </div>
+                        </li>
+
+                        <li class="navbarbtn">
+                            <div id="logButtonDiv" class="col-xs-4 col-md-3">
+                                <button type="button" class="btn"
+                                    id="logPlotButton"
+                                    onclick='DATA_DISPLAY.toggleLogPlot()'>
+                                    Log Plot?
+                                </button>
+                            </div>
+                        </li>
+
+                        <!-- A mobile dropdown menu -->
+                        <li class="navbarbtn">
+                            <a class="dropbtn fa-caret-down">Color Scale</a>
+
+                            <!-- Settings buttons -->
+                            <div class="dropdown-content">
+                                <a class="fa-lightbulb-o"
+                                    onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
+                                <a class="fa-sign-out"
+                                    onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
+                            </div>
+
+                        </li>
+
+                        <li class="navbarbtn">
+                        <div id="colorButtonDiv" class="form-group col-xs-4">
+                            <select id="selectColorScheme" class="form-control"
+                                onchange="DATA_DISPLAY.changeColor(value);" >
+                                <option value="" disabled>Color Scale </option>
+                                <option value="Blackbody">Blackbod</option>
+                                <option value="Bluered"  >Bluered </option>
+                                <option value="Earth"    >Earth   </option>
+                                <option value="Electric" >Electric</option>
+                                <option value="Greens"   >Greens  </option>
+                                <option value="Greys"    >Greys   </option>
+                                <option value="Hot"      >Hot     </option>
+                                <option value="Jet" selected> Jet </option>
+                                <option value="Picnic"   >Picnic  </option>
+                                <option value="Portland" >Portland</option>
+                                <option value="RdBu"     >RdBu    </option>
+                            </select>
+                        </div>
+                        </li>
+
+                        </ul>
                     </div>
 
-                    <div id="logButtonDiv" class="col-xs-4 col-md-3">
-                        <button type="button" class="btn"
-                            id="logPlotButton"
-                            onclick='DATA_DISPLAY.toggleLogPlot()'>
-                            Log Plot?
-                        </button>
+                    <!-- The plotting canvas -->
+                    <div id="plotCanvasDiv" class="container col-xs-12"
+                        style="display:none;"></div>
+
+
+                    <!-- A simple welcome message -->
+                    <div id="welcomeDiv" class="flex-container">
+                        <div id="welcomeRow" style="display:none;"
+                            class="row animate-bottom">
+                            <div id="welcomeDiv1" class="flex-item"> </div>
+                            <div id="welcomeDiv2" class="flex-item"> </div>
+                        </div>
                     </div>
 
-                    <div id="colorButtonDiv" class="form-group col-xs-4">
-                        <select id="selectColorScheme" class="form-control"
-                            onchange="DATA_DISPLAY.changeColor(value);" >
-                            <option value="" disabled>Color Scale </option>
-                            <option value="Blackbody">Blackbod</option>
-                            <option value="Bluered"  >Bluered </option>
-                            <option value="Earth"    >Earth   </option>
-                            <option value="Electric" >Electric</option>
-                            <option value="Greens"   >Greens  </option>
-                            <option value="Greys"    >Greys   </option>
-                            <option value="Hot"      >Hot     </option>
-                            <option value="Jet" selected> Jet </option>
-                            <option value="Picnic"   >Picnic  </option>
-                            <option value="Portland" >Portland</option>
-                            <option value="RdBu"     >RdBu    </option>
-                        </select>
-                    </div>
 
-                </form>
+                    <!-- Image Series Control -->
+                    <div id='imageSeriesControl' class="col-xs-12
+                        col-md-6 col-md-offset-2" style="display:none;">
 
+                        <div class="input-group col-xs-12">
 
-                <!-- The plotting canvas -->
-                <div id="plotCanvasDiv" class="container col-xs-12"
-                    style="display:none;"></div>
+                            <!-- Start button -->
+                            <div class="input-group-btn">
+                                <button type="button" id='startButton'
+                                    class="btn-labels-large btn btn-primary
+                                    btn-number"  data-type="minus"
+                                    onclick='HANDLE_DATASET.imageSeriesInput(0,
+                                        true, true, false);'>
+                                    <span id='startButtonValue' >0</span>
+                                    <div class="glyphicon glyphicon-step-backward">
+                                    </div>
+                                </button>
+                            </div>
 
+                            <!-- Minus button -->
+                            <div class="input-group-btn">
+                                <button type="button" id='minusButton'
+                                    class="btn btn-info btn-number"
+                                    data-type="minus" data-field="quant[0]">
+                                    <div class="glyphicon glyphicon-triangle-left">
+                                    </div>
+                                </button>
+                            </div>
 
-                <!-- A simple welcome message -->
-                <div id="welcomeDiv" class="flex-container">
-                    <div id="welcomeRow" style="display:none;"
-                        class="row animate-bottom">
-                        <div id="welcomeDiv1" class="flex-item"> </div>
-                        <div id="welcomeDiv2" class="flex-item"> </div>
-                    </div>
-                </div>
-
-
-                <!-- Image Series Control -->
-                <div id='imageSeriesControl' class="col-xs-12
-                    col-md-6 col-md-offset-2" style="display:none;">
-
-                    <div class="input-group col-xs-12">
-
-                        <!-- Start button -->
-                        <div class="input-group-btn">
-                            <button type="button" id='startButton'
-                                class="btn-labels-large btn btn-primary
-                                btn-number"  data-type="minus"
-                                onclick='HANDLE_DATASET.imageSeriesInput(0,
+                            <!-- Display and enter values -->
+                            <input id="inputNumberDiv"  type="text" name="quant[0]"
+                                class="form-control input-number"
+                                value="0" min="0" max="1" maxlength="7"
+                                size="7"
+                                onchange='HANDLE_DATASET.imageSeriesInput(value,
                                     true, true, false);'>
-                                <span id='startButtonValue' >0</span>
-                                <div class="glyphicon glyphicon-step-backward">
-                                </div>
-                            </button>
+
+                            <!-- Plus button -->
+                            <div class="input-group-btn">
+                                <button type="button" id='plusButton'
+                                    class="btn btn-info btn-number"
+                                    data-type="plus" data-field="quant[0]">
+                                    <div class="glyphicon glyphicon-triangle-right">
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- End button -->
+                            <div class="input-group-btn">
+                                <button type="button" id='endButton'
+                                    class="btn btn-primary btn-number"
+                                    data-type="plus"
+                                    onclick='HANDLE_DATASET.imageSeriesInput(
+                                        10000000, true, true, false);'>
+                                    <div class="glyphicon glyphicon-step-forward">
+                                    </div>
+                                    <span id='endButtonValue' >0</span>
+                                </button>
+                            </div>
+
                         </div>
 
-                        <!-- Minus button -->
-                        <div class="input-group-btn">
-                            <button type="button" id='minusButton'
-                                class="btn btn-info btn-number"
-                                data-type="minus" data-field="quant[0]">
-                                <div class="glyphicon glyphicon-triangle-left">
-                                </div>
-                            </button>
+                        <div id='sliderDiv' class="col-xs-12">
+                            <input id="slider" type='text'
+                                data-slider-id='imageSeriesSlider'
+                                data-slider-tooltip='hide'
+                                data-slider-handle='square' />
                         </div>
 
-                        <!-- Display and enter values -->
-                        <input id="inputNumberDiv"  type="text" name="quant[0]"
-                            class="form-control input-number"
-                            value="0" min="0" max="1" maxlength="7"
-                            size="7"
-                            onchange='HANDLE_DATASET.imageSeriesInput(value,
-                                true, true, false);'>
-
-                        <!-- Plus button -->
-                        <div class="input-group-btn">
-                            <button type="button" id='plusButton'
-                                class="btn btn-info btn-number"
-                                data-type="plus" data-field="quant[0]">
-                                <div class="glyphicon glyphicon-triangle-right">
-                                </div>
-                            </button>
-                        </div>
-
-                        <!-- End button -->
-                        <div class="input-group-btn">
-                            <button type="button" id='endButton'
-                                class="btn btn-primary btn-number"
-                                data-type="plus"
-                                onclick='HANDLE_DATASET.imageSeriesInput(
-                                    10000000, true, true, false);'>
-                                <div class="glyphicon glyphicon-step-forward">
-                                </div>
-                                <span id='endButtonValue' >0</span>
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div id='sliderDiv' class="col-xs-12">
-                        <input id="slider" type='text'
-                            data-slider-id='imageSeriesSlider'
-                            data-slider-tooltip='hide'
-                            data-slider-handle='square' />
                     </div>
 
                 </div>
 
             </div>
-
         </div>
 
 

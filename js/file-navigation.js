@@ -497,7 +497,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                         if (itemList[keyTitle].collection === 'groups') {
                             type = 'folder';
-                            icon = 'glyphicon glyphicon-folder-close';
+                            // icon = 'glyphicon glyphicon-folder-close';
+                            icon = 'fa fa-folder';
                         }
 
                         if (itemList[keyTitle].collection === 'datasets') {
@@ -508,26 +509,35 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                                 switch (itemList[keyTitle].dataType) {
                                 case 'image-series':
-                                    icon = 'glyphicon glyphicon-certificate';
+                                    // icon = 'glyphicon
+                                    // glyphicon-certificate';
+                                    icon = 'fa fa-stack-overflow';
                                     break;
                                 case 'image':
-                                    icon = 'glyphicon glyphicon-picture';
+                                    // icon = 'glyphicon glyphicon-picture';
+                                    icon = 'fa fa-area-chart';
                                     break;
                                 case 'line':
-                                    icon = 'glyphicon glyphicon-signal';
+                                    // icon = 'glyphicon glyphicon-signal';
+                                    icon = 'fa fa-line-chart';
                                     break;
                                 case 'number':
-                                    icon = 'glyphicon glyphicon-barcode';
+                                    // icon = 'glyphicon glyphicon-barcode';
+                                    icon = 'fa fa-barcode';
                                     break;
                                 case 'text':
-                                    icon = 'glyphicon glyphicon-list';
+                                    /// icon = 'glyphicon glyphicon-list';
+                                    icon = 'fa fa-list';
                                     break;
                                 default:
-                                    icon = 'glyphicon glyphicon-question-sign';
+                                    // icon = 'glyphicon
+                                    // glyphicon-question-sign';
+                                    icon = 'fa fa-question-circle';
                                 }
 
                             } else {
-                                icon = 'glyphicon glyphicon-remove-sign';
+                                // icon = 'glyphicon glyphicon-remove-sign';
+                                icon = 'fa fa-minus-circle';
                             }
                         }
                     }
@@ -1012,7 +1022,8 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
     }
 
     if (data.node.data.type === 'folder') {
-        data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-open');
+        // data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-open');
+        data.instance.set_icon(data.node, 'fa fa-folder-open');
     }
 
 // Change the icon when a folder is closed
@@ -1024,7 +1035,8 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
     }
 
     if (data.node.data.type === 'folder') {
-        data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-close');
+        // data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-close');
+        data.instance.set_icon(data.node, 'fa fa-folder');
     }
 });
 

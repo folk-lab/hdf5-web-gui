@@ -3,17 +3,14 @@
     padding: 0;
     border: 0;
     outline: 0;
-    font-size: 100%;
     vertical-align: baseline;
     background: transparent;
 }
 
 body {
     font-family: "Lato", sans-serif;
-    /*
-    font-size: 18px;
-    margin: 0px;
-    */
+    font-size: 14px;
+    margin: 5px;
 }
 
 /* The nav menu */
@@ -22,31 +19,13 @@ body {
     width: 0;
     position: fixed;
     z-index: 1;
-    top: 0;
+    top: 54px;
     left: 0;
-    background-color: #111;
+    background-color: #222;
     overflow-x: hidden;
     transition: 0.3s;
-    padding-top: 60px;
-}
-
-.sidenav a,
-.sidenav span {
-    padding-top: 14px;
-    padding-right: 16px;
-    padding-bottom: 14px;
-    padding-left: 16px;
-    text-decoration: none;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-}
-
-.sidenav a:hover,
-.offcanvas a:focus,
-.sidenav span:hover,
-.offcanvas span:focus{
-    color: #f1f1f1;
+    padding-top: 0px;
+    margin: 5px;
 }
 
 /* Buttons in the nav menu */
@@ -63,6 +42,14 @@ body {
 .sidenav .pinbtn {
     right: 25px;
     margin-left: 50px;
+    padding-top: 14px;
+    padding-right: 16px;
+    padding-bottom: 14px;
+    padding-left: 16px;
+    text-decoration: none;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
 }
 
 

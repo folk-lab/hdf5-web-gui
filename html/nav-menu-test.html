@@ -55,7 +55,6 @@
         <!-- Side navigation menu -->
         <div id="sideNav" class="sidenav">
 
-
             <!-- A couple buttons on top of the menu -->
             <span class="closebtn fa-bars" onclick="NAV_MENU_TEST.closeNav()">
                 Data Storage
@@ -79,38 +78,40 @@
 
 
             <!-- The navigation bar -->
-            <ul>
+            <div id="navbar" class="navbar">
+                <ul>
 
-                <!-- A button to open the side navigation menu -->
-                <li>
-                    <a class="fa-bars" onclick="NAV_MENU_TEST.openNav()">
-                        Data Storage</a></li>
+                    <!-- A button to open the side navigation menu -->
+                    <li style="float:left">
+                        <a class="fa-bars" onclick="NAV_MENU_TEST.openNav()">
+                            Data Storage</a></li>
 
-                <!-- A mobile dropdown menu -->
-                <li style="float:right" class="dropdown">
-                    <a class="dropbtn fa-caret-down"> Options </a>
+                    <!-- A mobile dropdown menu -->
+                    <li class="dropdown">
+                        <a class="dropbtn fa-caret-down"> Options </a>
+
+                        <!-- Settings buttons -->
+                        <div class="dropdown-content">
+                            <a class="fa-lightbulb-o"> Theme</a>
+                            <a class="fa-sign-out"> Logout</a>
+                        </div>
+
+                    </li>
+
+                    <!-- Logo -->
+                    <li class="navbarbtnimg"> <a class="barimage">
+                        <img alt="max-iv-logo"
+                            src="../images/maxiv-logo-20x63.png"></a></li>
 
                     <!-- Settings buttons -->
-                    <div class="dropdown-content">
-                        <a class="fa-lightbulb-o"> Theme</a>
-                        <a class="fa-sign-out"> Logout</a>
-                    </div>
+                    <li class="navbarbtn">
+                        <a class="fa-sign-out"> Logout</a></li>
+                    <li class="navbarbtn">
+                        <a class="fa-lightbulb-o"> Theme</a></li>
 
-                </li>
+                </ul>
 
-                <!-- Logo -->
-                <li class="navbarbtnimg"> <a class="barimage">
-                    <img alt="max-iv-logo"
-                        src="../images/maxiv-logo-20x63.png"></a></li>
-
-                <!-- Settings buttons -->
-                <li class="navbarbtn">
-                    <a class="fa-sign-out"> Logout</a></li>
-                <li class="navbarbtn">
-                    <a class="fa-lightbulb-o"> Theme</a></li>
-
-            </ul>
-
+            </div>
         </div>
 
     </body>

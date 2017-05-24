@@ -1100,6 +1100,50 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
 
+        redrawPlotCanvas : function (timeDelay) {
+
+            var debug = true, plotHeight = DATA_DISPLAY.plotHeight;
+
+            if (DATA_DISPLAY.plotExists) {
+
+                // During a window resize event, the resize function will be
+                // called several times per second, on the order of 15 Hz! Best
+                // to wait a bit try to just resize once, as it's a bit costly
+                // for plotly to execute relyout
+                clearTimeout(DATA_DISPLAY.resizeTimer);
+
+                AJAX_SPINNER.startLoadingData(50);
+
+                DATA_DISPLAY.resizeTimer = setTimeout(function () {
+
+                    if (debug) {
+                        console.log('about to run Plotly.relayout');
+                    }
+
+                    // Calculate the plot dimensions and save them
+                    DATA_DISPLAY.calculatePlotSize();
+
+                    // Use smaller canvas when displaying text instead of
+                    // images
+                    if (DATA_DISPLAY.displayType === 'text') {
+                        plotHeight = 300;
+                    } else {
+                        plotHeight = DATA_DISPLAY.plotHeight;
+                    }
+
+                    Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                        width: DATA_DISPLAY.plotWidth,
+                        height: plotHeight,
+                    }).then(
+                        AJAX_SPINNER.doneLoadingData()
+                    );
+
+                }, timeDelay);
+            }
+
+        },
+
+
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
@@ -1646,44 +1690,13 @@ $('.btn-number').click(function (e) {
 // This function fires when the browser window is resized
 $(window).resize(function () {
 
-    var debug = true, plotHeight = DATA_DISPLAY.plotHeight;
+    var debug = false;
 
     if (debug) {
         console.log('wait for it...');
     }
 
-    if (DATA_DISPLAY.plotExists) {
-
-        // During a window resize event, the resize function will be called
-        // several times per second, on the order of 15 Hz! Best to wait a bit
-        // try to just resize once, as it's a bit costly for plotly to execute
-        // relyout
-        clearTimeout(DATA_DISPLAY.resizeTimer);
-
-        DATA_DISPLAY.resizeTimer = setTimeout(function () {
-
-            if (debug) {
-                console.log('about to run Plotly.relayout');
-            }
-
-            // Calculate the plot dimensions and save them
-            DATA_DISPLAY.calculatePlotSize();
-
-            // Use smaller canvas when displaying text instead of images
-            if (DATA_DISPLAY.displayType === 'text') {
-                plotHeight = 300;
-            } else {
-                plotHeight = DATA_DISPLAY.plotHeight;
-            }
-
-            Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-                width: DATA_DISPLAY.plotWidth,
-                height: plotHeight,
-            });
-
-        }, 200);
-
-    }
+    DATA_DISPLAY.redrawPlotCanvas(100);
 });
 
 
@@ -1699,7 +1712,7 @@ $(document).ready(function () {
     // Calculate the proper plot dimensions and save them
     DATA_DISPLAY.calculatePlotSize();
 
-    // Handle image series slider events
+    // // Handle image series slider events
     $('#slider').slider().on('slideStop', function (slideEvt) {
 
         // Get an image from the series
