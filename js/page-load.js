@@ -185,7 +185,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
             // Create the welcome message, which depends upon login status
             if (CAS_TICKET.isLoggedIn) {
-                messageRow1 = 'Welcome ' + CAS_TICKET.displayName + '!';
+                messageRow1 = 'Welcome ' + CAS_TICKET.firstName + '!';
                 messageRow2 = '(click stuff on the left)';
             } else {
                 messageRow1 = 'Welcome!';
