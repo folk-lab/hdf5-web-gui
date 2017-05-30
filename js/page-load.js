@@ -2,12 +2,12 @@
 'use strict';
 
 // External libraries
-var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
+var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
 
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
 
-        useDarkTheme : false,
+        useDarkTheme : true,
 
         // This function is to be called when the page is loaded
         //  - assumes the url has already been checked for a CAS ticket
@@ -41,6 +41,10 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
                         // Show or hide various items
                         PAGE_LOAD.toggleLoginItems();
+
+                        if (PAGE_LOAD.useDarkTheme) {
+                            THEME_TOGGLE.toggleTheme(true);
+                        }
 
                         // Load the plotly libraries after all the hard stuff
                         // is done - it takes a while and is not needed
@@ -102,7 +106,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
             }
 
             if (group === 2) {
-                scripts = ["../lib/js/plotly/1.26.1/plotly.min.js"];
+                scripts = ["../lib/js/plotly/1.21.2/plotly-latest.min.js"];
             }
 
             scripts.forEach(function (script) {

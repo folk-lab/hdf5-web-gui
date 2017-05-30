@@ -464,7 +464,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
@@ -497,7 +497,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                         if (itemList[keyTitle].collection === 'groups') {
                             type = 'folder';
-                            // icon = 'glyphicon glyphicon-folder-close';
                             icon = 'fa fa-folder';
                         }
 
@@ -509,34 +508,25 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                                 switch (itemList[keyTitle].dataType) {
                                 case 'image-series':
-                                    // icon = 'glyphicon
-                                    // glyphicon-certificate';
                                     icon = 'fa fa-stack-overflow';
                                     break;
                                 case 'image':
-                                    // icon = 'glyphicon glyphicon-picture';
                                     icon = 'fa fa-area-chart';
                                     break;
                                 case 'line':
-                                    // icon = 'glyphicon glyphicon-signal';
                                     icon = 'fa fa-line-chart';
                                     break;
                                 case 'number':
-                                    // icon = 'glyphicon glyphicon-barcode';
                                     icon = 'fa fa-barcode';
                                     break;
                                 case 'text':
-                                    /// icon = 'glyphicon glyphicon-list';
                                     icon = 'fa fa-list';
                                     break;
                                 default:
-                                    // icon = 'glyphicon
-                                    // glyphicon-question-sign';
                                     icon = 'fa fa-question-circle';
                                 }
 
                             } else {
-                                // icon = 'glyphicon glyphicon-remove-sign';
                                 icon = 'fa fa-minus-circle';
                             }
                         }
@@ -1022,7 +1012,6 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
     }
 
     if (data.node.data.type === 'folder') {
-        // data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-open');
         data.instance.set_icon(data.node, 'fa fa-folder-open');
     }
 
@@ -1035,7 +1024,6 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
     }
 
     if (data.node.data.type === 'folder') {
-        // data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-close');
         data.instance.set_icon(data.node, 'fa fa-folder');
     }
 });
@@ -1126,6 +1114,8 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
+                DATA_DISPLAY.imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayImage(data.node.data.target,
                     data.node.data.shapeDims, false, data.selected, true);
                 break;

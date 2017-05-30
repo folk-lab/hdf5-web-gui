@@ -49,7 +49,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("body").addClass('darkTheme');
 
                 // Plot control buttons
-                $("#logPlotButton").addClass('btn-darkTheme');
+                // $("#logPlotButton").addClass('btn-darkTheme');
                 $("#selectColorScheme").addClass('btn-darkTheme');
                 $("#selectPlotType").addClass('btn-darkTheme');
 
@@ -69,7 +69,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("body").removeClass('darkTheme');
 
                 // Plot control buttons
-                $("#logPlotButton").removeClass('btn-darkTheme');
+                // $("#logPlotButton").removeClass('btn-darkTheme');
                 $("#selectColorScheme").removeClass('btn-darkTheme');
                 $("#selectPlotType").removeClass('btn-darkTheme');
 

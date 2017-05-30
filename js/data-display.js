@@ -34,6 +34,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         imageIsDownsampled : false,
         imageZoomSection : false,
         usingOriginalImage : true,
+        imageTitle : 'Title goes here',
 
         lineValues : [],
         lineTitle : '',
@@ -58,7 +59,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             enableSeriesControls) {
 
             var i, debug = false, seriesMax = 0, endButtonWidth = '50px',
-                imageControlDiv = ['#plotControls'],
+                imageControlDiv = ['#plotControlType', '#plotControlLog',
+                    '#plotControlColor'],
                 seriesControlDiv = ['#imageSeriesControl'];
 
             // General plotting controls - show, hide
@@ -384,7 +386,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             layout = {
                 showlegend: false,
                 title : (DATA_DISPLAY.mobileDisplay === true ?
-                        '' : 'Title goes here'),
+                        '' : DATA_DISPLAY.imageTitle),
                 autosize: false,
                 width: DATA_DISPLAY.plotWidth,
                 height: DATA_DISPLAY.plotHeight,
@@ -984,7 +986,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // the keyword 'domain'
             layout = {
                 title : (DATA_DISPLAY.mobileDisplay === true ?
-                        '' : 'Title goes here'),
+                        '' : DATA_DISPLAY.imageTitle),
                 showlegend : false,
                 autosize : false,
 
@@ -1383,7 +1385,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Change the color map
         changeColor : function (colorscale) {
 
-            var debug = false;
+            var debug = true;
 
             if (debug) {
                 console.log('colorscale: ' + colorscale);
@@ -1405,6 +1407,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             var debug = false;
 
+            AJAX_SPINNER.startLoadingData(1);
+
             if (debug) {
                 console.log('useLog: ' + useLog);
             }
@@ -1424,21 +1428,25 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 if (debug) {
                     console.log('Log Plot!');
                 }
-                $("#logPlotButton").html('Log Plot!');
-                $("#logPlotButton").addClass('btn-success');
+                $("#logPlotButton").html(' Log Plot!');
+                $("#logPlotButtonMobile").html(' Log Plot!');
 
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
             } else {
                 if (debug) {
                     console.log('Log Plot?');
                 }
-                $("#logPlotButton").html('Log Plot?');
-                $("#logPlotButton").removeClass('btn-success');
+                $("#logPlotButton").html(' Log Plot?');
+                $("#logPlotButtonMobile").html(' Log Plot?');
 
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.initialDataValues;
             }
 
-            DATA_DISPLAY.updatePlotZData(false, true, false);
+            // Use a bit of a delay just so that the loading spinner has a
+            // chance to start up
+            setTimeout(function () {
+                DATA_DISPLAY.updatePlotZData(false, true, false);
+            }, 30);
         },
 
 
