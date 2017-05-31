@@ -178,10 +178,12 @@
                         <a class="fa-caret-down"> Plot Type</a>
 
                         <div class="dropdown-content">
-                            <a onclick="DATA_DISPLAY.changeType(
-                                    &quot;heatmap&quot;);"> 2D </a>
-                            <a onclick="DATA_DISPLAY.changeType(
-                                    &quot;surface&quot;);"> 3D </a>
+                            <a id="plotTypeheatmap" class="selected"
+                                onclick="DATA_DISPLAY.changeType(
+                                &quot;heatmap&quot;);"> 2D </a>
+                            <a id="plotTypesurface"
+                                onclick="DATA_DISPLAY.changeType(
+                                &quot;surface&quot;);"> 3D </a>
                         </div>
 
                     </li>
@@ -201,28 +203,39 @@
                         <a class="fa-caret-down"> Color Scale </a>
 
                         <div class="dropdown-content">
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Blackbod&quot;);"> Blackbod </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Bluered&quot;);"> Bluered </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Earth&quot;);"> Earth </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Electric&quot;);"> Electric </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Greens&quot;);"> Greens </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Greys&quot;);"> Greys </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Hot&quot;);"> Hot </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Jet&quot;);"> Jet </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Picnic&quot;);"> Picnic </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;Portland&quot;);"> Portland </a>
-                            <a onclick="DATA_DISPLAY.changeColor(
-                                    &quot;RdBu&quot;);"> RdBu </a>
+                            <a id="plotColorBlackbod"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Blackbod&quot;);"> Blackbod </a>
+                            <a id="plotColorBluered"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Bluered&quot;);"> Bluered </a>
+                            <a id="plotColorEarth"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Earth&quot;);"> Earth </a>
+                            <a id="plotColorElectric"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Electric&quot;);"> Electric </a>
+                            <a id="plotColorGreens"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Greens&quot;);"> Greens </a>
+                            <a id="plotColorGreys"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Greys&quot;);"> Greys </a>
+                            <a id="plotColorHot" class="selected"
+                               onclick="DATA_DISPLAY.changeColor(
+                                &quot;Hot&quot;);"> Hot </a>
+                            <a id="plotColorJet"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Jet&quot;);"> Jet </a>
+                            <a id="plotColorPicnic"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Picnic&quot;);"> Picnic </a>
+                            <a id="plotColorPortland"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;Portland&quot;);"> Portland </a>
+                            <a id="plotColorRdBu"
+                                onclick="DATA_DISPLAY.changeColor(
+                                &quot;RdBu&quot;);"> RdBu </a>
                         </div>
 
                     </li>
