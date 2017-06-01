@@ -83,7 +83,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705171221';
+                version = '?v=201706011527';
 
             if (group === 0) {
                 scripts = [
@@ -94,8 +94,6 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
 
             if (group === 1) {
                 scripts = [
-                    // "../lib/js/bootstrap/3.3.7/js/bootstrap.min.js",
-                    "../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js",
                     "../lib/js/jstree/3.2.1/jstree.min.js",
                     "../js/cas-login-logout.js",
                     "../js/data-display.js",
@@ -143,18 +141,15 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201705171221';
+            var cssFiles, version = '?v=201706011527';
 
             if (group === 0) {
                 cssFiles = [
                     '../lib/css/jstree/3.2.1/themes/default/style.min.css',
                     '../lib/css/jstree/3.2.1/themes/default-dark/' +
                         'style.min.css',
-                    '../lib/css/bootstrap-slider/9.7.0/' +
-                         'bootstrap-slider.min.css',
                     '../css/index.css',
                     '../css/plot-controls.css',
-                    // '../css/navmenu.css',
                     '../css/nav-menu.css',
                     '../css/nav-bar.css',
                     '../lib/css/font-awesome/4.7.0/css/font-awesome.min.css',
@@ -212,7 +207,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
 
             var i, debug = false, alwaysShow = ['#navMenu', '#navMenuMobile'],
                 whenLoggedInShow = ['#logoutButton', '#logoutButtonMobile',
-                    '#treeSectionDiv', '#plotContainer'],
+                    '#treeSectionDiv', '#displayContainer'],
                 whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
 
             if (debug) {

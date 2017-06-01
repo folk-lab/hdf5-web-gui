@@ -159,6 +159,32 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         },
 
 
+        imageSeriesStep : function (stepUp) {
+
+            var debug = false, imageIndex = 0;
+
+            // Need to add a check to see if an image series is being displayed
+
+            if (debug) {
+                console.log('DATA_DISPLAY.imageSeriesIndex: ' +
+                    DATA_DISPLAY.imageSeriesIndex);
+            }
+
+            if (stepUp) {
+                imageIndex = Number(DATA_DISPLAY.imageSeriesIndex) + 1;
+            } else {
+                imageIndex = Number(DATA_DISPLAY.imageSeriesIndex) - 1;
+            }
+
+            if (debug) {
+                console.log('imageIndex: ' + imageIndex);
+            }
+
+            HANDLE_DATASET.imageSeriesInput(imageIndex, true, true, false);
+
+        },
+
+
         // Handle input from image series control buttons
         // This assumes that displayImageSeriesInitial() has at some point
         // already been called
@@ -176,6 +202,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('max: ' + max);
             }
 
+            // Need to add a check to see if an image series is being displayed
+
             if (DATA_DISPLAY.isNumeric(imageIndex)) {
 
                 // Start the spinner
@@ -192,13 +220,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                 // Set image series entry field value
                 $("#inputNumberDiv").val(imageIndex);
-
-                // Set the slider value
-                $("#slider").slider({
-                    'data-value': imageIndex,
-                    'value': imageIndex,
-                });
-                $("#slider").slider('refresh');
+                $("#imageSeriesSlider").val(imageIndex);
 
                 DATA_DISPLAY.saveImageInfo(false, false, false, true, section,
                     imageIndex);
@@ -229,6 +251,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 );
             }
 
+            // If the given image index was not numeric, return to the
+            // beginning of the series
             HANDLE_DATASET.imageSeriesInput(0, false, true, false);
         },
 

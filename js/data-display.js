@@ -94,18 +94,15 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     'max' : seriesMax,
                 });
 
-                // Set the limits of the slider
-                $("#slider").slider({
-                    'data-value': 0,
-                    'value': 0,
-                    'min': 0,
-                    'max': seriesMax,
+                $("#imageSeriesSlider").val("0");
+                $('#imageSeriesSlider').attr({
+                    'min' : 0,
+                    'max' : seriesMax,
                 });
-                $("#slider").slider('refresh');
 
                 // Set the text of the start and end buttons
                 $('#startButtonValue').text(0);
-                $('#endButtonValue').text(seriesMax);
+                $('#endButtonValue').text(' ' + seriesMax);
 
                 // Set the width of the end button, depending on text size
                 endButtonWidth = seriesMax.toString().length * 10 + 40;
@@ -628,7 +625,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Check if an event is a zoom event
         isZoomEvent : function (eventdata) {
 
-            var debug = true, i = 0, zoomEvent = false,
+            var debug = false, i = 0, zoomEvent = false,
                 rangeKeys = ['xaxis.range[0]', 'xaxis.range[1]',
                     'yaxis.range[0]', 'yaxis.range[1]'],
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
@@ -816,7 +813,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 2D image
         handle2DZoom : function (eventdata) {
 
-            var debug = true, i = 0, ranges = [-1, -1, -1, -1],
+            var debug = false, i = 0, ranges = [-1, -1, -1, -1],
                 promises = [], newImageFetched = false, resetZoomEvent = false,
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
 
@@ -1115,7 +1112,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         redrawPlotCanvas : function (timeDelay) {
 
-            var debug = true, plotHeight = DATA_DISPLAY.plotHeight;
+            var debug = false, plotHeight = DATA_DISPLAY.plotHeight;
 
             if (DATA_DISPLAY.plotExists) {
 
@@ -1163,16 +1160,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             var debug = false, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
-                appWidth = $('#applicationContainer').width(),
-                appHeight = $('#applicationContainer').height(),
-                containerWidth = $('#plotContainer').width(),
-                containerHeight = $('#plotContainer').height(),
+                containerWidth = $('#displayContainer').width(),
+                containerHeight = $('#displayContainer').height(),
                 divWidth = $('#plotCanvasDiv').width(),
                 divHeight = $('#plotCanvasDiv').height();
 
             newPlotDivHeight = windowHeight - 80;
             if (DATA_DISPLAY.imageSeries) {
-                newPlotDivHeight -= 35;
+                newPlotDivHeight -= 55;
             }
 
             // For smaller screens, fuck padding
@@ -1196,8 +1191,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.imageSeries);
                 console.log('DATA_DISPLAY.mobileDisplay: ' +
                     DATA_DISPLAY.mobileDisplay);
-                console.log('appWidth:     ' + appWidth);
-                console.log('appHeight:    ' + appHeight);
                 console.log('windowWidth:  ' + windowWidth);
                 console.log('windowHeight: ' + windowHeight);
                 console.log('divWidth:     ' + divWidth);
@@ -1400,7 +1393,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Change the color map
         changeColor : function (colorscale) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('colorscale: ' + colorscale);
@@ -1742,12 +1735,5 @@ $(document).ready(function () {
 
     // Calculate the proper plot dimensions and save them
     DATA_DISPLAY.calculatePlotSize();
-
-    // // Handle image series slider events
-    $('#slider').slider().on('slideStop', function (slideEvt) {
-
-        // Get an image from the series
-        HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true, false);
-    });
 
 });

@@ -34,324 +34,285 @@
 
         <!-- Scripts need to verify CAS ticket -->
         <script type="text/javascript"
-            src="../js/server-communication.js?v=201705171221"></script>
+            src="../js/server-communication.js?v=201706011527"></script>
         <script type="text/javascript"
-            src="../js/cas-handle-ticket.js?v=201705171221"></script>
+            src="../js/cas-handle-ticket.js?v=201706011527"></script>
 
         <!-- Start the loading icon -->
         <script type="text/javascript" defer
-            src="../js/ajax-spinner.js?v=201705171221"></script>
+            src="../js/ajax-spinner.js?v=201706011527"></script>
         <link type="text/css" rel="stylesheet"
-            href="../css/loader.css?v=201705171221">
+            href="../css/loader.css?v=201706011527">
 
     </head>
 
 
     <body>
 
-        <!-- The main page content -->
-        <div id="main">
+        <!-- The navigation bar -->
+        <div id="navbar" class="navbar">
 
-            <!-- The navigation bar -->
-            <div id="navbar" class="navbar">
-                <ul>
+            <ul>
+                <!-- A button to open the side navigation menu -->
+                <li class="navbarbtn" style="float:left"
+                        onclick="NAV_MENU.menuButton()" >
+                    <a class="fa-bars"> Data Storage</a></li>
 
-                    <!-- A button to open the side navigation menu -->
-                    <li class="navbarbtn" style="float:left"
-                            onclick="NAV_MENU_TEST.menuButton()" >
-                        <a class="fa-bars">
-                            Data Storage</a></li>
+                <!-- A mobile dropdown menu for options -->
+                <li style="float:right" class="dropdown mobile">
 
-                    <!-- A mobile dropdown menu for options -->
-                    <li style="float:right" class="dropdown mobile">
-
-                        <a class="fa-caret-down"> Options </a>
-
-                        <!-- Settings buttons -->
-                        <div class="dropdown-content">
-                            <a class="fa-lightbulb-o"
-                                onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
-                            <a class="fa-sign-out"
-                                onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
-                        </div>
-
-                    </li>
-
-                    <!-- A mobile dropdown menu for plot control -->
-                    <li style="float:right" class="dropdown mobile">
-
-                        <a class="fa-caret-down"> Plot Control </a>
-
-                        <!-- Settings buttons -->
-                        <div class="dropdown-content">
-                            <ul>
-
-                                <!-- Plot type dropdown menu -->
-                                <li id="plotControlTypeMobile"
-                                    class="navbarbtn sub-dropdown">
-
-                                    <a class="fa-caret-down"> Plot Type</a>
-
-                                    <div class="sub-dropdown-content">
-                                        <a onclick="DATA_DISPLAY.changeType(
-                                                &quot;heatmap&quot;);"> 2D </a>
-                                        <a onclick="DATA_DISPLAY.changeType(
-                                                &quot;surface&quot;);"> 3D </a>
-                                    </div>
-
-                                </li>
-
-                                <!-- Log plot toggle -->
-                                <li id="plotControlLogMobile"
-                                    class="navbarbtn"
-                                    onclick='DATA_DISPLAY.toggleLogPlot()'>
-                                    <a id="logPlotButtonMobile"
-                                        class="fa-bar-chart"> Log Plot?</a>
-                                </li>
-
-                                <!-- Colorscale dropdown menu -->
-                                <li id="plotControlColorMobile"
-                                    class="navbarbtn sub-dropdown">
-
-                                    <a class="fa-caret-down"> Color Scale </a>
-
-                                    <div class="sub-dropdown-content">
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Blackbod&quot;);">
-                                                Blackbod </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Bluered&quot;);"> Bluered
-                                        </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Earth&quot;);"> Earth </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Electric&quot;);">
-                                                Electric </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Greens&quot;);"> Greens
-                                        </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Greys&quot;);"> Greys
-                                        </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Hot&quot;);"> Hot </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Jet&quot;);"> Jet </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Picnic&quot;);"> Picnic
-                                        </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;Portland&quot;);">
-                                                Portland </a>
-                                        <a onclick="DATA_DISPLAY.changeColor(
-                                                &quot;RdBu&quot;);"> RdBu </a>
-                                    </div>
-
-                                </li>
-                            </ul>
-                        </div>
-
-                    </li>
-
-                    <!-- Logo -->
-                    <li class="navbarbtnimg desktop"> <a class="barimage">
-                        <img alt="max-iv-logo"
-                            src="../images/maxiv-logo-20x63.png"></a></li>
+                    <a class="fa-caret-down"> Options </a>
 
                     <!-- Settings buttons -->
-                    <li class="navbarbtn desktop"
-                        onclick='CAS_LOGIN_LOGOUT.logout();'>
-                        <a class="fa-sign-out"> Logout</a>
+                    <div class="dropdown-content">
+                        <a class="fa-lightbulb-o"
+                            onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
+                        <a class="fa-sign-out"
+                            onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
+                    </div>
+
+                </li>
+
+                <!-- A mobile dropdown menu for plot control -->
+                <li style="float:right" class="dropdown mobile">
+
+                    <a class="fa-caret-down"> Plot Control </a>
+
+                    <!-- Settings buttons -->
+                    <div class="dropdown-content">
+                        <ul>
+
+                            <!-- Plot type dropdown menu -->
+                            <li id="plotControlTypeMobile"
+                                class="navbarbtn sub-dropdown">
+
+                                <a class="fa-caret-down"> Plot Type</a>
+
+                                <div class="sub-dropdown-content">
+                                    <a onclick="DATA_DISPLAY.changeType(
+                                            &quot;heatmap&quot;);"> 2D </a>
+                                    <a onclick="DATA_DISPLAY.changeType(
+                                            &quot;surface&quot;);"> 3D </a>
+                                </div>
+
+                            </li>
+
+                            <!-- Log plot toggle -->
+                            <li id="plotControlLogMobile" class="navbarbtn"
+                                onclick='DATA_DISPLAY.toggleLogPlot()'>
+                                <a id="logPlotButtonMobile"
+                                    class="fa-bar-chart"> Log Plot?</a>
+                            </li>
+
+                            <!-- Colorscale dropdown menu -->
+                            <li id="plotControlColorMobile"
+                                class="navbarbtn sub-dropdown">
+
+                                <a class="fa-caret-down"> Color Scale </a>
+
+                                <div class="sub-dropdown-content">
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Blackbod&quot;);">
+                                            Blackbod </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Bluered&quot;);"> Bluered
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Earth&quot;);"> Earth </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Electric&quot;);">
+                                            Electric </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Greens&quot;);"> Greens
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Greys&quot;);"> Greys
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Hot&quot;);"> Hot </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Jet&quot;);"> Jet </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Picnic&quot;);"> Picnic
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Portland&quot;);">
+                                            Portland </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;RdBu&quot;);"> RdBu </a>
+                                </div>
+
+                            </li>
+                        </ul>
+                    </div>
+
+                </li>
+
+                <!-- Logo -->
+                <li class="navbarbtnimg desktop"> <a class="barimage">
+                    <img alt="max-iv-logo"
+                        src="../images/maxiv-logo-20x63.png"></a></li>
+
+                <!-- Settings buttons -->
+                <li class="navbarbtn desktop"
+                    onclick='CAS_LOGIN_LOGOUT.logout();'>
+                    <a class="fa-sign-out"> Logout</a>
+                </li>
+
+                <li class="navbarbtn desktop"
+                    onclick='THEME_TOGGLE.toggleTheme();'>
+                    <a class="fa-lightbulb-o"> Theme</a>
+                </li>
+
+                <!-- Image Plot Controls -->
+
+                <!-- Plot type dropdown menu -->
+                <li id="plotControlType" style="display:none;"
+                    class="navbarbtn dropdown">
+
+                    <a class="fa-caret-down"> Plot Type</a>
+
+                    <div class="dropdown-content">
+                        <a id="plotTypeheatmap" class="selected"
+                            onclick="DATA_DISPLAY.changeType(
+                            &quot;heatmap&quot;);"> 2D </a>
+                        <a id="plotTypesurface"
+                            onclick="DATA_DISPLAY.changeType(
+                            &quot;surface&quot;);"> 3D </a>
+                    </div>
+
+                </li>
+
+                <!-- Log plot toggle -->
+                <li id="plotControlLog" style="display:none;"
+                    class="navbarbtn desktop"
+                    onclick='DATA_DISPLAY.toggleLogPlot()'>
+                    <a id="logPlotButton"
+                        class="fa-bar-chart"> Log Plot?</a>
+                </li>
+
+                <!-- Colorscale dropdown menu -->
+                <li id="plotControlColor" style="display:none;"
+                    class="navbarbtn dropdown">
+
+                    <a class="fa-caret-down"> Color Scale </a>
+
+                    <div class="dropdown-content">
+                        <a id="plotColorBlackbod"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Blackbod&quot;);"> Blackbod </a>
+                        <a id="plotColorBluered"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Bluered&quot;);"> Bluered </a>
+                        <a id="plotColorEarth"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Earth&quot;);"> Earth </a>
+                        <a id="plotColorElectric"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Electric&quot;);"> Electric </a>
+                        <a id="plotColorGreens"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Greens&quot;);"> Greens </a>
+                        <a id="plotColorGreys"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Greys&quot;);"> Greys </a>
+                        <a id="plotColorHot" class="selected"
+                           onclick="DATA_DISPLAY.changeColor(
+                            &quot;Hot&quot;);"> Hot </a>
+                        <a id="plotColorJet"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Jet&quot;);"> Jet </a>
+                        <a id="plotColorPicnic"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Picnic&quot;);"> Picnic </a>
+                        <a id="plotColorPortland"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;Portland&quot;);"> Portland </a>
+                        <a id="plotColorRdBu"
+                            onclick="DATA_DISPLAY.changeColor(
+                            &quot;RdBu&quot;);"> RdBu </a>
+                    </div>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <!-- Side navigation menu -->
+        <div id="sideNav" class="sidenav">
+            <div id="jstree_div"> </div>
+        </div>
+
+
+        <!-- Layout the plotting canvas, welcome message, image series controls
+             -->
+        <div id="displayContainer" class="container"
+            style="display:none;">
+
+            <!-- The plotting canvas -->
+            <div id="plotCanvasDiv"
+                style="display:none;"></div>
+
+
+            <!-- A simple welcome message -->
+            <div id="welcomeDiv" class="flex-container">
+                <div id="welcomeRow" style="display:none;"
+                    class="row animate-bottom">
+                    <div id="welcomeDiv1" class="flex-item"> </div>
+                    <div id="welcomeDiv2" class="flex-item"> </div>
+                </div>
+            </div>
+
+
+            <!-- Image Series Control -->
+            <div id='imageSeriesControl' class="navbar" style="display:none;" >
+
+                <!-- Image series buttons -->
+                <ul>
+                    <!-- Start button -->
+                    <li class="navbarbtn imageSeriesButton fa"
+                        style="float:left"
+                        onclick='HANDLE_DATASET.imageSeriesInput(0, true, true,
+                            false);'>
+                        0 <a class="fa fa-angle-double-left"> </a></li>
+
+                    <!-- Minus button -->
+                    <li class="navbarbtn imageSeriesButton" style="float:left"
+                        onclick='HANDLE_DATASET.imageSeriesStep(false);'>
+                        <a class="fa fa-angle-left"> </a></li>
+
+                    <!-- End button -->
+                    <li class="navbarbtn imageSeriesButton" style="float:right"
+                        onclick='HANDLE_DATASET.imageSeriesInput( 10000000,
+                            true, true, false);'>
+                        <a id='endButtonValue' class="fa
+                            fa-angle-double-right"> 0 </a>
                     </li>
 
-                    <li class="navbarbtn desktop"
-                        onclick='THEME_TOGGLE.toggleTheme();'>
-                        <a class="fa-lightbulb-o"> Theme</a>
-                    </li>
+                    <!-- Plus button -->
+                    <li class="navbarbtn imageSeriesButton" style="float:right"
+                        onclick='HANDLE_DATASET.imageSeriesStep(true);'>
+                        <a class="fa fa-angle-right"> </a></li>
 
-                    <!-- Image Plot Controls -->
-
-                    <!-- Plot type dropdown menu -->
-                    <li id="plotControlType" style="display:none;"
-                        class="navbarbtn dropdown">
-
-                        <a class="fa-caret-down"> Plot Type</a>
-
-                        <div class="dropdown-content">
-                            <a id="plotTypeheatmap" class="selected"
-                                onclick="DATA_DISPLAY.changeType(
-                                &quot;heatmap&quot;);"> 2D </a>
-                            <a id="plotTypesurface"
-                                onclick="DATA_DISPLAY.changeType(
-                                &quot;surface&quot;);"> 3D </a>
-                        </div>
-
-                    </li>
-
-                    <!-- Log plot toggle -->
-                    <li id="plotControlLog" style="display:none;"
-                        class="navbarbtn desktop"
-                        onclick='DATA_DISPLAY.toggleLogPlot()'>
-                        <a id="logPlotButton"
-                            class="fa-bar-chart"> Log Plot?</a>
-                    </li>
-
-                    <!-- Colorscale dropdown menu -->
-                    <li id="plotControlColor" style="display:none;"
-                        class="navbarbtn dropdown">
-
-                        <a class="fa-caret-down"> Color Scale </a>
-
-                        <div class="dropdown-content">
-                            <a id="plotColorBlackbod"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Blackbod&quot;);"> Blackbod </a>
-                            <a id="plotColorBluered"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Bluered&quot;);"> Bluered </a>
-                            <a id="plotColorEarth"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Earth&quot;);"> Earth </a>
-                            <a id="plotColorElectric"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Electric&quot;);"> Electric </a>
-                            <a id="plotColorGreens"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Greens&quot;);"> Greens </a>
-                            <a id="plotColorGreys"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Greys&quot;);"> Greys </a>
-                            <a id="plotColorHot" class="selected"
-                               onclick="DATA_DISPLAY.changeColor(
-                                &quot;Hot&quot;);"> Hot </a>
-                            <a id="plotColorJet"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Jet&quot;);"> Jet </a>
-                            <a id="plotColorPicnic"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Picnic&quot;);"> Picnic </a>
-                            <a id="plotColorPortland"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;Portland&quot;);"> Portland </a>
-                            <a id="plotColorRdBu"
-                                onclick="DATA_DISPLAY.changeColor(
-                                &quot;RdBu&quot;);"> RdBu </a>
-                        </div>
-
-                    </li>
+                    <!-- Display and enter values -->
+                    <span><input id="inputNumberDiv"  type="text"
+                        class="inputNumber" value="0" min="0" max="1"
+                        maxlength="7" size="7"
+                        onchange='HANDLE_DATASET.imageSeriesInput(value,
+                            true, true, false);' /></span>
 
                 </ul>
 
+                <!-- Image series slider bar -->
+                <input id="imageSeriesSlider" type='range' value="0" min="0"
+                    max="1" onchange='HANDLE_DATASET.imageSeriesInput(value,
+                        true, true, false);' />
 
             </div>
 
-            <!-- Side navigation menu -->
-            <div id="sideNav" class="sidenav">
-
-                <div id="jstree_div"></div>
-
-            </div>
-
-
-            <!-- Layout some stuff -->
-            <div class="container-fluid fill-height fill-width"
-                id="applicationContainer">
-
-                <!-- Container for plot canvas and controls -->
-                <div id="plotContainer" class="container"
-                    style="display:none;">
-
-                    <!-- The plotting canvas -->
-                    <div id="plotCanvasDiv" class="container col-xs-12"
-                        style="display:none;"></div>
-
-
-                    <!-- A simple welcome message -->
-                    <div id="welcomeDiv" class="flex-container">
-                        <div id="welcomeRow" style="display:none;"
-                            class="row animate-bottom">
-                            <div id="welcomeDiv1" class="flex-item"> </div>
-                            <div id="welcomeDiv2" class="flex-item"> </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Image Series Control -->
-                    <div id='imageSeriesControl' class="col-xs-12
-                        col-md-6 col-md-offset-2" style="display:none;">
-
-                        <div class="input-group col-xs-12">
-
-                            <!-- Start button -->
-                            <div class="input-group-btn">
-                                <button type="button" id='startButton'
-                                    class="btn-labels-large btn btn-primary
-                                    btn-number"  data-type="minus"
-                                    onclick='HANDLE_DATASET.imageSeriesInput(0,
-                                        true, true, false);'>
-                                    <span id='startButtonValue' >0</span>
-                                    <div class="glyphicon glyphicon-step-backward">
-                                    </div>
-                                </button>
-                            </div>
-
-                            <!-- Minus button -->
-                            <div class="input-group-btn">
-                                <button type="button" id='minusButton'
-                                    class="btn btn-info btn-number"
-                                    data-type="minus" data-field="quant[0]">
-                                    <div class="glyphicon glyphicon-triangle-left">
-                                    </div>
-                                </button>
-                            </div>
-
-                            <!-- Display and enter values -->
-                            <input id="inputNumberDiv"  type="text" name="quant[0]"
-                                class="form-control input-number"
-                                value="0" min="0" max="1" maxlength="7"
-                                size="7"
-                                onchange='HANDLE_DATASET.imageSeriesInput(value,
-                                    true, true, false);'>
-
-                            <!-- Plus button -->
-                            <div class="input-group-btn">
-                                <button type="button" id='plusButton'
-                                    class="btn btn-info btn-number"
-                                    data-type="plus" data-field="quant[0]">
-                                    <div class="glyphicon glyphicon-triangle-right">
-                                    </div>
-                                </button>
-                            </div>
-
-                            <!-- End button -->
-                            <div class="input-group-btn">
-                                <button type="button" id='endButton'
-                                    class="btn btn-primary btn-number"
-                                    data-type="plus"
-                                    onclick='HANDLE_DATASET.imageSeriesInput(
-                                        10000000, true, true, false);'>
-                                    <div class="glyphicon glyphicon-step-forward">
-                                    </div>
-                                    <span id='endButtonValue' >0</span>
-                                </button>
-                            </div>
-
-                        </div>
-
-                        <div id='sliderDiv' class="col-xs-12">
-                            <input id="slider" type='text'
-                                data-slider-id='imageSeriesSlider'
-                                data-slider-tooltip='hide'
-                                data-slider-handle='square' />
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
         </div>
-
 
         <!-- Process loading icon -->
         <div id="loader" style="display:none;"></div>

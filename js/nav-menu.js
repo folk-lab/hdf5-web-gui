@@ -4,52 +4,63 @@
 
 // The global variables for this applicaiton
 var DATA_DISPLAY,
-    NAV_MENU_TEST = {
+
+    NAV_MENU = {
 
         sideNavWidth : "350px",
-        // menuIsPinned : false,
+        displayOffsetWidth : "355px",
+        loaderOffsetWidth : "55px",
         menuIsPinned : true,
         menuIsOpen : false,
+        displayContainer : "displayContainer",
+        loaderContainer : "loader",
+        sideNavMenu : "sideNav",
 
         menuButton : function () {
 
-            if (NAV_MENU_TEST.menuIsOpen) {
-                NAV_MENU_TEST.closeNav();
+            if (NAV_MENU.menuIsOpen) {
+                NAV_MENU.closeNav();
             } else {
-                NAV_MENU_TEST.openNav();
+                NAV_MENU.openNav();
             }
         },
 
 
         openNav : function () {
-            document.getElementById("sideNav").style.width =
-                NAV_MENU_TEST.sideNavWidth;
 
-            if (NAV_MENU_TEST.menuIsPinned) {
+            // Slide the menu out
+            document.getElementById(NAV_MENU.sideNavMenu).style.width =
+                NAV_MENU.sideNavWidth;
 
-                // Slide page content out so that it is not hidden my the menu
-                document.getElementById(
-                    "applicationContainer"
-                ).style.marginLeft = NAV_MENU_TEST.sideNavWidth;
+            if (NAV_MENU.menuIsPinned) {
+
+                // Slide page content out so that it is not hidden by the menu
+                document.getElementById(NAV_MENU.displayContainer
+                    ).style.marginLeft = NAV_MENU.displayOffsetWidth;
+                document.getElementById(NAV_MENU.loaderContainer
+                    ).style.marginLeft = NAV_MENU.loaderOffsetWidth;
             }
 
-            NAV_MENU_TEST.menuIsOpen = true;
+            NAV_MENU.menuIsOpen = true;
 
+            // Redraw the plot, waiting a bit for nav menu animation
             DATA_DISPLAY.redrawPlotCanvas(300);
         },
 
         closeNav : function () {
 
             // Hide the menu
-            document.getElementById("sideNav").style.width = "0";
+            document.getElementById(NAV_MENU.sideNavMenu).style.width = "0";
 
             // Set page content to the left
-            document.getElementById(
-                "applicationContainer"
-            ).style.marginLeft = "0px";
+            document.getElementById(NAV_MENU.displayContainer
+                ).style.marginLeft = "0px";
+            document.getElementById(NAV_MENU.loaderContainer
+                ).style.marginLeft = "-75px";
 
-            NAV_MENU_TEST.menuIsOpen = false;
+            NAV_MENU.menuIsOpen = false;
 
+            // Redraw the plot, waiting a bit for nav menu animation
             DATA_DISPLAY.redrawPlotCanvas(300);
         },
 
@@ -57,28 +68,30 @@ var DATA_DISPLAY,
 
             var pinMenu;
 
-            console.log('NAV_MENU_TEST.menuIsPinned: ' +
-                NAV_MENU_TEST.menuIsPinned);
+            console.log('NAV_MENU.menuIsPinned: ' + NAV_MENU.menuIsPinned);
 
             // If not pinned, pin it.
-            pinMenu = !NAV_MENU_TEST.menuIsPinned;
+            pinMenu = !NAV_MENU.menuIsPinned;
 
             /// Change the state of the pin
-            NAV_MENU_TEST.menuIsPinned = !NAV_MENU_TEST.menuIsPinned;
+            NAV_MENU.menuIsPinned = !NAV_MENU.menuIsPinned;
             $('#pinBtn').toggleClass("down");
 
             if (pinMenu) {
 
-                // Slide page content out so that it is not hidden my the menu
-                document.getElementById(
-                    "applicationContainer"
-                ).style.marginLeft = NAV_MENU_TEST.sideNavWidth;
+                // Slide page content out so that it is not hidden by the menu
+                document.getElementById(NAV_MENU.displayContainer
+                    ).style.marginLeft = NAV_MENU.displayOffsetWidth;
+                document.getElementById(NAV_MENU.loaderContainer
+                    ).style.marginLeft = NAV_MENU.loaderOffsetWidth;
 
             } else {
 
-                document.getElementById(
-                    "applicationContainer"
-                ).style.marginLeft = "0px";
+                // Set page content to the left
+                document.getElementById(NAV_MENU.displayContainer
+                    ).style.marginLeft = "0px";
+                document.getElementById(NAV_MENU.loaderContainer
+                    ).style.marginLeft = "-75px";
 
             }
 
