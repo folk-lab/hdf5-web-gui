@@ -60,7 +60,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             var i, debug = false, seriesMax = 0, endButtonWidth = '50px',
                 imageControlDiv = ['#plotControlType', '#plotControlLog',
-                    '#plotControlColor'],
+                    '#plotControlColor', '#plotControlDownload',
+                    '#plotControlReset'],
                 seriesControlDiv = ['#imageSeriesControl'];
 
             // General plotting controls - show, hide
@@ -88,13 +89,13 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 seriesMax = DATA_DISPLAY.imageSeriesRange - 1;
 
                 // Reset the value and limits of the input field
-                $("#inputNumberDiv").val("0");
+                $("#inputNumberDiv").val(DATA_DISPLAY.imageSeriesIndex);
                 $('#inputNumberDiv').attr({
                     'min' : 0,
                     'max' : seriesMax,
                 });
 
-                $("#imageSeriesSlider").val("0");
+                $("#imageSeriesSlider").val(DATA_DISPLAY.imageSeriesIndex);
                 $('#imageSeriesSlider').attr({
                     'min' : 0,
                     'max' : seriesMax,
@@ -311,7 +312,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
                     'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d',
                     'zoomOut2d'],
-                displayModeBar: true,
+                // displayModeBar: true,
+                displayModeBar: false,
                 showTips: false,
                 scrollZoom: true,
             };
@@ -449,7 +451,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
                     'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d',
                     'zoomOut2d'],
-                displayModeBar: true,
+                // displayModeBar: true,
+                displayModeBar: false,
                 showTips: false,
                 scrollZoom: true,
             };
@@ -482,34 +485,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 });
         },
 
-
-        handle2DHover : function (data) {
-
-            var hoverInfo, hoverText,
-                hoverTSpan, hoverValues = [0, 0, 0],
-                zOriginal = 0, zNew = 0;
-
-            data.points.forEach(function (p) {
-                console.log(p);
-                zOriginal = p.z;
-                zNew = Math.exp(Math.LN10 * zOriginal);
-                console.log('zOriginal: ' + zOriginal);
-                console.log('zNew:      ' + zNew);
-                p.z = zNew;
-                console.log(p.z);
-            });
-
-            hoverInfo = $(".hovertext")[0];
-            hoverText = $('text', hoverInfo).get(0);
-            console.log(hoverInfo);
-            console.log(hoverText);
-
-            hoverTSpan = $('tspan', hoverText).get(2);
-            hoverValues[2] = hoverTSpan.innerHTML;
-            console.log(hoverValues);
-            $('tspan', hoverText).get(2).innerHTML = zNew;
-            console.log('zNew:      ' + zNew);
-        },
 
         // Fill x and y profile histograms, given the image and the dimensions
         // of the section of the image being viewed
@@ -1077,7 +1052,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
                     'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d',
                     'zoomOut2d'],
-                displayModeBar: true,
+                // displayModeBar: true,
+                displayModeBar: false,
                 showTips: false,
                 scrollZoom: true,
             };
@@ -1167,7 +1143,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             newPlotDivHeight = windowHeight - 80;
             if (DATA_DISPLAY.imageSeries) {
-                newPlotDivHeight -= 55;
+                newPlotDivHeight -= 33;
             }
 
             // For smaller screens, fuck padding
@@ -1274,7 +1250,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             if (newImageFetched) {
 
-                // Refill the 2Dor 3D plot, set the min and max so the color
+                // Refill the 2D or 3D plot, set the min and max so the color
                 // bar range updates
                 Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
                     z: [DATA_DISPLAY.dataValues],
@@ -1412,6 +1388,69 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     colorscale: DATA_DISPLAY.colorScale
                 }, [0]);
             }
+        },
+
+
+        // One of the plotly buttons remade - reset zoom / autoscale
+        resetZoom : function () {
+
+            var debug = true;
+
+            if (debug) {
+                console.log();
+            }
+
+            // Start the spinner
+            AJAX_SPINNER.startLoadingData(1);
+
+            // The simplest way to reset the zoom seems to be to just replot
+            // everything
+
+            // For an image series
+            if (DATA_DISPLAY.imageSeries) {
+
+                HANDLE_DATASET.displayImageSeriesInitial(
+                    DATA_DISPLAY.imageTargetUrl,
+                    false,
+                    DATA_DISPLAY.imageSeriesIndex
+                );
+
+
+            // For an image
+            } else {
+
+                HANDLE_DATASET.displayImage(
+                    DATA_DISPLAY.imageTargetUrl,
+                    DATA_DISPLAY.imageShapeDims,
+                    false,
+                    DATA_DISPLAY.imageNodeId,
+                    true
+                );
+            }
+
+        },
+
+
+        // One of the plotly buttons remade - download the plot image
+        downloadPlot : function () {
+
+            // Get the plot dimensions
+            var divWidth = $('#plotCanvasDiv').width(),
+                divHeight = $('#plotCanvasDiv').height();
+
+            // Start the spinner
+            AJAX_SPINNER.startLoadingData(1);
+
+            // Download that shit!
+            Plotly.downloadImage(
+                DATA_DISPLAY.plotCanvasDiv,
+                {
+                    format: 'png',
+                    width: divWidth,
+                    height: divHeight,
+                    filename: 'newplot'
+                }
+            );
         },
 
 
@@ -1669,46 +1708,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
     };
-
-
-// Handle images series button click events
-$('.btn-number').click(function (e) {
-
-    var fieldName, type, input, currentVal;
-
-    e.preventDefault();
-
-    fieldName = $(this).attr('data-field');
-    type = $(this).attr('data-type');
-    input = $("input[name='" + fieldName + "']");
-    currentVal = parseInt(input.val(), 10);
-
-    if (!isNaN(currentVal)) {
-        if (type === 'minus') {
-
-            if (currentVal > input.attr('min')) {
-                input.val(currentVal - 1).change();
-            }
-            if (currentVal === input.attr('min')) {
-                $(this).attr('disabled', true);
-            }
-
-        } else if (type === 'plus') {
-
-            if (currentVal < input.attr('max')) {
-                input.val(currentVal + 1).change();
-            }
-            if (currentVal === input.attr('max')) {
-                $(this).attr('disabled', true);
-            }
-
-        }
-
-    } else {
-        input.val(0);
-    }
-
-});
 
 
 // This function fires when the browser window is resized

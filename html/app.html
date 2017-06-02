@@ -149,22 +149,37 @@
                 </li>
 
                 <!-- Logo -->
-                <li class="navbarbtnimg desktop"> <a class="barimage">
-                    <img alt="max-iv-logo"
-                        src="../images/maxiv-logo-20x63.png"></a></li>
+                <li class="navbarbtnimg desktop" style="float:left">
+                    <a class="barimage">
+                        <img alt="max-iv-logo"
+                            src="../images/maxiv-logo-20x63.png"></a></li>
 
                 <!-- Settings buttons -->
-                <li class="navbarbtn desktop"
+                <li class="navbarbtn desktop" style="float:left"
                     onclick='CAS_LOGIN_LOGOUT.logout();'>
                     <a class="fa-sign-out"> Logout</a>
                 </li>
 
-                <li class="navbarbtn desktop"
+                <li class="navbarbtn desktop" style="float:left"
                     onclick='THEME_TOGGLE.toggleTheme();'>
                     <a class="fa-lightbulb-o"> Theme</a>
                 </li>
 
                 <!-- Image Plot Controls -->
+
+                <!-- Reset Zoom -->
+                <li id="plotControlReset" style="display:none;"
+                    class="navbarbtn desktop"
+                    onclick='DATA_DISPLAY.resetZoom()'>
+                    <a class="fa-home"> Reset Zoom</a>
+                </li>
+
+                <!-- Download image -->
+                <li id="plotControlDownload" style="display:none;"
+                    class="navbarbtn desktop"
+                    onclick='DATA_DISPLAY.downloadPlot()'>
+                    <a class="fa-camera"> Download Plot</a>
+                </li>
 
                 <!-- Plot type dropdown menu -->
                 <li id="plotControlType" style="display:none;"
@@ -272,19 +287,19 @@
                 <!-- Image series buttons -->
                 <ul>
                     <!-- Start button -->
-                    <li class="navbarbtn imageSeriesButton fa"
+                    <li class="imageSeriesButton fa"
                         style="float:left"
                         onclick='HANDLE_DATASET.imageSeriesInput(0, true, true,
                             false);'>
                         0 <a class="fa fa-angle-double-left"> </a></li>
 
                     <!-- Minus button -->
-                    <li class="navbarbtn imageSeriesButton" style="float:left"
+                    <li class="imageSeriesButton" style="float:left"
                         onclick='HANDLE_DATASET.imageSeriesStep(false);'>
                         <a class="fa fa-angle-left"> </a></li>
 
                     <!-- End button -->
-                    <li class="navbarbtn imageSeriesButton" style="float:right"
+                    <li class="imageSeriesButton" style="float:right"
                         onclick='HANDLE_DATASET.imageSeriesInput( 10000000,
                             true, true, false);'>
                         <a id='endButtonValue' class="fa
@@ -292,7 +307,7 @@
                     </li>
 
                     <!-- Plus button -->
-                    <li class="navbarbtn imageSeriesButton" style="float:right"
+                    <li class="imageSeriesButton" style="float:right"
                         onclick='HANDLE_DATASET.imageSeriesStep(true);'>
                         <a class="fa fa-angle-right"> </a></li>
 

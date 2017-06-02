@@ -258,7 +258,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // Setup an image series
-        displayImageSeriesInitial : function (targetUrl, shapeDims) {
+        displayImageSeriesInitial : function (targetUrl, shapeDims,
+            imageIndex) {
 
             var debug = false, nodeId;
 
@@ -274,11 +275,11 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
             // Save some information about the image series
             DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, true,
-                false, 0);
+                false, imageIndex);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
-                nodeId, 0, false)).then(
+                nodeId, imageIndex, false)).then(
 
                 function (completeImage) {
 

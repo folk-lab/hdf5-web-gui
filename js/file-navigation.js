@@ -1109,7 +1109,7 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
             case 'image-series':
                 AJAX_SPINNER.startLoadingData(10);
                 HANDLE_DATASET.displayImageSeriesInitial(data.node.data.target,
-                    data.node.data.shapeDims);
+                    data.node.data.shapeDims, 0);
                 break;
 
             case 'image':
