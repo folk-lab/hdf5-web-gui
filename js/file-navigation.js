@@ -1125,18 +1125,24 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             case 'line':
                 AJAX_SPINNER.startLoadingData(10);
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayLine(data.node.data.target,
-                    data.selected, data.node.text);
+                    data.selected, imageTitle);
                 break;
 
             case 'number':
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayText(data.node.data.target,
-                    data.node.text, '#ad3a3a');
+                    data.node.text, '#ad3a3a', imageTitle);
                 break;
 
             case 'text':
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayText(data.node.data.target,
-                    data.node.text, '#3a74ad');
+                    data.node.text, '#3a74ad', imageTitle);
                 break;
 
             default:

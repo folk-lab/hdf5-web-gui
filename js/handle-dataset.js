@@ -259,8 +259,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // Setup an image series
-        displayImageSeriesInitial : function (targetUrl, shapeDims,
-            imageIndex, imageSeriesTitle) {
+        displayImageSeriesInitial : function (targetUrl, shapeDims, imageIndex,
+            imageSeriesTitle) {
 
             var debug = false, nodeId;
 
@@ -326,7 +326,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // When a dataset is selected, display whatever text there is
-        displayText : function (inputUrl, inputText, fontColor) {
+        displayText : function (inputUrl, inputText, fontColor, imageTitle) {
 
             var debug = false;
 
@@ -351,7 +351,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                             }
 
                             // Display the data
-                            DATA_DISPLAY.drawText(inputText, value, fontColor);
+                            DATA_DISPLAY.drawText(inputText, value, fontColor,
+                                imageTitle);
                         }
                     );
 
@@ -359,7 +360,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             );
         },
 
-        displayLine : function (inputUrl, selectedId, nodeTitle) {
+        displayLine : function (inputUrl, selectedId, imageTitle) {
 
             var debug = false, valueUrl;
 
@@ -386,7 +387,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     DATA_DISPLAY.enableImagePlotControls(true, false, false);
 
                     // Display the data
-                    DATA_DISPLAY.plotLine(response.value, nodeTitle);
+                    DATA_DISPLAY.plotLine(response.value, imageTitle);
                 }
             );
 

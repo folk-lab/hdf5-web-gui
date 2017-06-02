@@ -129,7 +129,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         // Draw an empty plot when there is no data yet selected
-        drawText : function (itemTitle, itemValue, fontColor) {
+        drawText : function (itemTitle, itemValue, fontColor, imageTitle) {
 
             DATA_DISPLAY.showPlotCanvas();
 
@@ -170,7 +170,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             // The layout of the plotting canvas and axes.
             layout = {
-                "title" : '',
+                "title" : imageTitle,
+                "titlefont" : {
+                    "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                            "#DDDDCE" : "#000000"),
+                },
                 "showlegend" : false,
                 "autosize" : false,
                 "width" : DATA_DISPLAY.plotWidth,
@@ -248,7 +252,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             DATA_DISPLAY.enableImagePlotControls(false, false, false);
             DATA_DISPLAY.drawText('I don\'t know how to handle this yet!',
                 'Sorry for the inconvenience :(',
-                '#ad3a74');
+                '#ad3a74', '');
             console.log('inputUrl: ' + inputUrl);
         },
 
@@ -345,7 +349,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         draw3DPlot : function () {
 
-            var debug = false, data, layout, options, plotMargins, profiles;
+            var debug = false, data, layout, options, plotMargins, profiles,
+                imageTitle;
 
             // Get the proper x & y axes ranges if this image has been
             // downsampled
@@ -394,11 +399,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 plotMargins =  { l: 30, r: 20, b: 30, t: 20, };
             }
 
+            imageTitle = DATA_DISPLAY.imageTitle;
+            if (DATA_DISPLAY.imageSeries) {
+                imageTitle += '-' +
+                    DATA_DISPLAY.imageSeriesIndex;
+            }
+
             // And the layout
             layout = {
                 "showlegend" : false,
                 "title" : (DATA_DISPLAY.mobileDisplay === true ?
-                        '' : DATA_DISPLAY.imageTitle),
+                        '' : imageTitle),
                 "titlefont" : {
                     "color" : (DATA_DISPLAY.useDarkTheme === true ?
                             "#999" : "#000000"),
@@ -891,7 +902,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         draw2DPlot : function () {
 
             var debug = false, profiles, xProfilePlot, yProfilePlot, data,
-                layout, options, mainDataPlot, plotMargins = {};
+                layout, options, mainDataPlot, plotMargins = {}, imageTitle;
 
             if (debug) {
                 console.log('DATA_DISPLAY.imageShapeDims[0]' +
@@ -970,12 +981,18 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 plotMargins =  { l: 30, r: 20, b: 30, t: 20, };
             }
 
+            imageTitle = DATA_DISPLAY.imageTitle;
+            if (DATA_DISPLAY.imageSeries) {
+                imageTitle += '-' +
+                    DATA_DISPLAY.imageSeriesIndex;
+            }
+
             // The layout of the plotting canvas and axes. Note that the amount
             // of space each plot takes up is a range from 0 to 1, and follows
             // the keyword 'domain'
             layout = {
                 "title" : (DATA_DISPLAY.mobileDisplay === true ?
-                        '' : DATA_DISPLAY.imageTitle),
+                        '' : imageTitle),
                 "titlefont" : {
                     "color" : (DATA_DISPLAY.useDarkTheme === true ?
                             "#DDDDCE" : "#000000"),
@@ -1194,7 +1211,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         // Plot the data!
-        plotLine : function (value, nodeTitle) {
+        plotLine : function (value, imageTitle) {
 
             DATA_DISPLAY.displayType = 'line';
 
@@ -1203,7 +1220,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             DATA_DISPLAY.calculatePlotSize();
 
             DATA_DISPLAY.lineValues = value;
-            DATA_DISPLAY.lineTitle = nodeTitle;
+            DATA_DISPLAY.lineTitle = imageTitle;
 
             DATA_DISPLAY.drawLine(DATA_DISPLAY.lineValues,
                 DATA_DISPLAY.lineTitle);
