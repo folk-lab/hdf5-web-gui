@@ -464,7 +464,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
@@ -1032,7 +1032,7 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
 // When an item in the tree is clicked, do some stuff
 $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
-    var debug = false, keyData, keyNode;
+    var debug = false, keyData, keyNode, imageTitle;
 
     // Open or close the node
     // data.instance.toggle_node(data.node);
@@ -1108,16 +1108,19 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             case 'image-series':
                 AJAX_SPINNER.startLoadingData(10);
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayImageSeriesInitial(data.node.data.target,
-                    data.node.data.shapeDims, 0);
+                    data.node.data.shapeDims, 0, imageTitle);
                 break;
 
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
-                DATA_DISPLAY.imageTitle = data.node.data.filePath + '/' +
+                imageTitle = data.node.data.filePath + '/' +
                     data.node.data.h5Path;
                 HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.node.data.shapeDims, false, data.selected, true);
+                    data.node.data.shapeDims, false, data.selected, true,
+                    imageTitle);
                 break;
 
             case 'line':

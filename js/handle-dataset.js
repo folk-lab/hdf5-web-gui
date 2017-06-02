@@ -36,7 +36,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
         // When an image is selected, get it and plot it
         displayImage : function (inputUrl, shapeDims, section, nodeId,
-            newImage) {
+            newImage, imageTitle) {
 
             // Get the data
             return $.when(HANDLE_DATASET.getImage(inputUrl, section,
@@ -46,7 +46,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     // Save some information about the image
                     DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims,
-                        newImage, section, false);
+                        newImage, section, false, imageTitle);
 
                     DATA_DISPLAY.initializeImageData(value);
 
@@ -54,7 +54,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     // be false
                     if (newImage) {
                         // Enable plot controls
-                        DATA_DISPLAY.enableImagePlotControls(true, false);
+                        DATA_DISPLAY.enableImagePlotControls(true, true,
+                            false);
 
                         // Plot the data
                         DATA_DISPLAY.plotData();
@@ -259,7 +260,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
         // Setup an image series
         displayImageSeriesInitial : function (targetUrl, shapeDims,
-            imageIndex) {
+            imageIndex, imageSeriesTitle) {
 
             var debug = false, nodeId;
 
@@ -275,7 +276,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
             // Save some information about the image series
             DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, true,
-                false, imageIndex);
+                false, imageIndex, imageSeriesTitle);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
@@ -284,7 +285,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 function (completeImage) {
 
                     // Enable some plot controls
-                    DATA_DISPLAY.enableImagePlotControls(true, true);
+                    DATA_DISPLAY.enableImagePlotControls(true, true, true);
 
                     // Plot the data
                     DATA_DISPLAY.initializeImageData(completeImage);
@@ -380,6 +381,9 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     if (debug) {
                         console.log(response.value);
                     }
+
+                    // Enable some plot controls
+                    DATA_DISPLAY.enableImagePlotControls(true, false, false);
 
                     // Display the data
                     DATA_DISPLAY.plotLine(response.value, nodeTitle);

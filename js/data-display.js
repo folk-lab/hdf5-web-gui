@@ -55,16 +55,26 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
         // Enable or disable various image and image series controls
-        enableImagePlotControls : function (enableImageControls,
-            enableSeriesControls) {
+        enableImagePlotControls : function (enablePlotControls,
+            enableImageControls, enableSeriesControls) {
 
             var i, debug = false, seriesMax = 0, endButtonWidth = '50px',
-                imageControlDiv = ['#plotControlType', '#plotControlLog',
-                    '#plotControlColor', '#plotControlDownload',
+                plotControlDiv = [ '#plotControlDownload',
                     '#plotControlReset'],
+                imageControlDiv = ['#plotControlType', '#plotControlLog',
+                    '#plotControlColor' ],
                 seriesControlDiv = ['#imageSeriesControl'];
 
-            // General plotting controls - show, hide
+            // General plot controls - show, hide
+            for (i = 0; i < plotControlDiv.length; i += 1) {
+                if (enablePlotControls) {
+                    $(plotControlDiv[i]).show();
+                } else {
+                    $(plotControlDiv[i]).hide();
+                }
+            }
+
+            // General image controls - show, hide
             for (i = 0; i < imageControlDiv.length; i += 1) {
                 if (enableImageControls) {
                     $(imageControlDiv[i]).show();
@@ -123,7 +133,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.showPlotCanvas();
 
-            DATA_DISPLAY.enableImagePlotControls(false, false);
+            DATA_DISPLAY.enableImagePlotControls(false, false, false);
 
             var debug = false, data, layout, options, mainDataPlot, string1,
                 string2;
@@ -235,7 +245,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         displayErrorMessage : function (inputUrl) {
-            DATA_DISPLAY.enableImagePlotControls(false, false);
+            DATA_DISPLAY.enableImagePlotControls(false, false, false);
             DATA_DISPLAY.drawText('I don\'t know how to handle this yet!',
                 'Sorry for the inconvenience :(',
                 '#ad3a74');
@@ -1274,6 +1284,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     }],
                 }, [0]);
 
+                // Set the ranges of the 2D plot properly - otherwise empty
+                // bands will appears when not centered on data.
                 if (DATA_DISPLAY.plotDimension === 2) {
                     if (debug) {
                         console.log('DATA_DISPLAY.imageZoomSection:');
@@ -1284,8 +1296,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     }
 
                     if (setAxesRange) {
-                        // Set the ranges of the 2D plot properly - otherwise
-                        // empty bands will appears when not centered on data.
                         // Also, the domain needs to be set again, not sure
                         // why...
                         Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
@@ -1304,6 +1314,15 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                             },
                         });
                     }
+                }
+
+                // If an image series, change the title
+                if (DATA_DISPLAY.imageSeries) {
+                    Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                        "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                                '' : DATA_DISPLAY.imageTitle + '-' +
+                                DATA_DISPLAY.imageSeriesIndex),
+                    });
                 }
 
             } else {
@@ -1417,7 +1436,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
             // For an image
-            } else {
+            } else if (DATA_DISPLAY.displayType === 'image') {
 
                 HANDLE_DATASET.displayImage(
                     DATA_DISPLAY.imageTargetUrl,
@@ -1426,6 +1445,13 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.imageNodeId,
                     true
                 );
+
+            // For a line
+            } else if (DATA_DISPLAY.displayType === 'line') {
+
+                DATA_DISPLAY.drawLine(DATA_DISPLAY.lineValues,
+                    DATA_DISPLAY.lineTitle);
+
             }
 
         },
@@ -1667,9 +1693,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //------------------------------------------------
         //
         saveImageInfo : function (targetUrl, nodeId, shapeDims, newImage,
-            section, imageIndex) {
+            section, imageIndex, imageTitle) {
 
-            var debug = false;
+            var debug = true;
 
             // Save data, if provided
             if (targetUrl) {
@@ -1693,7 +1719,16 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.imageSeriesIndex = imageIndex;
 
+            // Set the plot title
+            if (imageTitle) {
+                DATA_DISPLAY.imageTitle = imageTitle;
+            }
+
             if (debug) {
+                console.log('DATA_DISPLAY.imageTitle: ' +
+                    DATA_DISPLAY.imageTitle);
+                console.log('DATA_DISPLAY.imageSeriesIndex: ' +
+                    DATA_DISPLAY.imageSeriesIndex);
                 console.log('DATA_DISPLAY.imageShapeDims[0]' +
                     DATA_DISPLAY.imageShapeDims[0]);
                 console.log('DATA_DISPLAY.imageShapeDims[1]' +
