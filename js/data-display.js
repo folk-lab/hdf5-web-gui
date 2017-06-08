@@ -1122,7 +1122,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 // During a window resize event, the resize function will be
                 // called several times per second, on the order of 15 Hz! Best
                 // to wait a bit try to just resize once, as it's a bit costly
-                // for plotly to execute relyout
+                // for plotly to execute relayout
                 clearTimeout(DATA_DISPLAY.resizeTimer);
 
                 AJAX_SPINNER.startLoadingData(50);
@@ -1607,7 +1607,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //
         initializeImageData : function (value) {
 
-            var debug = false;
+            var debug = true;
 
             DATA_DISPLAY.dataValues = value;
 

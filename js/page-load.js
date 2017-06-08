@@ -95,6 +95,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
             if (group === 1) {
                 scripts = [
                     "../lib/js/jstree/3.2.1/jstree.min.js",
+                    "../lib/js/mobile-check/mobile-check.js",
                     "../js/cas-login-logout.js",
                     "../js/data-display.js",
                     "../js/handle-dataset.js",

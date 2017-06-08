@@ -992,7 +992,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         setTreeDivHeight : function () {
 
             var window_height = $(window).height(),
-                // content_height = window_height - 110;
                 content_height = window_height - 80;
 
             $('#treeSectionDiv').height(content_height);

@@ -7,15 +7,18 @@ var DATA_DISPLAY,
 
     NAV_MENU = {
 
-        sideNavWidth : "350px",
-        displayOffsetWidth : "355px",
-        loaderOffsetWidth : "55px",
-        menuIsPinned : true,
-        menuIsOpen : false,
-        displayContainer : "displayContainer",
-        loaderContainer : "loader",
-        sideNavMenu : "sideNav",
+        "sideNavWidth" : "350px",
+        "displayOffsetWidth" : "355px",
+        "loaderOffsetWidth" : "55px",
+        "menuIsPinned" : true,
+        "menuIsOpen" : false,
+        "displayContainer" : "displayContainer",
+        "loaderContainer" : "loader",
+        "sideNavMenu" : "sideNav",
+        "mobileView" : undefined,
 
+
+        // If the menu button is pressed
         menuButton : function () {
 
             if (NAV_MENU.menuIsOpen) {
@@ -26,6 +29,7 @@ var DATA_DISPLAY,
         },
 
 
+        // Open the side menu
         openNav : function () {
 
             // Slide the menu out
@@ -33,20 +37,26 @@ var DATA_DISPLAY,
                 NAV_MENU.sideNavWidth;
 
             if (NAV_MENU.menuIsPinned) {
+                if (!NAV_MENU.mobileView) {
 
-                // Slide page content out so that it is not hidden by the menu
-                document.getElementById(NAV_MENU.displayContainer
-                    ).style.marginLeft = NAV_MENU.displayOffsetWidth;
-                document.getElementById(NAV_MENU.loaderContainer
-                    ).style.marginLeft = NAV_MENU.loaderOffsetWidth;
+                    // Slide page content out so that it is not hidden by the
+                    // menu
+                    document.getElementById(NAV_MENU.displayContainer
+                        ).style.marginLeft = NAV_MENU.displayOffsetWidth;
+                    document.getElementById(NAV_MENU.loaderContainer
+                        ).style.marginLeft = NAV_MENU.loaderOffsetWidth;
+
+                    // Redraw the plot, waiting a bit for nav menu animation
+                    DATA_DISPLAY.redrawPlotCanvas(300);
+
+                }
             }
 
             NAV_MENU.menuIsOpen = true;
-
-            // Redraw the plot, waiting a bit for nav menu animation
-            DATA_DISPLAY.redrawPlotCanvas(300);
         },
 
+
+        // Close the side menu
         closeNav : function () {
 
             // Hide the menu
@@ -60,10 +70,19 @@ var DATA_DISPLAY,
 
             NAV_MENU.menuIsOpen = false;
 
-            // Redraw the plot, waiting a bit for nav menu animation
-            DATA_DISPLAY.redrawPlotCanvas(300);
+            if (NAV_MENU.menuIsPinned) {
+                if (!NAV_MENU.mobileView) {
+
+                    // Redraw the plot, waiting a bit for nav menu animation
+                    DATA_DISPLAY.redrawPlotCanvas(300);
+
+                }
+            }
         },
 
+
+        // This is not being used at the moment, and it is not setup for mobile
+        // use
         pinNav : function () {
 
             var pinMenu;
@@ -98,4 +117,20 @@ var DATA_DISPLAY,
             console.log('pinMenu: ' + pinMenu);
         },
 
+        windowResizeEvent : function () {
+            NAV_MENU.mobileView = window.mobilecheck();
+        }
+
     };
+
+
+// This function fires when the browser window is resized
+$(window).resize(function () {
+    NAV_MENU.windowResizeEvent();
+});
+
+
+// This function fires when the page is ready
+$(document).ready(function () {
+    NAV_MENU.mobileView = window.mobilecheck();
+});
