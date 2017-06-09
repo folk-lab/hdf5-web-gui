@@ -10,7 +10,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     {
         plotCanvasDiv : document.getElementById('plotCanvasDiv'),
         plotExists : false,
-        colorScale : 'Jet',
+        colorScale : 'Picnic',
         plotLogValues : false,
         plotType : 'heatmap',
         plotDimension : 2,
@@ -1484,16 +1484,22 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Start the spinner
             AJAX_SPINNER.startLoadingData(1);
 
-            // Download that shit!
-            Plotly.downloadImage(
-                DATA_DISPLAY.plotCanvasDiv,
-                {
-                    format: 'png',
-                    width: divWidth,
-                    height: divHeight,
-                    filename: 'newplot'
-                }
-            );
+            // Download that shit! Wait a bit so that the loader is visible :)
+            setTimeout(function () {
+                Plotly.downloadImage(
+                    DATA_DISPLAY.plotCanvasDiv,
+                    {
+                        format: 'png',
+                        width: divWidth,
+                        height: divHeight,
+                        filename: 'newplot'
+                    }
+                ).then(
+                    // There seems to be a delay between when plotly is doen
+                    // creating 3D images, and when the download dialog appears
+                    AJAX_SPINNER.doneLoadingData(1000)
+                );
+            }, 50);
         },
 
 

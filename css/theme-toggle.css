@@ -27,11 +27,6 @@
     background-color: #222;
 }
 
-/* Modify the navmenu dark theme */
-.navmenu-inverse {
-    color: #999;
-}
-
 /* Modify the jstree dark theme */
 .jstree-default-dark {
     background: #222;

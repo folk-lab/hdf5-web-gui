@@ -36,6 +36,8 @@ var DATA_DISPLAY,
             document.getElementById(NAV_MENU.sideNavMenu).style.width =
                 NAV_MENU.sideNavWidth;
 
+            NAV_MENU.mobileView = window.mobilecheck();
+
             if (NAV_MENU.menuIsPinned) {
                 if (!NAV_MENU.mobileView) {
 
@@ -68,7 +70,7 @@ var DATA_DISPLAY,
             document.getElementById(NAV_MENU.loaderContainer
                 ).style.marginLeft = "-75px";
 
-            NAV_MENU.menuIsOpen = false;
+            NAV_MENU.mobileView = window.mobilecheck();
 
             if (NAV_MENU.menuIsPinned) {
                 if (!NAV_MENU.mobileView) {
@@ -78,6 +80,8 @@ var DATA_DISPLAY,
 
                 }
             }
+
+            NAV_MENU.menuIsOpen = false;
         },
 
 
@@ -117,8 +121,19 @@ var DATA_DISPLAY,
             console.log('pinMenu: ' + pinMenu);
         },
 
+
         windowResizeEvent : function () {
+
             NAV_MENU.mobileView = window.mobilecheck();
+
+            // Make sure the margins are set all the way to the left if in a
+            // mobile view, otherwise errors may occur
+            if (NAV_MENU.mobileView) {
+                document.getElementById(NAV_MENU.displayContainer
+                    ).style.marginLeft = "0px";
+                document.getElementById(NAV_MENU.loaderContainer
+                    ).style.marginLeft = "-75px";
+            }
         }
 
     };
@@ -127,10 +142,4 @@ var DATA_DISPLAY,
 // This function fires when the browser window is resized
 $(window).resize(function () {
     NAV_MENU.windowResizeEvent();
-});
-
-
-// This function fires when the page is ready
-$(document).ready(function () {
-    NAV_MENU.mobileView = window.mobilecheck();
 });

@@ -3,8 +3,8 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #222;
-    color: #DDDDCE;
+    background-color: #cfe8fb;
+    color: #000;
 }
 
 .navbar li {
@@ -12,12 +12,21 @@
 }
 
 .navbar li a:hover {
+    background-color: #e7f4f9;
+}
+
+.navbar-darkTheme ul {
+    background-color: #222;
+    color: #DDDDCE;
+}
+
+.navbar-darkTheme li a:hover {
     background-color: #111;
 }
 
 .navbarbtn {
     display: inline-block;
-    color: #DDDDCE;
+    color: #000;
     text-align: center;
     display: inline-block;
     padding-top: 16px;
@@ -29,6 +38,14 @@
 }
 
 .navbarbtn:hover {
+    background-color: #e7f4f9;
+}
+
+.navbarbtn-darkTheme {
+    color: #DDDDCE;
+}
+
+.navbarbtn-darkTheme:hover {
     background-color: #111;
 }
 
@@ -53,10 +70,16 @@
 .sub-dropdown-content {
     display: none;
     position: absolute;
-    background-color: #222;
-    min-width: 160px;
+    background-color: #cfe8fb;
+    min-width: 100px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1002;
+}
+
+.dropdown-content i,
+.sub-dropdown-content i {
+    min-width: 25px;
+    text-align: center;
 }
 
 .dropdown-content a,
@@ -83,6 +106,12 @@
     display: block;
 }
 
+
+.dropdown-content-darkTheme,
+.sub-dropdown-content-darkTheme {
+    background-color: #222;
+}
+
 /* Mobile stuff */
 .mobile {
     display: none;
@@ -99,5 +128,9 @@
 
 /* Selected items */
 .selected {
+    background-color: #70a0ff;
+}
+
+.selected-darkTheme {
     background-color: #572424;
 }

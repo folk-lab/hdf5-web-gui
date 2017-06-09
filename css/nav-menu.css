@@ -21,11 +21,15 @@ body {
     z-index: 1;
     top: 54px;
     left: 0;
-    background-color: #222;
+    background-color: #cfe8fb;
     overflow-x: hidden;
     transition: 0.3s;
     padding-top: 0px;
     margin: 5px;
+}
+
+.sidenav-darkTheme {
+    background-color: #222;
 }
 
 /* Buttons in the nav menu */

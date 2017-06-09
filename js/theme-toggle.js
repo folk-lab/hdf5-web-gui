@@ -11,7 +11,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         toggleTheme : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             // See if this is a toggle or if a particular theme has been
             // selected
@@ -48,11 +48,6 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
                 $("body").addClass('darkTheme');
 
-                // Plot control buttons
-                // $("#logPlotButton").addClass('btn-darkTheme');
-                $("#selectColorScheme").addClass('btn-darkTheme');
-                $("#selectPlotType").addClass('btn-darkTheme');
-
                 // Image series buttons
                 $("#startButton").addClass('btn-darkTheme');
                 $("#endButton").addClass('btn-darkTheme');
@@ -61,17 +56,26 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#inputNumberDiv").addClass('btn-darkTheme');
 
                 // Side menu
-                $("#navMenu").addClass('navmenu-inverse');
-                $("#navMenu").removeClass('navmenu-default');
+                $("#sideNav").addClass('sidenav-darkTheme');
+
+                // Nav bar
+                $("#navbar").addClass('navbar-darkTheme');
+                $("#data-storage-button").addClass('navbarbtn-darkTheme');
+                $("#logout-btn").addClass('navbarbtn-darkTheme');
+                $("#theme-toggle-btn").addClass('navbarbtn-darkTheme');
+
+                // Plot control
+                $("#plotControlColor").addClass('navbarbtn-darkTheme');
+                $("#plotControlLog").addClass('navbarbtn-darkTheme');
+                $("#plotControlType").addClass('navbarbtn-darkTheme');
+                $("#plotControlReset").addClass('navbarbtn-darkTheme');
+                $("#plotControlDownload").addClass('navbarbtn-darkTheme');
+                $("#plot-type-list").addClass('dropdown-content-darkTheme');
+                $("#color-scale-list").addClass('dropdown-content-darkTheme');
 
             } else {
 
                 $("body").removeClass('darkTheme');
-
-                // Plot control buttons
-                // $("#logPlotButton").removeClass('btn-darkTheme');
-                $("#selectColorScheme").removeClass('btn-darkTheme');
-                $("#selectPlotType").removeClass('btn-darkTheme');
 
                 // Image series buttons
                 $("#startButton").removeClass('btn-darkTheme');
@@ -81,8 +85,24 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#inputNumberDiv").removeClass('btn-darkTheme');
 
                 // Side menu
-                $("#navMenu").removeClass('navmenu-inverse');
-                $("#navMenu").addClass('navmenu-default');
+                $("#sideNav").removeClass('sidenav-darkTheme');
+
+                // Nav bar
+                $("#navbar").removeClass('navbar-darkTheme');
+                $("#data-storage-button").removeClass('navbarbtn-darkTheme');
+                $("#logout-btn").removeClass('navbarbtn-darkTheme');
+                $("#theme-toggle-btn").removeClass('navbarbtn-darkTheme');
+
+                // Plot control
+                $("#plotControlColor").removeClass('navbarbtn-darkTheme');
+                $("#plotControlLog").removeClass('navbarbtn-darkTheme');
+                $("#plotControlType").removeClass('navbarbtn-darkTheme');
+                $("#plotControlReset").removeClass('navbarbtn-darkTheme');
+                $("#plotControlDownload").removeClass('navbarbtn-darkTheme');
+                $("#plot-type-list").removeClass('dropdown-content-darkTheme');
+                $("#color-scale-list").removeClass(
+                    'dropdown-content-darkTheme'
+                );
 
             }
         },
@@ -124,11 +144,10 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
             // Changec color choice - 'Hot' looks nicer in a dark theme I think
             if (DATA_DISPLAY.useDarkTheme) {
-                DATA_DISPLAY.colorScale = 'Hot';
+                DATA_DISPLAY.changeColor('Hot');
             } else {
-                DATA_DISPLAY.colorScale = 'Jet';
+                DATA_DISPLAY.changeColor('Picnic');
             }
-            $('#selectColorScheme').val(DATA_DISPLAY.colorScale);
 
             // The easiest solution for images and lines seems to be just to
             // redraw everything - slower, but it avoids many issues..

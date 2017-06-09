@@ -54,8 +54,8 @@
 
             <ul>
                 <!-- A button to open the side navigation menu -->
-                <li class="navbarbtn" style="float:left"
-                        onclick="NAV_MENU.menuButton()" >
+                <li id="data-storage-button" class="navbarbtn"
+                    style="float:left" onclick="NAV_MENU.menuButton()">
                     <a class="fa-bars"> Data Storage</a></li>
 
                 <!-- A mobile dropdown menu for options -->
@@ -155,13 +155,13 @@
                             src="../images/maxiv-logo-20x63.png"></a></li>
 
                 <!-- Settings buttons -->
-                <li class="navbarbtn desktop" style="float:left"
+                <li id="logout-btn" class="navbarbtn desktop" style="float:left"
                     onclick='CAS_LOGIN_LOGOUT.logout();'>
                     <a class="fa-sign-out"> Logout</a>
                 </li>
 
-                <li class="navbarbtn desktop" style="float:left"
-                    onclick='THEME_TOGGLE.toggleTheme();'>
+                <li id="theme-toggle-btn" class="navbarbtn desktop"
+                    style="float:left" onclick='THEME_TOGGLE.toggleTheme();'>
                     <a class="fa-lightbulb-o"> Theme</a>
                 </li>
 
@@ -187,13 +187,15 @@
 
                     <a class="fa-caret-down"> Plot Type</a>
 
-                    <div class="dropdown-content">
+                    <div id="plot-type-list" class="dropdown-content">
                         <a id="plotTypeheatmap" class="selected"
                             onclick="DATA_DISPLAY.changeType(
-                            &quot;heatmap&quot;);"> 2D </a>
+                            &quot;heatmap&quot;);">
+                                <i class="fa fa-picture-o">&nbsp;</i>2D</a>
                         <a id="plotTypesurface"
                             onclick="DATA_DISPLAY.changeType(
-                            &quot;surface&quot;);"> 3D </a>
+                            &quot;surface&quot;);">
+                                <i class="fa fa-cube">&nbsp;</i>3D</a>
                     </div>
 
                 </li>
@@ -212,40 +214,32 @@
 
                     <a class="fa-caret-down"> Color Scale </a>
 
-                    <div class="dropdown-content">
-                        <a id="plotColorBlackbod"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Blackbod&quot;);"> Blackbod </a>
-                        <a id="plotColorBluered"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Bluered&quot;);"> Bluered </a>
-                        <a id="plotColorEarth"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Earth&quot;);"> Earth </a>
+                    <div id="color-scale-list" class="dropdown-content">
                         <a id="plotColorElectric"
                             onclick="DATA_DISPLAY.changeColor(
-                            &quot;Electric&quot;);"> Electric </a>
-                        <a id="plotColorGreens"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Greens&quot;);"> Greens </a>
+                            &quot;Electric&quot;);">
+                                <i class="fa fa-bolt">&nbsp;
+                                </i>Electric</a>
                         <a id="plotColorGreys"
                             onclick="DATA_DISPLAY.changeColor(
-                            &quot;Greys&quot;);"> Greys </a>
-                        <a id="plotColorHot" class="selected"
+                            &quot;Greys&quot;);">
+                                <i class="fa fa-blind">&nbsp;
+                                </i>Greys</a>
+                        <a id="plotColorHot"
                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Hot&quot;);"> Hot </a>
+                            &quot;Hot&quot;);">
+                                <i class="fa fa-fire">&nbsp;
+                                </i>Hot</a>
                         <a id="plotColorJet"
                             onclick="DATA_DISPLAY.changeColor(
-                            &quot;Jet&quot;);"> Jet </a>
-                        <a id="plotColorPicnic"
+                            &quot;Jet&quot;);">
+                                <i class="fa fa-fighter-jet">&nbsp;
+                                </i>Jet</a>
+                        <a id="plotColorPicnic" class="selected"
                             onclick="DATA_DISPLAY.changeColor(
-                            &quot;Picnic&quot;);"> Picnic </a>
-                        <a id="plotColorPortland"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Portland&quot;);"> Portland </a>
-                        <a id="plotColorRdBu"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;RdBu&quot;);"> RdBu </a>
+                            &quot;Picnic&quot;);">
+                                <i class="fa fa-cutlery">&nbsp;
+                                </i>Picnic</a>
                     </div>
 
                 </li>
