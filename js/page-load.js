@@ -7,7 +7,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
 
-        useDarkTheme : false,
+        useDarkTheme : true,
 
         // This function is to be called when the page is loaded
         //  - assumes the url has already been checked for a CAS ticket
