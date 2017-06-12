@@ -83,7 +83,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201706011527';
+                version = '?v=201706121522';
 
             if (group === 0) {
                 scripts = [
@@ -142,7 +142,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201706011527';
+            var cssFiles, version = '?v=201706121522';
 
             if (group === 0) {
                 cssFiles = [

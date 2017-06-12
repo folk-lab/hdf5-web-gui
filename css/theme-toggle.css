@@ -13,20 +13,6 @@
     background: #181817;
 }
 
-/* buttons */
-.btn-darkTheme {
-    color: #a9a9a9;
-    border-color: #080808;
-    background-color: #2f2f2f;
- }
-
-.btn-darkTheme:hover, .btn-darkTheme:focus, .btn-darkTheme:active,
-.btn-darkTheme.active, .open .dropdown-toggle.btn-darkTheme {
-    color: #ffffff;
-    border-color: #080808;
-    background-color: #222;
-}
-
 /* Modify the jstree dark theme */
 .jstree-default-dark {
     background: #222;

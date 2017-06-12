@@ -37,7 +37,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         pageElementsThemeToggle : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('useDarkTheme: ', useDarkTheme);
@@ -49,11 +49,13 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("body").addClass('darkTheme');
 
                 // Image series buttons
-                $("#startButton").addClass('btn-darkTheme');
-                $("#endButton").addClass('btn-darkTheme');
-                $("#plusButton").addClass('btn-darkTheme');
-                $("#minusButton").addClass('btn-darkTheme');
-                $("#inputNumberDiv").addClass('btn-darkTheme');
+                $("#imageSeriesControl").addClass('seriesbar-darkTheme');
+                $("#startButton").addClass('imageSeriesButton-darkTheme');
+                $("#endButton").addClass('imageSeriesButton-darkTheme');
+                $("#plusButton").addClass('imageSeriesButton-darkTheme');
+                $("#minusButton").addClass('imageSeriesButton-darkTheme');
+                $("#inputNumberDiv").addClass('inputNumber-darkTheme');
+                $("#imageSeriesSlider").addClass('range-darkTheme');
 
                 // Side menu
                 $("#sideNav").addClass('sidenav-darkTheme');
@@ -78,11 +80,13 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("body").removeClass('darkTheme');
 
                 // Image series buttons
-                $("#startButton").removeClass('btn-darkTheme');
-                $("#endButton").removeClass('btn-darkTheme');
-                $("#plusButton").removeClass('btn-darkTheme');
-                $("#minusButton").removeClass('btn-darkTheme');
-                $("#inputNumberDiv").removeClass('btn-darkTheme');
+                $("#imageSeriesControl").removeClass('seriesbar-darkTheme');
+                $("#startButton").removeClass('imageSeriesButton-darkTheme');
+                $("#endButton").removeClass('imageSeriesButton-darkTheme');
+                $("#plusButton").removeClass('imageSeriesButton-darkTheme');
+                $("#minusButton").removeClass('imageSeriesButton-darkTheme');
+                $("#inputNumberDiv").removeClass('inputNumber-darkTheme');
+                $("#imageSeriesSlider").removeClass('range-darkTheme');
 
                 // Side menu
                 $("#sideNav").removeClass('sidenav-darkTheme');
@@ -110,7 +114,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         fileTreeThemeToggle : function (useDarkTheme) {
 
-            var debug = true, currentTheme;
+            var debug = false, currentTheme;
 
             if (debug) {
                 console.log('useDarkTheme: ', useDarkTheme);
@@ -133,7 +137,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         plottingThemeToggle : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('useDarkTheme: ', useDarkTheme);
@@ -192,7 +196,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
         // without redrawing everything - so far unsuccessful
         plotThemeRestyle : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             // Restyle the plot, if necessary
             if (DATA_DISPLAY.plotCanvasDiv.layout) {

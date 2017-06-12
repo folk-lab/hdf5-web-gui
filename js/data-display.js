@@ -1420,9 +1420,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 $("#plotColor" + DATA_DISPLAY.colorScale).addClass('selected');
 
                 // Change the plot color using a restyle event
-                Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                    colorscale: DATA_DISPLAY.colorScale
-                }, [0]);
+                if (DATA_DISPLAY.plotExists) {
+                    Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                        colorscale: DATA_DISPLAY.colorScale
+                    }, [0]);
+                }
             }
         },
 
@@ -1430,7 +1432,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // One of the plotly buttons remade - reset zoom / autoscale
         resetZoom : function () {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log();
@@ -1613,7 +1615,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //
         initializeImageData : function (value) {
 
-            var debug = true;
+            var debug = false;
 
             DATA_DISPLAY.dataValues = value;
 
@@ -1718,7 +1720,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         saveImageInfo : function (targetUrl, nodeId, shapeDims, newImage,
             section, imageIndex, imageTitle) {
 
-            var debug = true;
+            var debug = false;
 
             // Save data, if provided
             if (targetUrl) {
