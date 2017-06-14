@@ -7,7 +7,8 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
 
-        useDarkTheme : true,
+        "useDarkTheme" : true,
+        // "mobileView" : undefined,
 
         // This function is to be called when the page is loaded
         //  - assumes the url has already been checked for a CAS ticket
@@ -83,7 +84,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201706121522';
+                version = '?v=201706141311';
 
             if (group === 0) {
                 scripts = [
@@ -142,7 +143,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201706121522';
+            var cssFiles, version = '?v=201706141311';
 
             if (group === 0) {
                 cssFiles = [
@@ -206,18 +207,26 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         // some other items
         toggleLoginItems : function () {
 
-            var i, debug = false, alwaysShow = ['#navMenu', '#navMenuMobile'],
-                whenLoggedInShow = ['#logoutButton', '#logoutButtonMobile',
-                    '#treeSectionDiv', '#displayContainer'],
-                whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
+            var i, debug = false,
+                // alwaysShow = ['#data-storage-button', '#max-iv-logo',
+                //     '#theme-toggle-btn', '#navbar'],
+                alwaysShow = ['#navbar'],
+                whenLoggedInShow = ['#side-nav-menu', '#displayContainer'];
+
+            // Mobile display?
+            // PAGE_LOAD.mobileView = window.mobilecheck();
 
             if (debug) {
                 console.log('CAS_TICKET.isLoggedIn: ' + CAS_TICKET.isLoggedIn);
             }
 
             // Some thigs are initially hidden, as they look ugly without the
-            // proper js and css loaded, but they should be shown
+            // proper js and css loaded, but they should eventully be shown
             for (i = 0; i < alwaysShow.length; i += 1) {
+                // if (PAGE_LOAD.mobileView &&
+                //         !$(alwaysShow[i]).hasClass("desktop")) {
+                //     $(alwaysShow[i]).show();
+                // }
                 $(alwaysShow[i]).show();
             }
 
@@ -227,14 +236,6 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
                     $(whenLoggedInShow[i]).show();
                 } else {
                     $(whenLoggedInShow[i]).hide();
-                }
-            }
-
-            for (i = 0; i < whenLoggedOutShow.length; i += 1) {
-                if (!CAS_TICKET.isLoggedIn) {
-                    $(whenLoggedOutShow[i]).show();
-                } else {
-                    $(whenLoggedOutShow[i]).hide();
                 }
             }
 

@@ -14,7 +14,7 @@ var DATA_DISPLAY,
         "menuIsOpen" : false,
         "displayContainer" : "displayContainer",
         "loaderContainer" : "loader",
-        "sideNavMenu" : "sideNav",
+        "sideNavMenu" : "side-nav-menu",
         "mobileView" : undefined,
 
 

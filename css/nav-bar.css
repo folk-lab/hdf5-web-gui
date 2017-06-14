@@ -95,10 +95,28 @@
     background-color: #111
 }
 
+.dropdown {
+    display: block;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+}
+
 .dropdown:hover
 .dropdown-content {
     display: block;
 }
+
+.sub-dropdown {
+    display: none;
+}
+
+.dropdown:hover
+.sub-dropdown {
+    display: block;
+}
+
 
 .sub-dropdown:hover
 .sub-dropdown-content {
@@ -110,6 +128,30 @@
 .sub-dropdown-content-darkTheme {
     background-color: #222;
     color: #DDDDCE;
+}
+
+#plotControlLogMobile {
+    text-align: left;
+    width: 100px;
+}
+
+#plotControlResetMobile {
+    text-align: left;
+    width: 100px;
+}
+
+#plotControlDownloadMobile {
+    text-align: left;
+    width: 100px;
+}
+
+#mobile-sub-dropdown {
+    text-align: left;
+    width: 120px;
+}
+
+#mobile-sub-dropdown li {
+    float: left;
 }
 
 /* Mobile stuff */

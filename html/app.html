@@ -34,15 +34,15 @@
 
         <!-- Scripts need to verify CAS ticket -->
         <script type="text/javascript"
-            src="../js/server-communication.js?v=201706121522"></script>
+            src="../js/server-communication.js?v=201706141311"></script>
         <script type="text/javascript"
-            src="../js/cas-handle-ticket.js?v=201706121522"></script>
+            src="../js/cas-handle-ticket.js?v=201706141311"></script>
 
         <!-- Start the loading icon -->
         <script type="text/javascript" defer
-            src="../js/ajax-spinner.js?v=201706121522"></script>
+            src="../js/ajax-spinner.js?v=201706141311"></script>
         <link type="text/css" rel="stylesheet"
-            href="../css/loader.css?v=201706121522">
+            href="../css/loader.css?v=201706141311">
 
     </head>
 
@@ -50,122 +50,37 @@
     <body>
 
         <!-- The navigation bar -->
-        <div id="navbar" class="navbar">
+        <div id="navbar" class="navbar" style="display:none;">
 
             <ul>
                 <!-- A button to open the side navigation menu -->
                 <li id="data-storage-button" class="navbarbtn"
-                    style="float:left" onclick="NAV_MENU.menuButton()">
+                    style="float:left;"
+                    onclick="NAV_MENU.menuButton()">
                     <a class="fa-bars"> Data Storage</a></li>
 
-                <!-- A mobile dropdown menu for options -->
-                <li style="float:right" class="dropdown mobile">
-
-                    <a class="fa-caret-down"> Options </a>
-
-                    <!-- Settings buttons -->
-                    <div class="dropdown-content">
-                        <a class="fa-lightbulb-o"
-                            onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
-                        <a class="fa-sign-out"
-                            onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
-                    </div>
-
-                </li>
-
-                <!-- A mobile dropdown menu for plot control -->
-                <li style="float:right" class="dropdown mobile">
-
-                    <a class="fa-caret-down"> Plot Control </a>
-
-                    <!-- Settings buttons -->
-                    <div class="dropdown-content">
-                        <ul>
-
-                            <!-- Plot type dropdown menu -->
-                            <li id="plotControlTypeMobile"
-                                class="navbarbtn sub-dropdown">
-
-                                <a class="fa-caret-down"> Plot Type</a>
-
-                                <div class="sub-dropdown-content">
-                                    <a onclick="DATA_DISPLAY.changeType(
-                                            &quot;heatmap&quot;);"> 2D </a>
-                                    <a onclick="DATA_DISPLAY.changeType(
-                                            &quot;surface&quot;);"> 3D </a>
-                                </div>
-
-                            </li>
-
-                            <!-- Log plot toggle -->
-                            <li id="plotControlLogMobile" class="navbarbtn"
-                                onclick='DATA_DISPLAY.toggleLogPlot()'>
-                                <a id="logPlotButtonMobile"
-                                    class="fa-bar-chart"> Log Plot?</a>
-                            </li>
-
-                            <!-- Colorscale dropdown menu -->
-                            <li id="plotControlColorMobile"
-                                class="navbarbtn sub-dropdown">
-
-                                <a class="fa-caret-down"> Color Scale </a>
-
-                                <div class="sub-dropdown-content">
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Blackbod&quot;);">
-                                            Blackbod </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Bluered&quot;);"> Bluered
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Earth&quot;);"> Earth </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Electric&quot;);">
-                                            Electric </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Greens&quot;);"> Greens
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Greys&quot;);"> Greys
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Hot&quot;);"> Hot </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Jet&quot;);"> Jet </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Picnic&quot;);"> Picnic
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Portland&quot;);">
-                                            Portland </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;RdBu&quot;);"> RdBu </a>
-                                </div>
-
-                            </li>
-                        </ul>
-                    </div>
-
-                </li>
-
                 <!-- Logo -->
-                <li class="navbarbtnimg desktop" style="float:left">
+                <li id="max-iv-logo" class="navbarbtnimg desktop"
+                    style="float:left;">
                     <a class="barimage">
                         <img alt="max-iv-logo"
                             src="../images/maxiv-logo-20x63.png"></a></li>
 
-                <!-- Settings buttons -->
-                <li id="logout-btn" class="navbarbtn desktop" style="float:left"
+                <!-- Logout button -->
+                <li id="logout-btn" class="navbarbtn desktop"
+                    style="float:left;"
                     onclick='CAS_LOGIN_LOGOUT.logout();'>
                     <a class="fa-sign-out"> Logout</a>
                 </li>
 
+                <!-- Theme toggle button -->
                 <li id="theme-toggle-btn" class="navbarbtn desktop"
-                    style="float:left" onclick='THEME_TOGGLE.toggleTheme();'>
+                    style="float:left;"
+                    onclick='THEME_TOGGLE.toggleTheme();'>
                     <a class="fa-lightbulb-o"> Theme</a>
                 </li>
 
-                <!-- Image Plot Controls -->
+                <!-- Image Plot Controls - intially hidden -->
 
                 <!-- Reset Zoom -->
                 <li id="plotControlReset" style="display:none;"
@@ -183,7 +98,7 @@
 
                 <!-- Plot type dropdown menu -->
                 <li id="plotControlType" style="display:none;"
-                    class="navbarbtn dropdown">
+                    class="navbarbtn dropdown desktop">
 
                     <a class="fa-caret-down"> Plot Type</a>
 
@@ -210,7 +125,7 @@
 
                 <!-- Colorscale dropdown menu -->
                 <li id="plotControlColor" style="display:none;"
-                    class="navbarbtn dropdown">
+                    class="navbarbtn dropdown desktop">
 
                     <a class="fa-caret-down"> Color Scale </a>
 
@@ -244,25 +159,129 @@
 
                 </li>
 
+                <!-- A mobile dropdown menu for options -->
+                <li style="float:right;" class="dropdown mobile">
+
+                    <a class="fa-caret-down"> Options </a>
+
+                    <!-- Settings buttons -->
+                    <div id="mobile-options-list" class="dropdown-content">
+                        <a id="theme-toggle-btn-mobile" class="fa-lightbulb-o"
+                            onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
+
+                        <a id="logout-btn-mobile" class="fa-sign-out"
+                            onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
+                    </div>
+
+                </li>
+
+                <!-- A mobile dropdown menu for plot control -->
+                <li id="plot-control-mobile" style="float:right;display:none;"
+                    class="dropdown mobile">
+
+                    <a class="fa-caret-down"> Plot Control </a>
+
+                    <div id="mobile-control-list" class="dropdown-content">
+
+                        <!-- Log plot toggle -->
+                        <a id="plotControlLogMobile" class="fa-bar-chart"
+                            onclick='DATA_DISPLAY.toggleLogPlot()'>
+                            Log Plot?</a>
+
+                        <ul id="mobile-sub-dropdown">
+
+                            <!-- Plot type dropdown menu -->
+                            <li id="plotControlTypeMobile"
+                                class="sub-dropdown">
+
+                                <a class="fa-caret-down"> Plot Type</a>
+
+                                <div id="plot-type-list-mobile"
+                                    class="sub-dropdown-content">
+                                    <a onclick="DATA_DISPLAY.changeType(
+                                            &quot;heatmap&quot;);"> 2D </a>
+
+                                    <a onclick="DATA_DISPLAY.changeType(
+                                            &quot;surface&quot;);"> 3D </a>
+                                </div>
+
+                            </li>
+
+                            <!-- Color scale dropdown menu -->
+                            <li id="plotControlColorMobile"
+                                class="sub-dropdown">
+
+                                <a class="fa-caret-down"> Color Scale </a>
+
+                                <div id="color-scale-list-mobile"
+                                    class="sub-dropdown-content">
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Blackbod&quot;);">
+                                            Blackbod </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Bluered&quot;);"> Bluered
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Earth&quot;);"> Earth </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Electric&quot;);">
+                                            Electric </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Greens&quot;);"> Greens
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Greys&quot;);"> Greys
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Hot&quot;);"> Hot </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Jet&quot;);"> Jet </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Picnic&quot;);"> Picnic
+                                    </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;Portland&quot;);">
+                                            Portland </a>
+                                    <a onclick="DATA_DISPLAY.changeColor(
+                                            &quot;RdBu&quot;);"> RdBu </a>
+                                </div>
+
+                            </li>
+
+
+                        </ul>
+
+                        <!-- Reset Zoom -->
+                        <a id="plotControlResetMobile" class="fa-home"
+                            onclick='DATA_DISPLAY.resetZoom()'>
+                            Reset Zoom</a>
+
+                        <!-- Download image -->
+                        <a id="plotControlDownloadMobile" class="fa-camera"
+                            onclick='DATA_DISPLAY.downloadPlot()'>
+                            Download</a>
+
+                    </div>
+
+                </li>
+
             </ul>
 
         </div>
 
 
         <!-- Side navigation menu -->
-        <div id="sideNav" class="sidenav">
+        <div id="side-nav-menu" class="sidenav">
             <div id="jstree_div"> </div>
         </div>
 
 
         <!-- Layout the plotting canvas, welcome message, image series controls
              -->
-        <div id="displayContainer" class="container"
-            style="display:none;">
+        <div id="displayContainer" class="container" style="display:none;">
 
             <!-- The plotting canvas -->
-            <div id="plotCanvasDiv"
-                style="display:none;"></div>
+            <div id="plotCanvasDiv" style="display:none;"></div>
 
 
             <!-- A simple welcome message -->
@@ -277,10 +296,11 @@
 
             <!-- Image Series Control -->
             <div id='imageSeriesControl' class="seriesbar"
-                style="display:none;" >
+                style="display:none;">
 
-                <!-- Image series buttons -->
+                <!-- Image series controls -->
                 <ul>
+
                     <!-- Start button -->
                     <li id="startButton" class="imageSeriesButton"
                         style="float:left"

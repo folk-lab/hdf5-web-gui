@@ -63,23 +63,36 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     '#plotControlReset'],
                 imageControlDiv = ['#plotControlType', '#plotControlLog',
                     '#plotControlColor' ],
+                imageControlDivMobile = ['#plot-control-mobile'],
                 seriesControlDiv = ['#imageSeriesControl'];
 
             // General plot controls - show, hide
-            for (i = 0; i < plotControlDiv.length; i += 1) {
-                if (enablePlotControls) {
-                    $(plotControlDiv[i]).show();
-                } else {
-                    $(plotControlDiv[i]).hide();
+            if (!DATA_DISPLAY.mobileDisplay) {
+                for (i = 0; i < plotControlDiv.length; i += 1) {
+                    if (enablePlotControls) {
+                        $(plotControlDiv[i]).show();
+                    } else {
+                        $(plotControlDiv[i]).hide();
+                    }
                 }
             }
 
             // General image controls - show, hide
-            for (i = 0; i < imageControlDiv.length; i += 1) {
-                if (enableImageControls) {
-                    $(imageControlDiv[i]).show();
-                } else {
-                    $(imageControlDiv[i]).hide();
+            if (DATA_DISPLAY.mobileDisplay) {
+                for (i = 0; i < imageControlDivMobile.length; i += 1) {
+                    if (enableImageControls) {
+                        $(imageControlDivMobile[i]).show();
+                    } else {
+                        $(imageControlDivMobile[i]).hide();
+                    }
+                }
+            } else {
+                for (i = 0; i < imageControlDiv.length; i += 1) {
+                    if (enableImageControls) {
+                        $(imageControlDiv[i]).show();
+                    } else {
+                        $(imageControlDiv[i]).hide();
+                    }
                 }
             }
 
@@ -1779,6 +1792,7 @@ $(window).resize(function () {
         console.log('wait for it...');
     }
 
+    DATA_DISPLAY.mobileDisplay = window.mobilecheck();
     DATA_DISPLAY.redrawPlotCanvas(100);
 });
 

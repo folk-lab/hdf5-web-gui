@@ -58,7 +58,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#imageSeriesSlider").addClass('range-darkTheme');
 
                 // Side menu
-                $("#sideNav").addClass('sidenav-darkTheme');
+                $("#side-nav-menu").addClass('sidenav-darkTheme');
 
                 // Nav bar
                 $("#navbar").addClass('navbar-darkTheme');
@@ -75,6 +75,23 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#plot-type-list").addClass('dropdown-content-darkTheme');
                 $("#color-scale-list").addClass('dropdown-content-darkTheme');
 
+                // Plot control mobile
+                $("#mobile-options-list").addClass('dropdown-content-darkTheme'
+                    );
+                $("#mobile-control-list").addClass('dropdown-content-darkTheme'
+                    );
+                $("#plotControlTypeMobile").addClass('navbarbtn-darkTheme');
+                $("#plotControlLogMobile").addClass('navbarbtn-darkTheme');
+                $("#plotControlResetMobile").addClass('navbarbtn-darkTheme');
+                $("#plotControlDownloadMobile").addClass('navbarbtn-darkTheme'
+                    );
+                $("#plot-type-list-mobile").addClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#color-scale-list-mobile").addClass(
+                    'dropdown-content-darkTheme'
+                );
+
             } else {
 
                 $("body").removeClass('darkTheme');
@@ -89,7 +106,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#imageSeriesSlider").removeClass('range-darkTheme');
 
                 // Side menu
-                $("#sideNav").removeClass('sidenav-darkTheme');
+                $("#side-nav-menu").removeClass('sidenav-darkTheme');
 
                 // Nav bar
                 $("#navbar").removeClass('navbar-darkTheme');
@@ -104,7 +121,27 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#plotControlReset").removeClass('navbarbtn-darkTheme');
                 $("#plotControlDownload").removeClass('navbarbtn-darkTheme');
                 $("#plot-type-list").removeClass('dropdown-content-darkTheme');
-                $("#color-scale-list").removeClass(
+                $("#color-scale-list").removeClass('dropdown-content-darkTheme'
+                    );
+
+                // Plot control mobile
+                $("#mobile-options-list").removeClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#mobile-control-list").removeClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#plotControlLogMobile").removeClass('navbarbtn-darkTheme');
+                $("#plotControlResetMobile").removeClass('navbarbtn-darkTheme'
+                    );
+                $("#plotControlDownloadMobile").removeClass(
+                    'navbarbtn-darkTheme'
+                );
+                $("#plotControlTypeMobile").removeClass('navbarbtn-darkTheme');
+                $("#plot-type-list-mobile").removeClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#color-scale-list-mobile").removeClass(
                     'dropdown-content-darkTheme'
                 );
 
@@ -193,8 +230,9 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
 
         // Trying to use retyle to change all the colors in image plots
-        // without redrawing everything - so far unsuccessful
-        plotThemeRestyle : function (useDarkTheme) {
+        // without redrawing everything - so far unsuccessful, just using
+        // the redraw functions in plottingThemeToggle() instead :(
+        plottingThemeRestyle : function (useDarkTheme) {
 
             var debug = false;
 
