@@ -8,7 +8,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
     PAGE_LOAD = {
 
         "useDarkTheme" : true,
-        // "mobileView" : undefined,
+        "mobileView" : undefined,
 
         // This function is to be called when the page is loaded
         //  - assumes the url has already been checked for a CAS ticket
@@ -43,7 +43,9 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
                         // Show or hide various items
                         PAGE_LOAD.toggleLoginItems();
 
-                        if (PAGE_LOAD.useDarkTheme) {
+                        // Maybe the dark theme is tougher to use on a mobile
+                        // device?
+                        if (PAGE_LOAD.useDarkTheme && !PAGE_LOAD.mobileView) {
                             THEME_TOGGLE.toggleTheme(true);
                         }
 
@@ -214,7 +216,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
                 whenLoggedInShow = ['#side-nav-menu', '#displayContainer'];
 
             // Mobile display?
-            // PAGE_LOAD.mobileView = window.mobilecheck();
+            PAGE_LOAD.mobileView = window.mobilecheck();
 
             if (debug) {
                 console.log('CAS_TICKET.isLoggedIn: ' + CAS_TICKET.isLoggedIn);
@@ -223,10 +225,6 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
             // Some thigs are initially hidden, as they look ugly without the
             // proper js and css loaded, but they should eventully be shown
             for (i = 0; i < alwaysShow.length; i += 1) {
-                // if (PAGE_LOAD.mobileView &&
-                //         !$(alwaysShow[i]).hasClass("desktop")) {
-                //     $(alwaysShow[i]).show();
-                // }
                 $(alwaysShow[i]).show();
             }
 

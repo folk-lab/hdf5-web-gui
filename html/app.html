@@ -162,15 +162,25 @@
                 <!-- A mobile dropdown menu for options -->
                 <li style="float:right;" class="dropdown mobile">
 
-                    <a class="fa fa-caret-down"> Options </a>
+                    <a class="fa fa-caret-down"
+                        onclick='$("#mobile-options-list").toggle();'>
+                        Options</a>
 
                     <!-- Settings buttons -->
                     <div id="mobile-options-list" class="dropdown-content">
-                        <a id="theme-toggle-btn-mobile" class="fa fa-lightbulb-o"
-                            onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
+                        <a id="theme-toggle-btn-mobile"
+                            class="fa fa-lightbulb-o"
+                            onclick='THEME_TOGGLE.toggleTheme();
+                            $("#mobile-options-list").toggle();'>
+                            Theme</a>
+
+                        <a id="refresh-btn-mobile" class="fa fa-refresh"
+                            onclick='location.reload();
+                            $("#mobile-options-list").toggle();'> Reload</a>
 
                         <a id="logout-btn-mobile" class="fa fa-sign-out"
-                            onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
+                            onclick='CAS_LOGIN_LOGOUT.logout();
+                            $("#mobile-options-list").toggle();'> Logout</a>
                     </div>
 
                 </li>
@@ -179,13 +189,16 @@
                 <li id="plot-control-mobile" style="float:right;display:none;"
                     class="dropdown mobile">
 
-                    <a class="fa fa-caret-down"> Plot Control </a>
+                    <a class="fa fa-caret-down"
+                        onclick='$("#mobile-control-list").toggle();'>
+                        Plot Control </a>
 
                     <div id="mobile-control-list" class="dropdown-content">
 
                         <!-- Log plot toggle -->
                         <a id="plotControlLogMobile" class="fa fa-bar-chart"
-                            onclick='DATA_DISPLAY.toggleLogPlot()'>
+                            onclick='DATA_DISPLAY.toggleLogPlot();
+                            $("#mobile-control-list").toggle();'>
                             Log Plot?</a>
 
                         <ul id="mobile-sub-dropdown">
@@ -194,15 +207,21 @@
                             <li id="plotControlTypeMobile"
                                 class="sub-dropdown">
 
-                                <a class="fa fa-caret-down"> Plot Type</a>
+                                <a class="fa fa-caret-down"
+                                    onclick='$("#plot-type-list-mobile").toggle();'>
+                                    Plot Type</a>
 
                                 <div id="plot-type-list-mobile"
                                     class="sub-dropdown-content">
-                                    <a onclick="DATA_DISPLAY.changeType(
-                                            &quot;heatmap&quot;);"> 2D </a>
+                                <a onclick='DATA_DISPLAY.changeType("heatmap");
+                                    $("#plot-type-list-mobile").toggle();
+                                    $("#mobile-control-list").toggle();'>
+                                    2D </a>
 
-                                    <a onclick="DATA_DISPLAY.changeType(
-                                            &quot;surface&quot;);"> 3D </a>
+                                <a onclick='DATA_DISPLAY.changeType("surface");
+                                    $("#plot-type-list-mobile").toggle();
+                                    $("#mobile-control-list").toggle();'>
+                                    3D </a>
                                 </div>
 
                             </li>
@@ -211,7 +230,9 @@
                             <li id="plotControlColorMobile"
                                 class="sub-dropdown">
 
-                                <a class="fa fa-caret-down"> Color Scale </a>
+                                <a class="fa fa-caret-down"
+                                    onclick='$("#color-scale-list-mobile").toggle();'>
+                                    Color Scale </a>
 
                                 <div id="color-scale-list-mobile"
                                     class="sub-dropdown-content">

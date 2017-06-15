@@ -102,27 +102,26 @@
     padding-bottom: 16px;
     padding-left: 16px;
 }
-
+/*
 .dropdown:hover
 .dropdown-content {
     display: block;
 }
-
 .sub-dropdown {
     display: none;
 }
-
+*/
+/*
 .dropdown:hover
 .sub-dropdown {
     display: block;
 }
-
 
 .sub-dropdown:hover
 .sub-dropdown-content {
     display: block;
 }
-
+*/
 
 .dropdown-content-darkTheme,
 .sub-dropdown-content-darkTheme {
