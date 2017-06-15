@@ -57,7 +57,7 @@
                 <li id="data-storage-button" class="navbarbtn"
                     style="float:left;"
                     onclick="NAV_MENU.menuButton()">
-                    <a class="fa-bars"> Data Storage</a></li>
+                    <a class="fa fa-bars"> Data Storage</a></li>
 
                 <!-- Logo -->
                 <li id="max-iv-logo" class="navbarbtnimg desktop"
@@ -70,14 +70,14 @@
                 <li id="logout-btn" class="navbarbtn desktop"
                     style="float:left;"
                     onclick='CAS_LOGIN_LOGOUT.logout();'>
-                    <a class="fa-sign-out"> Logout</a>
+                    <a class="fa fa-sign-out"> Logout</a>
                 </li>
 
                 <!-- Theme toggle button -->
                 <li id="theme-toggle-btn" class="navbarbtn desktop"
                     style="float:left;"
                     onclick='THEME_TOGGLE.toggleTheme();'>
-                    <a class="fa-lightbulb-o"> Theme</a>
+                    <a class="fa fa-lightbulb-o"> Theme</a>
                 </li>
 
                 <!-- Image Plot Controls - intially hidden -->
@@ -86,21 +86,21 @@
                 <li id="plotControlReset" style="display:none;"
                     class="navbarbtn desktop"
                     onclick='DATA_DISPLAY.resetZoom()'>
-                    <a class="fa-home"> Reset Zoom</a>
+                    <a class="fa fa-home"> Reset Zoom</a>
                 </li>
 
                 <!-- Download image -->
                 <li id="plotControlDownload" style="display:none;"
                     class="navbarbtn desktop"
                     onclick='DATA_DISPLAY.downloadPlot()'>
-                    <a class="fa-camera"> Download Plot</a>
+                    <a class="fa fa-camera"> Download Plot</a>
                 </li>
 
                 <!-- Plot type dropdown menu -->
                 <li id="plotControlType" style="display:none;"
                     class="navbarbtn dropdown desktop">
 
-                    <a class="fa-caret-down"> Plot Type</a>
+                    <a class="fa fa-caret-down"> Plot Type</a>
 
                     <div id="plot-type-list" class="dropdown-content">
                         <a id="plotTypeheatmap" class="selected"
@@ -120,14 +120,14 @@
                     class="navbarbtn desktop"
                     onclick='DATA_DISPLAY.toggleLogPlot()'>
                     <a id="logPlotButton"
-                        class="fa-bar-chart"> Log Plot?</a>
+                        class="fa fa-bar-chart"> Log Plot?</a>
                 </li>
 
                 <!-- Colorscale dropdown menu -->
                 <li id="plotControlColor" style="display:none;"
                     class="navbarbtn dropdown desktop">
 
-                    <a class="fa-caret-down"> Color Scale </a>
+                    <a class="fa fa-caret-down"> Color Scale </a>
 
                     <div id="color-scale-list" class="dropdown-content">
                         <a id="plotColorElectric"
@@ -162,14 +162,14 @@
                 <!-- A mobile dropdown menu for options -->
                 <li style="float:right;" class="dropdown mobile">
 
-                    <a class="fa-caret-down"> Options </a>
+                    <a class="fa fa-caret-down"> Options </a>
 
                     <!-- Settings buttons -->
                     <div id="mobile-options-list" class="dropdown-content">
-                        <a id="theme-toggle-btn-mobile" class="fa-lightbulb-o"
+                        <a id="theme-toggle-btn-mobile" class="fa fa-lightbulb-o"
                             onclick='THEME_TOGGLE.toggleTheme();'> Theme</a>
 
-                        <a id="logout-btn-mobile" class="fa-sign-out"
+                        <a id="logout-btn-mobile" class="fa fa-sign-out"
                             onclick='CAS_LOGIN_LOGOUT.logout();'> Logout</a>
                     </div>
 
@@ -179,12 +179,12 @@
                 <li id="plot-control-mobile" style="float:right;display:none;"
                     class="dropdown mobile">
 
-                    <a class="fa-caret-down"> Plot Control </a>
+                    <a class="fa fa-caret-down"> Plot Control </a>
 
                     <div id="mobile-control-list" class="dropdown-content">
 
                         <!-- Log plot toggle -->
-                        <a id="plotControlLogMobile" class="fa-bar-chart"
+                        <a id="plotControlLogMobile" class="fa fa-bar-chart"
                             onclick='DATA_DISPLAY.toggleLogPlot()'>
                             Log Plot?</a>
 
@@ -194,7 +194,7 @@
                             <li id="plotControlTypeMobile"
                                 class="sub-dropdown">
 
-                                <a class="fa-caret-down"> Plot Type</a>
+                                <a class="fa fa-caret-down"> Plot Type</a>
 
                                 <div id="plot-type-list-mobile"
                                     class="sub-dropdown-content">
@@ -211,7 +211,7 @@
                             <li id="plotControlColorMobile"
                                 class="sub-dropdown">
 
-                                <a class="fa-caret-down"> Color Scale </a>
+                                <a class="fa fa-caret-down"> Color Scale </a>
 
                                 <div id="color-scale-list-mobile"
                                     class="sub-dropdown-content">
@@ -252,12 +252,12 @@
                         </ul>
 
                         <!-- Reset Zoom -->
-                        <a id="plotControlResetMobile" class="fa-home"
+                        <a id="plotControlResetMobile" class="fa fa-home"
                             onclick='DATA_DISPLAY.resetZoom()'>
                             Reset Zoom</a>
 
                         <!-- Download image -->
-                        <a id="plotControlDownloadMobile" class="fa-camera"
+                        <a id="plotControlDownloadMobile" class="fa fa-camera"
                             onclick='DATA_DISPLAY.downloadPlot()'>
                             Download</a>
 
@@ -319,8 +319,8 @@
                         style="float:right"
                         onclick='HANDLE_DATASET.imageSeriesInput( 10000000,
                             true, true, false);'>
-                        <a id='endButtonValue' class="fa
-                            fa-angle-double-right"> 0 </a>
+                        <a id='endButtonValue'
+                            class="fa fa-angle-double-right"> 0 </a>
                     </li>
 
                     <!-- Plus button -->
