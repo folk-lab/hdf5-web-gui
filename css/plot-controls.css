@@ -159,3 +159,23 @@ span {
     overflow: hidden;
     padding: 0;
 }
+
+/* Media queries */
+@media handheld, screen and (max-width: 767px) {
+    .imageSeriesButton {
+        width: 25px;
+        padding-top: 4px;
+        padding-right: 4px;
+        padding-bottom: 4px;
+        padding-left: 4px;
+        cursor: pointer;
+    }
+
+    .inputNumber {
+        padding-top: 2px;
+        padding-right: 4px;
+        padding-bottom: 2px;
+        padding-left: 4px;
+        text-decoration: none;
+    }
+}

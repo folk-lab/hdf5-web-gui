@@ -56,7 +56,9 @@
                 <!-- A button to open the side navigation menu -->
                 <li id="data-storage-button" class="navbarbtn"
                     style="float:left;"
-                    onclick="NAV_MENU.menuButton()">
+                    onclick='NAV_MENU.menuButton();
+                    $("#mobile-control-list").hide();
+                    $("#mobile-options-list").hide();'>
                     <a class="fa fa-bars"> Data Storage</a></li>
 
                 <!-- Logo -->
@@ -80,7 +82,7 @@
                     <a class="fa fa-lightbulb-o"> Theme</a>
                 </li>
 
-                <!-- Image Plot Controls - intially hidden -->
+                <!-- Image Plot Controls -->
 
                 <!-- Reset Zoom -->
                 <li id="plotControlReset" style="display:none;"
@@ -102,15 +104,14 @@
 
                     <a class="fa fa-caret-down"> Plot Type</a>
 
-                    <div id="plot-type-list" class="dropdown-content">
+                    <div id="plot-type-list" class="desktop dropdown-content">
                         <a id="plotTypeheatmap" class="selected"
-                            onclick="DATA_DISPLAY.changeType(
-                            &quot;heatmap&quot;);">
-                                <i class="fa fa-picture-o">&nbsp;</i>2D</a>
+                            onclick='DATA_DISPLAY.changeType("heatmap");'>
+                            <i class="fa fa-picture-o">&nbsp;</i>2D</a>
                         <a id="plotTypesurface"
-                            onclick="DATA_DISPLAY.changeType(
-                            &quot;surface&quot;);">
-                                <i class="fa fa-cube">&nbsp;</i>3D</a>
+                            onclick='DATA_DISPLAY.changeType(
+                            "surface");'>
+                            <i class="fa fa-cube">&nbsp;</i>3D</a>
                     </div>
 
                 </li>
@@ -129,32 +130,33 @@
 
                     <a class="fa fa-caret-down"> Color Scale </a>
 
-                    <div id="color-scale-list" class="dropdown-content">
+                    <div id="color-scale-list"
+                        class="desktop dropdown-content">
                         <a id="plotColorElectric"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Electric&quot;);">
-                                <i class="fa fa-bolt">&nbsp;
-                                </i>Electric</a>
+                            onclick='DATA_DISPLAY.changeColor(
+                            "Electric");'>
+                            <i class="fa fa-bolt">&nbsp;
+                            </i>Electric</a>
                         <a id="plotColorGreys"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Greys&quot;);">
-                                <i class="fa fa-blind">&nbsp;
-                                </i>Greys</a>
+                            onclick='DATA_DISPLAY.changeColor(
+                            "Greys");'>
+                            <i class="fa fa-blind">&nbsp;
+                            </i>Greys</a>
                         <a id="plotColorHot"
-                           onclick="DATA_DISPLAY.changeColor(
-                            &quot;Hot&quot;);">
-                                <i class="fa fa-fire">&nbsp;
-                                </i>Hot</a>
+                           onclick='DATA_DISPLAY.changeColor(
+                            "Hot");'>
+                            <i class="fa fa-fire">&nbsp;
+                            </i>Hot</a>
                         <a id="plotColorJet"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Jet&quot;);">
-                                <i class="fa fa-fighter-jet">&nbsp;
-                                </i>Jet</a>
+                            onclick='DATA_DISPLAY.changeColor(
+                            "Jet");'>
+                            <i class="fa fa-fighter-jet">&nbsp;
+                            </i>Jet</a>
                         <a id="plotColorPicnic" class="selected"
-                            onclick="DATA_DISPLAY.changeColor(
-                            &quot;Picnic&quot;);">
-                                <i class="fa fa-cutlery">&nbsp;
-                                </i>Picnic</a>
+                            onclick='DATA_DISPLAY.changeColor(
+                            "Picnic");'>
+                            <i class="fa fa-cutlery">&nbsp;
+                            </i>Picnic</a>
                     </div>
 
                 </li>
@@ -162,25 +164,28 @@
                 <!-- A mobile dropdown menu for options -->
                 <li style="float:right;" class="dropdown mobile">
 
-                    <a class="fa fa-caret-down"
-                        onclick='$("#mobile-options-list").toggle();'>
-                        Options</a>
+                    <a onclick='
+                        $("#mobile-options-list").toggle();
+                        $("#mobile-control-list").hide();'>
+                        <i class="fa fa-caret-down">&nbsp;
+                        </i>Options&nbsp;&nbsp;&nbsp;</a>
 
                     <!-- Settings buttons -->
                     <div id="mobile-options-list" class="dropdown-content">
                         <a id="theme-toggle-btn-mobile"
-                            class="fa fa-lightbulb-o"
                             onclick='THEME_TOGGLE.toggleTheme();
                             $("#mobile-options-list").toggle();'>
-                            Theme</a>
+                            <i class="fa fa-lightbulb-o">&nbsp;</i>Theme</a>
 
-                        <a id="refresh-btn-mobile" class="fa fa-refresh"
+                        <a id="refresh-btn-mobile"
                             onclick='location.reload();
-                            $("#mobile-options-list").toggle();'> Reload</a>
+                            $("#mobile-options-list").toggle();'>
+                            <i class="fa fa-refresh">&nbsp;</i>Reload</a>
 
-                        <a id="logout-btn-mobile" class="fa fa-sign-out"
+                        <a id="logout-btn-mobile"
                             onclick='CAS_LOGIN_LOGOUT.logout();
-                            $("#mobile-options-list").toggle();'> Logout</a>
+                            $("#mobile-options-list").toggle();'>
+                            <i class="fa fa-sign-out">&nbsp;</i>Logout</a>
                     </div>
 
                 </li>
@@ -189,17 +194,21 @@
                 <li id="plot-control-mobile" style="float:right;display:none;"
                     class="dropdown mobile">
 
-                    <a class="fa fa-caret-down"
-                        onclick='$("#mobile-control-list").toggle();'>
-                        Plot Control </a>
+                    <a onclick='
+                        $("#mobile-control-list").toggle();
+                        $("#mobile-options-list").hide();
+                        $("#plot-type-list-mobile").hide();
+                        $("#color-scale-list-mobile").hide();'>
+                        <i class="fa fa-caret-down">&nbsp;</i>Plot Control</a>
 
                     <div id="mobile-control-list" class="dropdown-content">
 
                         <!-- Log plot toggle -->
-                        <a id="plotControlLogMobile" class="fa fa-bar-chart"
+                        <a id="plotControlLogMobile"
                             onclick='DATA_DISPLAY.toggleLogPlot();
                             $("#mobile-control-list").toggle();'>
-                            Log Plot?</a>
+                            <i id="logPlotButtonMobile"
+                                class="fa fa-bar-chart">&nbsp;&nbsp;Log Plot?</i></a>
 
                         <ul id="mobile-sub-dropdown">
 
@@ -207,21 +216,25 @@
                             <li id="plotControlTypeMobile"
                                 class="sub-dropdown">
 
-                                <a class="fa fa-caret-down"
-                                    onclick='$("#plot-type-list-mobile").toggle();'>
-                                    Plot Type</a>
+                                <a onclick='
+                                    $("#plot-type-list-mobile").toggle();
+                                    $("#color-scale-list-mobile").hide();'>
+                                    <i class="fa fa-caret-down">&nbsp;
+                                    </i>Plot Type</a>
 
                                 <div id="plot-type-list-mobile"
                                     class="sub-dropdown-content">
-                                <a onclick='DATA_DISPLAY.changeType("heatmap");
+                                <a id="plotTypeheatmapMobile" class="selected"
+                                    onclick='DATA_DISPLAY.changeType("heatmap");
                                     $("#plot-type-list-mobile").toggle();
                                     $("#mobile-control-list").toggle();'>
-                                    2D </a>
+                                    <i class="fa fa-picture-o">&nbsp;</i>2D</a>
 
-                                <a onclick='DATA_DISPLAY.changeType("surface");
+                                <a id="plotTypesurfaceMobile"
+                                    onclick='DATA_DISPLAY.changeType("surface");
                                     $("#plot-type-list-mobile").toggle();
                                     $("#mobile-control-list").toggle();'>
-                                    3D </a>
+                                    <i class="fa fa-cube">&nbsp;</i>3D</a>
                                 </div>
 
                             </li>
@@ -230,58 +243,65 @@
                             <li id="plotControlColorMobile"
                                 class="sub-dropdown">
 
-                                <a class="fa fa-caret-down"
-                                    onclick='$("#color-scale-list-mobile").toggle();'>
-                                    Color Scale </a>
+                                <a onclick='
+                                    $("#color-scale-list-mobile").toggle();
+                                    $("#plot-type-list-mobile").hide();'>
+                                    <i class="fa fa-caret-down">&nbsp;
+                                    </i>Color Scale </a>
+
 
                                 <div id="color-scale-list-mobile"
                                     class="sub-dropdown-content">
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Blackbod&quot;);">
-                                            Blackbod </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Bluered&quot;);"> Bluered
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Earth&quot;);"> Earth </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Electric&quot;);">
-                                            Electric </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Greens&quot;);"> Greens
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Greys&quot;);"> Greys
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Hot&quot;);"> Hot </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Jet&quot;);"> Jet </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Picnic&quot;);"> Picnic
-                                    </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;Portland&quot;);">
-                                            Portland </a>
-                                    <a onclick="DATA_DISPLAY.changeColor(
-                                            &quot;RdBu&quot;);"> RdBu </a>
+                                    <a id="plotColorElectricMobile"
+                                        onclick='DATA_DISPLAY.changeColor(
+                                        "Electric");
+                                        $("#mobile-control-list").hide();'>
+                                            <i class="fa fa-bolt">&nbsp;
+                                            </i>Electric</a>
+                                    <a id="plotColorGreysMobile"
+                                        onclick='DATA_DISPLAY.changeColor(
+                                        "Greys");
+                                        $("#mobile-control-list").hide();'>
+                                        <i class="fa fa-blind">&nbsp;
+                                        </i>Greys</a>
+                                    <a id="plotColorHotMobile"
+                                       onclick='DATA_DISPLAY.changeColor(
+                                        "Hot");
+                                        $("#mobile-control-list").hide();'>
+                                        <i class="fa fa-fire">&nbsp;
+                                        </i>Hot</a>
+                                    <a id="plotColorJetMobile"
+                                        onclick='DATA_DISPLAY.changeColor(
+                                        "Jet");
+                                        $("#mobile-control-list").hide();'>
+                                        <i class="fa fa-fighter-jet">&nbsp;
+                                        </i>Jet</a>
+                                    <a id="plotColorPicnicMobile"
+                                        class="selected"
+                                        onclick='DATA_DISPLAY.changeColor(
+                                        "Picnic");
+                                        $("#mobile-control-list").hide();'>
+                                        <i class="fa fa-cutlery">&nbsp;
+                                        </i>Picnic</a>
                                 </div>
 
                             </li>
 
-
                         </ul>
 
-                        <!-- Reset Zoom -->
-                        <a id="plotControlResetMobile" class="fa fa-home"
+                        <!-- Reset Zoom - not yet relevent for mobile devices
+                        <a id="plotControlResetMobile"
                             onclick='DATA_DISPLAY.resetZoom()'>
-                            Reset Zoom</a>
+                            <i class="fa fa-home">&nbsp;
+                            </i>Reset Zoom</a>
+                        -->
 
-                        <!-- Download image -->
-                        <a id="plotControlDownloadMobile" class="fa fa-camera"
+                        <!-- Download image - not working correctly in mobile
+                        <a id="plotControlDownloadMobile"
                             onclick='DATA_DISPLAY.downloadPlot()'>
-                            Download</a>
-
+                            <i class="fa fa-camera">&nbsp;
+                            </i>Download</a>
+                        -->
                     </div>
 
                 </li>
@@ -315,11 +335,11 @@
             </div>
 
 
-            <!-- Image Series Control -->
+            <!-- Image Series Controls -->
             <div id='imageSeriesControl' class="seriesbar"
                 style="display:none;">
 
-                <!-- Image series controls -->
+                <!-- step through images -->
                 <ul>
 
                     <!-- Start button -->
@@ -359,7 +379,7 @@
 
                 </ul>
 
-                <!-- Image series slider bar -->
+                <!-- slider bar -->
                 <input id="imageSeriesSlider" class="range"
                     type='range' value="0" min="0"
                     max="1" onchange='HANDLE_DATASET.imageSeriesInput(value,

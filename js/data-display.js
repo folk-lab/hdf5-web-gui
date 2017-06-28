@@ -1173,7 +1173,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
-            var debug = false, newPlotDivHeight, newPlotDivWidth,
+            var debug = true, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
                 containerWidth = $('#displayContainer').width(),
@@ -1187,19 +1187,16 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             // For smaller screens, fuck padding
-            if (windowWidth > 978) {
-                DATA_DISPLAY.mobileDisplay = false;
-            } else {
-                DATA_DISPLAY.mobileDisplay = true;
-            }
+            // if (windowWidth > 978) {
+            //     DATA_DISPLAY.mobileDisplay = false;
+            // } else {
+            //     DATA_DISPLAY.mobileDisplay = true;
+            // }
+            DATA_DISPLAY.mobileDisplay = window.mobilecheck();
 
             newPlotDivWidth = containerWidth;
             if (!DATA_DISPLAY.mobileDisplay) {
                 newPlotDivWidth -= 40;
-            }
-
-            if (DATA_DISPLAY.imageSeries && DATA_DISPLAY.mobileDisplay) {
-                newPlotDivHeight -= 50;
             }
 
             if (debug) {
@@ -1393,8 +1390,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 // Toggle which item in the list in highlighted
                 $("#plotType" +
                     DATA_DISPLAY.plotType).removeClass('selected');
+                $("#plotType" + type).addClass('selected');
+                $("#plotType" +
+                    DATA_DISPLAY.plotType + "Mobile").removeClass('selected');
+                $("#plotType" + type + "Mobile").addClass('selected');
+
+
+                // Save the new plot type
                 DATA_DISPLAY.plotType = type;
-                $("#plotType" + DATA_DISPLAY.plotType).addClass('selected');
 
                 if (DATA_DISPLAY.plotType === 'heatmap') {
                     DATA_DISPLAY.plotDimension = 2;
@@ -1416,21 +1419,26 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         // Change the color map
-        changeColor : function (colorscale) {
+        changeColor : function (colorScale) {
 
-            var debug = false;
+            var debug = true;
 
             if (debug) {
-                console.log('colorscale: ' + colorscale);
+                console.log('colorScale: ' + colorScale);
             }
 
-            if (colorscale !== '') {
+            if (colorScale !== '') {
 
                 // Toggle which item in the list in highlighted
                 $("#plotColor" +
                     DATA_DISPLAY.colorScale).removeClass('selected');
-                DATA_DISPLAY.colorScale = colorscale;
-                $("#plotColor" + DATA_DISPLAY.colorScale).addClass('selected');
+                $("#plotColor" + colorScale).addClass('selected');
+                $("#plotColor" + DATA_DISPLAY.colorScale +
+                    "Mobile").removeClass('selected');
+                $("#plotColor" + colorScale + "Mobile").addClass('selected');
+
+                // Save the new color scale
+                DATA_DISPLAY.colorScale = colorScale;
 
                 // Change the plot color using a restyle event
                 if (DATA_DISPLAY.plotExists) {
@@ -1493,7 +1501,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         downloadPlot : function () {
 
             // Get the plot dimensions
-            var divWidth = $('#plotCanvasDiv').width(),
+            var debug = true, divWidth = $('#plotCanvasDiv').width(),
                 divHeight = $('#plotCanvasDiv').height();
 
             // Start the spinner
@@ -1501,6 +1509,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             // Download that shit! Wait a bit so that the loader is visible :)
             setTimeout(function () {
+
+                if (debug) {
+                    console.log('starting plotly download function');
+                }
+
                 Plotly.downloadImage(
                     DATA_DISPLAY.plotCanvasDiv,
                     {
@@ -1510,7 +1523,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         filename: 'newplot'
                     }
                 ).then(
-                    // There seems to be a delay between when plotly is doen
+                    // There seems to be a delay between when plotly is done
                     // creating 3D images, and when the download dialog appears
                     AJAX_SPINNER.doneLoadingData(1000)
                 );
@@ -1543,8 +1556,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     console.log('Log Plot!');
                 }
                 $("#logPlotButton").html(' Log Plot!');
+                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log Plot!');
                 $("#plotControlLog").addClass('selected');
-                $("#logPlotButtonMobile").html(' Log Plot!');
+                $("#plotControlLogMobile").addClass('selected');
 
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
             } else {
@@ -1552,8 +1566,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     console.log('Log Plot?');
                 }
                 $("#logPlotButton").html(' Log Plot?');
+                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log Plot?');
                 $("#plotControlLog").removeClass('selected');
-                $("#logPlotButtonMobile").html(' Log Plot?');
+                $("#plotControlLogMobile").removeClass('selected');
 
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.initialDataValues;
             }
