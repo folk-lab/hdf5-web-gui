@@ -65,6 +65,9 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#data-storage-button").addClass('navbarbtn-darkTheme');
                 $("#logout-btn").addClass('navbarbtn-darkTheme');
                 $("#theme-toggle-btn").addClass('navbarbtn-darkTheme');
+                $("#settings-menu").addClass('navbarbtn-darkTheme');
+                $("#settings-menu-list").addClass('dropdown-content-darkTheme'
+                    );
 
                 // Plot control
                 $("#plotControlColor").addClass('navbarbtn-darkTheme');
@@ -113,6 +116,10 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
                 $("#data-storage-button").removeClass('navbarbtn-darkTheme');
                 $("#logout-btn").removeClass('navbarbtn-darkTheme');
                 $("#theme-toggle-btn").removeClass('navbarbtn-darkTheme');
+                $("#settings-menu").removeClass('navbarbtn-darkTheme');
+                $("#settings-menu-list").removeClass(
+                    'dropdown-content-darkTheme'
+                );
 
                 // Plot control
                 $("#plotControlColor").removeClass('navbarbtn-darkTheme');

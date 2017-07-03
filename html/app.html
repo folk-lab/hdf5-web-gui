@@ -63,25 +63,33 @@
 
                 <!-- Logo -->
                 <li id="max-iv-logo" class="navbarbtnimg desktop"
-                    style="float:left;">
+                    style="float:right;">
                     <a class="barimage">
                         <img alt="max-iv-logo"
                             src="../images/maxiv-logo-20x63.png"></a></li>
 
-                <!-- Logout button -->
-                <li id="logout-btn" class="navbarbtn desktop"
-                    style="float:left;"
-                    onclick='CAS_LOGIN_LOGOUT.logout();'>
-                    <a class="fa fa-sign-out"> Logout</a>
-                </li>
+                <!-- Settings dropdown menu -->
+                <li id="settings-menu"
+                    class="navbarbtn dropdown desktop">
 
-                <!-- Theme toggle button -->
-                <li id="theme-toggle-btn" class="navbarbtn desktop"
-                    style="float:left;"
-                    onclick='THEME_TOGGLE.toggleTheme();'>
-                    <a class="fa fa-lightbulb-o"> Theme</a>
-                </li>
+                    <a class="fa fa-cog">&nbsp;</a>
 
+                    <div id="settings-menu-list"
+                        class="desktop dropdown-content">
+
+                        <!-- Theme toggle button -->
+                        <a id="theme-toggle-btn" class="navbarbtn desktop"
+                            onclick='THEME_TOGGLE.toggleTheme();'>
+                            <i class="fa fa-lightbulb-o">&nbsp;</i>Theme</a>
+
+                        <!-- Logout button -->
+                        <a id="logout-btn" class="navbarbtn desktop"
+                            onclick='CAS_LOGIN_LOGOUT.logout();'>
+                            <i class="fa fa-sign-out">&nbsp;</i>Logout</a>
+
+                    </div>
+
+                </li>
                 <!-- Image Plot Controls -->
 
                 <!-- Reset Zoom -->
@@ -102,7 +110,7 @@
                 <li id="plotControlType" style="display:none;"
                     class="navbarbtn dropdown desktop">
 
-                    <a class="fa fa-caret-down"> Plot Type</a>
+                    <a class="fa fa-caret-down"> Dimensions </a>
 
                     <div id="plot-type-list" class="desktop dropdown-content">
                         <a id="plotTypeheatmap" class="selected"
@@ -121,14 +129,14 @@
                     class="navbarbtn desktop"
                     onclick='DATA_DISPLAY.toggleLogPlot()'>
                     <a id="logPlotButton"
-                        class="fa fa-bar-chart"> Log Plot?</a>
+                        class="fa fa-bar-chart"> Log?</a>
                 </li>
 
                 <!-- Colorscale dropdown menu -->
                 <li id="plotControlColor" style="display:none;"
                     class="navbarbtn dropdown desktop">
 
-                    <a class="fa fa-caret-down"> Color Scale </a>
+                    <a class="fa fa-caret-down"> Colors </a>
 
                     <div id="color-scale-list"
                         class="desktop dropdown-content">
@@ -208,7 +216,7 @@
                             onclick='DATA_DISPLAY.toggleLogPlot();
                             $("#mobile-control-list").toggle();'>
                             <i id="logPlotButtonMobile"
-                                class="fa fa-bar-chart">&nbsp;&nbsp;Log Plot?</i></a>
+                                class="fa fa-bar-chart">&nbsp;&nbsp;Log?</i></a>
 
                         <ul id="mobile-sub-dropdown">
 
@@ -220,7 +228,7 @@
                                     $("#plot-type-list-mobile").toggle();
                                     $("#color-scale-list-mobile").hide();'>
                                     <i class="fa fa-caret-down">&nbsp;
-                                    </i>Plot Type</a>
+                                    </i>Dimensions</a>
 
                                 <div id="plot-type-list-mobile"
                                     class="sub-dropdown-content">
@@ -247,7 +255,7 @@
                                     $("#color-scale-list-mobile").toggle();
                                     $("#plot-type-list-mobile").hide();'>
                                     <i class="fa fa-caret-down">&nbsp;
-                                    </i>Color Scale </a>
+                                    </i>Colors</a>
 
 
                                 <div id="color-scale-list-mobile"

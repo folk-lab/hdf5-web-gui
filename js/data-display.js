@@ -1555,8 +1555,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 if (debug) {
                     console.log('Log Plot!');
                 }
-                $("#logPlotButton").html(' Log Plot!');
-                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log Plot!');
+                $("#logPlotButton").html(' Log!');
+                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log!');
                 $("#plotControlLog").addClass('selected');
                 $("#plotControlLogMobile").addClass('selected');
 
@@ -1565,8 +1565,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 if (debug) {
                     console.log('Log Plot?');
                 }
-                $("#logPlotButton").html(' Log Plot?');
-                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log Plot?');
+                $("#logPlotButton").html(' Log?');
+                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log?');
                 $("#plotControlLog").removeClass('selected');
                 $("#plotControlLogMobile").removeClass('selected');
 
