@@ -137,6 +137,11 @@
     color: #DDDDCE;
 }
 
+#settings-menu-list,
+#mobile-options-list {
+    right: 0;
+}
+
 #plotControlLogMobile {
     text-align: left;
     width: 100px;
@@ -175,11 +180,19 @@
     display: none;
 }
 
+/* Display different items depending on screen size */
 @media handheld, screen and (max-width: 767px) {
     .mobile {
         display: inline-block;
     }
     .desktop {
+        display: none;
+    }
+}
+
+/* Hide the logo on smaller screens */
+@media handheld, screen and (max-width: 800px) {
+    #max-iv-logo {
         display: none;
     }
 }

@@ -144,6 +144,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Draw an empty plot when there is no data yet selected
         drawText : function (itemTitle, itemValue, fontColor, imageTitle) {
 
+            DATA_DISPLAY.calculatePlotSize();
             DATA_DISPLAY.showPlotCanvas();
 
             DATA_DISPLAY.enableImagePlotControls(false, false, false);
@@ -183,7 +184,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             // The layout of the plotting canvas and axes.
             layout = {
-                "title" : imageTitle,
+                "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : imageTitle),
                 "titlefont" : {
                     "color" : (DATA_DISPLAY.useDarkTheme === true ?
                             "#DDDDCE" : "#000000"),
@@ -286,7 +288,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // And the layout
             layout = {
                 "showlegend" : false,
-                "title" : nodeTitle,
+                "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : nodeTitle),
                 "titlefont" : {
                     "color" : (DATA_DISPLAY.useDarkTheme === true ?
                             "#DDDDCE" : "#000000"),
@@ -1173,7 +1176,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
-            var debug = true, newPlotDivHeight, newPlotDivWidth,
+            var debug = false, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
                 containerWidth = $('#displayContainer').width(),
@@ -1421,7 +1424,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Change the color map
         changeColor : function (colorScale) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('colorScale: ' + colorScale);
@@ -1501,7 +1504,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         downloadPlot : function () {
 
             // Get the plot dimensions
-            var debug = true, divWidth = $('#plotCanvasDiv').width(),
+            var debug = false, divWidth = $('#plotCanvasDiv').width(),
                 divHeight = $('#plotCanvasDiv').height();
 
             // Start the spinner
