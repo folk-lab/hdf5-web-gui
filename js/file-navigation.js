@@ -497,7 +497,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                         if (itemList[keyTitle].collection === 'groups') {
                             type = 'folder';
-                            icon = 'glyphicon glyphicon-folder-close';
+                            icon = 'fa fa-folder';
                         }
 
                         if (itemList[keyTitle].collection === 'datasets') {
@@ -508,26 +508,26 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                                 switch (itemList[keyTitle].dataType) {
                                 case 'image-series':
-                                    icon = 'glyphicon glyphicon-certificate';
+                                    icon = 'fa fa-stack-overflow';
                                     break;
                                 case 'image':
-                                    icon = 'glyphicon glyphicon-picture';
+                                    icon = 'fa fa-area-chart';
                                     break;
                                 case 'line':
-                                    icon = 'glyphicon glyphicon-signal';
+                                    icon = 'fa fa-line-chart';
                                     break;
                                 case 'number':
-                                    icon = 'glyphicon glyphicon-barcode';
+                                    icon = 'fa fa-barcode';
                                     break;
                                 case 'text':
-                                    icon = 'glyphicon glyphicon-list';
+                                    icon = 'fa fa-list';
                                     break;
                                 default:
-                                    icon = 'glyphicon glyphicon-question-sign';
+                                    icon = 'fa fa-question-circle';
                                 }
 
                             } else {
-                                icon = 'glyphicon glyphicon-remove-sign';
+                                icon = 'fa fa-minus-circle';
                             }
                         }
                     }
@@ -992,7 +992,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         setTreeDivHeight : function () {
 
             var window_height = $(window).height(),
-                // content_height = window_height - 110;
                 content_height = window_height - 80;
 
             $('#treeSectionDiv').height(content_height);
@@ -1012,7 +1011,7 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
     }
 
     if (data.node.data.type === 'folder') {
-        data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-open');
+        data.instance.set_icon(data.node, 'fa fa-folder-open');
     }
 
 // Change the icon when a folder is closed
@@ -1024,7 +1023,7 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
     }
 
     if (data.node.data.type === 'folder') {
-        data.instance.set_icon(data.node, 'glyphicon glyphicon-folder-close');
+        data.instance.set_icon(data.node, 'fa fa-folder');
     }
 });
 
@@ -1032,7 +1031,7 @@ $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
 // When an item in the tree is clicked, do some stuff
 $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
-    var debug = false, keyData, keyNode;
+    var debug = false, keyData, keyNode, imageTitle;
 
     // Open or close the node
     // data.instance.toggle_node(data.node);
@@ -1108,30 +1107,41 @@ $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
 
             case 'image-series':
                 AJAX_SPINNER.startLoadingData(10);
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayImageSeriesInitial(data.node.data.target,
-                    data.node.data.shapeDims);
+                    data.node.data.shapeDims, 0, imageTitle);
                 break;
 
             case 'image':
                 AJAX_SPINNER.startLoadingData(10);
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.node.data.shapeDims, false, data.selected, true);
+                    data.node.data.shapeDims, false, data.selected, true,
+                    imageTitle);
                 break;
 
             case 'line':
                 AJAX_SPINNER.startLoadingData(10);
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayLine(data.node.data.target,
-                    data.selected, data.node.text);
+                    data.selected, imageTitle);
                 break;
 
             case 'number':
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayText(data.node.data.target,
-                    data.node.text, '#ad3a3a');
+                    data.node.text, '#ad3a3a', imageTitle);
                 break;
 
             case 'text':
+                imageTitle = data.node.data.filePath + '/' +
+                    data.node.data.h5Path;
                 HANDLE_DATASET.displayText(data.node.data.target,
-                    data.node.text, '#3a74ad');
+                    data.node.text, '#3a74ad', imageTitle);
                 break;
 
             default:

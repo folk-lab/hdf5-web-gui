@@ -10,7 +10,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     {
         plotCanvasDiv : document.getElementById('plotCanvasDiv'),
         plotExists : false,
-        colorScale : 'Jet',
+        colorScale : 'Picnic',
         plotLogValues : false,
         plotType : 'heatmap',
         plotDimension : 2,
@@ -34,6 +34,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         imageIsDownsampled : false,
         imageZoomSection : false,
         usingOriginalImage : true,
+        imageTitle : 'Title goes here',
 
         lineValues : [],
         lineTitle : '',
@@ -54,19 +55,44 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
         // Enable or disable various image and image series controls
-        enableImagePlotControls : function (enableImageControls,
-            enableSeriesControls) {
+        enableImagePlotControls : function (enablePlotControls,
+            enableImageControls, enableSeriesControls) {
 
             var i, debug = false, seriesMax = 0, endButtonWidth = '50px',
-                imageControlDiv = ['#plotControls'],
+                plotControlDiv = [ '#plotControlDownload',
+                    '#plotControlReset'],
+                imageControlDiv = ['#plotControlType', '#plotControlLog',
+                    '#plotControlColor' ],
+                imageControlDivMobile = ['#plot-control-mobile'],
                 seriesControlDiv = ['#imageSeriesControl'];
 
-            // General plotting controls - show, hide
-            for (i = 0; i < imageControlDiv.length; i += 1) {
-                if (enableImageControls) {
-                    $(imageControlDiv[i]).show();
-                } else {
-                    $(imageControlDiv[i]).hide();
+            // General plot controls - show, hide
+            if (!DATA_DISPLAY.mobileDisplay) {
+                for (i = 0; i < plotControlDiv.length; i += 1) {
+                    if (enablePlotControls) {
+                        $(plotControlDiv[i]).show();
+                    } else {
+                        $(plotControlDiv[i]).hide();
+                    }
+                }
+            }
+
+            // General image controls - show, hide
+            if (DATA_DISPLAY.mobileDisplay) {
+                for (i = 0; i < imageControlDivMobile.length; i += 1) {
+                    if (enableImageControls) {
+                        $(imageControlDivMobile[i]).show();
+                    } else {
+                        $(imageControlDivMobile[i]).hide();
+                    }
+                }
+            } else {
+                for (i = 0; i < imageControlDiv.length; i += 1) {
+                    if (enableImageControls) {
+                        $(imageControlDiv[i]).show();
+                    } else {
+                        $(imageControlDiv[i]).hide();
+                    }
                 }
             }
 
@@ -86,24 +112,21 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 seriesMax = DATA_DISPLAY.imageSeriesRange - 1;
 
                 // Reset the value and limits of the input field
-                $("#inputNumberDiv").val("0");
+                $("#inputNumberDiv").val(DATA_DISPLAY.imageSeriesIndex);
                 $('#inputNumberDiv').attr({
                     'min' : 0,
                     'max' : seriesMax,
                 });
 
-                // Set the limits of the slider
-                $("#slider").slider({
-                    'data-value': 0,
-                    'value': 0,
-                    'min': 0,
-                    'max': seriesMax,
+                $("#imageSeriesSlider").val(DATA_DISPLAY.imageSeriesIndex);
+                $('#imageSeriesSlider').attr({
+                    'min' : 0,
+                    'max' : seriesMax,
                 });
-                $("#slider").slider('refresh');
 
                 // Set the text of the start and end buttons
                 $('#startButtonValue').text(0);
-                $('#endButtonValue').text(seriesMax);
+                $('#endButtonValue').text(' ' + seriesMax);
 
                 // Set the width of the end button, depending on text size
                 endButtonWidth = seriesMax.toString().length * 10 + 40;
@@ -119,11 +142,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         // Draw an empty plot when there is no data yet selected
-        drawText : function (itemTitle, itemValue, fontColor) {
+        drawText : function (itemTitle, itemValue, fontColor, imageTitle) {
 
+            DATA_DISPLAY.calculatePlotSize();
             DATA_DISPLAY.showPlotCanvas();
 
-            DATA_DISPLAY.enableImagePlotControls(false, false);
+            DATA_DISPLAY.enableImagePlotControls(false, false, false);
 
             var debug = false, data, layout, options, mainDataPlot, string1,
                 string2;
@@ -152,7 +176,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Setup the empty data
             mainDataPlot = {
                 z: [],
-                // type: 'heatmap',
                 colorscale: DATA_DISPLAY.colorScale,
             };
 
@@ -161,7 +184,12 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             // The layout of the plotting canvas and axes.
             layout = {
-                "title" : '',
+                "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : imageTitle),
+                "titlefont" : {
+                    "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                            "#DDDDCE" : "#000000"),
+                },
                 "showlegend" : false,
                 "autosize" : false,
                 "width" : DATA_DISPLAY.plotWidth,
@@ -236,10 +264,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         displayErrorMessage : function (inputUrl) {
-            DATA_DISPLAY.enableImagePlotControls(false, false);
+            DATA_DISPLAY.enableImagePlotControls(false, false, false);
             DATA_DISPLAY.drawText('I don\'t know how to handle this yet!',
                 'Sorry for the inconvenience :(',
-                '#ad3a74');
+                '#ad3a74', '');
             console.log('inputUrl: ' + inputUrl);
         },
 
@@ -251,47 +279,52 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Create data object
             data = [
                 {
-                    y: value,
-                    mode: 'lines',
-                    type: 'scatter'
+                    "y" : value,
+                    "mode" : 'lines',
+                    "type" : 'scatter'
                 }
             ];
 
             // And the layout
             layout = {
-                showlegend: false,
-                title: nodeTitle,
-                autosize: false,
-                width: DATA_DISPLAY.plotWidth,
-                height: DATA_DISPLAY.plotHeight,
-                hovermode: 'closest',
-                bargap: 0,
-                paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
+                "showlegend" : false,
+                "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : nodeTitle),
+                "titlefont" : {
+                    "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                            "#DDDDCE" : "#000000"),
+                },
+                "autosize" : false,
+                "width" : DATA_DISPLAY.plotWidth,
+                "height" : DATA_DISPLAY.plotHeight,
+                "hovermode" : 'closest',
+                "bargap" : 0,
+                "paper_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
-                plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
+                "plot_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
-                margin: {
+                "margin" : {
                     l: 65,
                     r: 50,
                     b: 65,
                     t: 90,
                 },
-                xaxis: {
+                "xaxis" : {
                     title: 'array index',
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                "#999" : "#000000"),
+                                "#DDDDCE" : "#000000"),
                     },
                     "tickfont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
                                 "#999" : "#000000"),
                     },
                 },
-                yaxis: {
+                "yaxis" : {
                     title: 'values',
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                "#999" : "#000000"),
+                                "#DDDDCE" : "#000000"),
                     },
                     "tickfont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -309,7 +342,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
                     'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d',
                     'zoomOut2d'],
-                displayModeBar: true,
+                // displayModeBar: true,
+                displayModeBar: false,
                 showTips: false,
                 scrollZoom: true,
             };
@@ -331,7 +365,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         draw3DPlot : function () {
 
-            var debug = false, data, layout, options, plotMargins, profiles;
+            var debug = false, data, layout, options, plotMargins, profiles,
+                imageTitle;
 
             // Get the proper x & y axes ranges if this image has been
             // downsampled
@@ -365,7 +400,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         "exponentformat" : "power",
                         "titlefont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                    "#999" : "#000000"),
+                                    "#DDDDCE" : "#000000"),
                         },
                         "tickfont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -380,27 +415,37 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 plotMargins =  { l: 30, r: 20, b: 30, t: 20, };
             }
 
+            imageTitle = DATA_DISPLAY.imageTitle;
+            if (DATA_DISPLAY.imageSeries) {
+                imageTitle += '-' +
+                    DATA_DISPLAY.imageSeriesIndex;
+            }
+
             // And the layout
             layout = {
-                showlegend: false,
-                title : (DATA_DISPLAY.mobileDisplay === true ?
-                        '' : 'Title goes here'),
-                autosize: false,
-                width: DATA_DISPLAY.plotWidth,
-                height: DATA_DISPLAY.plotHeight,
-                hovermode: 'closest',
-                bargap: 0,
-                paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
+                "showlegend" : false,
+                "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : imageTitle),
+                "titlefont" : {
+                    "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                            "#999" : "#000000"),
+                },
+                "autosize" : false,
+                "width" : DATA_DISPLAY.plotWidth,
+                "height" : DATA_DISPLAY.plotHeight,
+                "hovermode" : 'closest',
+                "bargap" : 0,
+                "paper_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
-                plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
+                "plot_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
-                margin: plotMargins,
+                "margin" : plotMargins,
                 "scene" : {
                     "xaxis" : {
                         "title" : "x",
                         "titlefont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                    "#999" : "#000000"),
+                                    "#DDDDCE" : "#000000"),
                         },
                         "tickfont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -411,7 +456,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         "title" : "y",
                         "titlefont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                    "#999" : "#000000"),
+                                    "#DDDDCE" : "#000000"),
                         },
                         "tickfont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -422,7 +467,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         "title" : "z",
                         "titlefont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                    "#999" : "#000000"),
+                                    "#DDDDCE" : "#000000"),
                         },
                         "tickfont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -443,7 +488,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
                     'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d',
                     'zoomOut2d'],
-                displayModeBar: true,
+                // displayModeBar: true,
+                displayModeBar: false,
                 showTips: false,
                 scrollZoom: true,
             };
@@ -476,34 +522,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 });
         },
 
-
-        handle2DHover : function (data) {
-
-            var hoverInfo, hoverText,
-                hoverTSpan, hoverValues = [0, 0, 0],
-                zOriginal = 0, zNew = 0;
-
-            data.points.forEach(function (p) {
-                console.log(p);
-                zOriginal = p.z;
-                zNew = Math.exp(Math.LN10 * zOriginal);
-                console.log('zOriginal: ' + zOriginal);
-                console.log('zNew:      ' + zNew);
-                p.z = zNew;
-                console.log(p.z);
-            });
-
-            hoverInfo = $(".hovertext")[0];
-            hoverText = $('text', hoverInfo).get(0);
-            console.log(hoverInfo);
-            console.log(hoverText);
-
-            hoverTSpan = $('tspan', hoverText).get(2);
-            hoverValues[2] = hoverTSpan.innerHTML;
-            console.log(hoverValues);
-            $('tspan', hoverText).get(2).innerHTML = zNew;
-            console.log('zNew:      ' + zNew);
-        },
 
         // Fill x and y profile histograms, given the image and the dimensions
         // of the section of the image being viewed
@@ -619,7 +637,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Check if an event is a zoom event
         isZoomEvent : function (eventdata) {
 
-            var debug = true, i = 0, zoomEvent = false,
+            var debug = false, i = 0, zoomEvent = false,
                 rangeKeys = ['xaxis.range[0]', 'xaxis.range[1]',
                     'yaxis.range[0]', 'yaxis.range[1]'],
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
@@ -807,7 +825,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 2D image
         handle2DZoom : function (eventdata) {
 
-            var debug = true, i = 0, ranges = [-1, -1, -1, -1],
+            var debug = false, i = 0, ranges = [-1, -1, -1, -1],
                 promises = [], newImageFetched = false, resetZoomEvent = false,
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
 
@@ -900,7 +918,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         draw2DPlot : function () {
 
             var debug = false, profiles, xProfilePlot, yProfilePlot, data,
-                layout, options, mainDataPlot, plotMargins = {};
+                layout, options, mainDataPlot, plotMargins = {}, imageTitle;
 
             if (debug) {
                 console.log('DATA_DISPLAY.imageShapeDims[0]' +
@@ -939,7 +957,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     "exponentformat" : "power",
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                "#999" : "#000000"),
+                                "#DDDDCE" : "#000000"),
                     },
                     "tickfont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -979,24 +997,34 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 plotMargins =  { l: 30, r: 20, b: 30, t: 20, };
             }
 
+            imageTitle = DATA_DISPLAY.imageTitle;
+            if (DATA_DISPLAY.imageSeries) {
+                imageTitle += '-' +
+                    DATA_DISPLAY.imageSeriesIndex;
+            }
+
             // The layout of the plotting canvas and axes. Note that the amount
             // of space each plot takes up is a range from 0 to 1, and follows
             // the keyword 'domain'
             layout = {
-                title : (DATA_DISPLAY.mobileDisplay === true ?
-                        '' : 'Title goes here'),
-                showlegend : false,
-                autosize : false,
+                "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                        '' : imageTitle),
+                "titlefont" : {
+                    "color" : (DATA_DISPLAY.useDarkTheme === true ?
+                            "#DDDDCE" : "#000000"),
+                },
+                "showlegend" : false,
+                "autosize" : false,
 
-                width: DATA_DISPLAY.plotWidth,
-                height: DATA_DISPLAY.plotHeight,
-                margin: plotMargins,
+                "width": DATA_DISPLAY.plotWidth,
+                "height": DATA_DISPLAY.plotHeight,
+                "margin": plotMargins,
 
-                hovermode: 'closest',
-                bargap: 0,
-                paper_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
+                "hovermode" : 'closest',
+                "bargap" : 0,
+                "paper_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
-                plot_bgcolor : (DATA_DISPLAY.useDarkTheme === true ?
+                "plot_bgcolor" : (DATA_DISPLAY.useDarkTheme === true ?
                         '#181817' : '#ffffff'),
 
                 "xaxis" : {
@@ -1006,7 +1034,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     "zeroline" : false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                "#999" : "#000000"),
+                                "#DDDDCE" : "#000000"),
                     },
                     "tickfont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -1021,7 +1049,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     "zeroline": false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                "#999" : "#000000"),
+                                "#DDDDCE" : "#000000"),
                     },
                     "tickfont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -1035,7 +1063,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     "zeroline" : false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                "#999" : "#000000"),
+                                "#DDDDCE" : "#000000"),
                     },
                     "tickfont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -1049,7 +1077,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     "zeroline" : false,
                     "titlefont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                "#999" : "#000000"),
+                                "#DDDDCE" : "#000000"),
                     },
                     "tickfont" : {
                         "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -1067,7 +1095,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     'hoverClosestCartesian', 'resetScale2d', 'hoverClosest3d',
                     'resetCameraLastSave3d', 'orbitRotation', 'zoomIn2d',
                     'zoomOut2d'],
-                displayModeBar: true,
+                // displayModeBar: true,
+                displayModeBar: false,
                 showTips: false,
                 scrollZoom: true,
             };
@@ -1100,38 +1129,77 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         },
 
 
+        redrawPlotCanvas : function (timeDelay) {
+
+            var debug = false, plotHeight = DATA_DISPLAY.plotHeight;
+
+            if (DATA_DISPLAY.plotExists) {
+
+                // During a window resize event, the resize function will be
+                // called several times per second, on the order of 15 Hz! Best
+                // to wait a bit try to just resize once, as it's a bit costly
+                // for plotly to execute relayout
+                clearTimeout(DATA_DISPLAY.resizeTimer);
+
+                AJAX_SPINNER.startLoadingData(50);
+
+                DATA_DISPLAY.resizeTimer = setTimeout(function () {
+
+                    if (debug) {
+                        console.log('about to run Plotly.relayout');
+                    }
+
+                    // Calculate the plot dimensions and save them
+                    DATA_DISPLAY.calculatePlotSize();
+
+                    // Use smaller canvas when displaying text instead of
+                    // images
+                    if (DATA_DISPLAY.displayType === 'text') {
+                        plotHeight = 300;
+                    } else {
+                        plotHeight = DATA_DISPLAY.plotHeight;
+                    }
+
+                    Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                        width: DATA_DISPLAY.plotWidth,
+                        height: plotHeight,
+                    }).then(
+                        AJAX_SPINNER.doneLoadingData()
+                    );
+
+                }, timeDelay);
+            }
+
+        },
+
+
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
             var debug = false, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
-                appWidth = $('#applicationContainer').width(),
-                appHeight = $('#applicationContainer').height(),
-                containerWidth = $('#plotContainer').width(),
-                containerHeight = $('#plotContainer').height(),
+                containerWidth = $('#displayContainer').width(),
+                containerHeight = $('#displayContainer').height(),
                 divWidth = $('#plotCanvasDiv').width(),
                 divHeight = $('#plotCanvasDiv').height();
 
             newPlotDivHeight = windowHeight - 80;
             if (DATA_DISPLAY.imageSeries) {
-                newPlotDivHeight -= 35;
+                newPlotDivHeight -= 33;
             }
 
             // For smaller screens, fuck padding
-            if (windowWidth > 978) {
-                DATA_DISPLAY.mobileDisplay = false;
-            } else {
-                DATA_DISPLAY.mobileDisplay = true;
-            }
+            // if (windowWidth > 978) {
+            //     DATA_DISPLAY.mobileDisplay = false;
+            // } else {
+            //     DATA_DISPLAY.mobileDisplay = true;
+            // }
+            DATA_DISPLAY.mobileDisplay = window.mobilecheck();
 
             newPlotDivWidth = containerWidth;
             if (!DATA_DISPLAY.mobileDisplay) {
                 newPlotDivWidth -= 40;
-            }
-
-            if (DATA_DISPLAY.imageSeries && DATA_DISPLAY.mobileDisplay) {
-                newPlotDivHeight -= 50;
             }
 
             if (debug) {
@@ -1139,8 +1207,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.imageSeries);
                 console.log('DATA_DISPLAY.mobileDisplay: ' +
                     DATA_DISPLAY.mobileDisplay);
-                console.log('appWidth:     ' + appWidth);
-                console.log('appHeight:    ' + appHeight);
                 console.log('windowWidth:  ' + windowWidth);
                 console.log('windowHeight: ' + windowHeight);
                 console.log('divWidth:     ' + divWidth);
@@ -1158,7 +1224,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
         // Plot the data!
-        plotLine : function (value, nodeTitle) {
+        plotLine : function (value, imageTitle) {
 
             DATA_DISPLAY.displayType = 'line';
 
@@ -1167,7 +1233,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             DATA_DISPLAY.calculatePlotSize();
 
             DATA_DISPLAY.lineValues = value;
-            DATA_DISPLAY.lineTitle = nodeTitle;
+            DATA_DISPLAY.lineTitle = imageTitle;
 
             DATA_DISPLAY.drawLine(DATA_DISPLAY.lineValues,
                 DATA_DISPLAY.lineTitle);
@@ -1224,7 +1290,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             if (newImageFetched) {
 
-                // Refill the 2Dor 3D plot, set the min and max so the color
+                // Refill the 2D or 3D plot, set the min and max so the color
                 // bar range updates
                 Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
                     z: [DATA_DISPLAY.dataValues],
@@ -1239,7 +1305,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         "exponentformat" : "power",
                         "titlefont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
-                                    "#999" : "#000000"),
+                                    "#DDDDCE" : "#000000"),
                         },
                         "tickfont" : {
                             "color" : (DATA_DISPLAY.useDarkTheme === true ?
@@ -1248,6 +1314,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     }],
                 }, [0]);
 
+                // Set the ranges of the 2D plot properly - otherwise empty
+                // bands will appears when not centered on data.
                 if (DATA_DISPLAY.plotDimension === 2) {
                     if (debug) {
                         console.log('DATA_DISPLAY.imageZoomSection:');
@@ -1258,8 +1326,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     }
 
                     if (setAxesRange) {
-                        // Set the ranges of the 2D plot properly - otherwise
-                        // empty bands will appears when not centered on data.
                         // Also, the domain needs to be set again, not sure
                         // why...
                         Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
@@ -1278,6 +1344,15 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                             },
                         });
                     }
+                }
+
+                // If an image series, change the title
+                if (DATA_DISPLAY.imageSeries) {
+                    Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
+                        "title" : (DATA_DISPLAY.mobileDisplay === true ?
+                                '' : DATA_DISPLAY.imageTitle + '-' +
+                                DATA_DISPLAY.imageSeriesIndex),
+                    });
                 }
 
             } else {
@@ -1314,10 +1389,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         changeType : function (type) {
 
             if (type !== '') {
-                DATA_DISPLAY.purgePlotCanvas();
 
-                AJAX_SPINNER.startLoadingData(1);
+                // Toggle which item in the list in highlighted
+                $("#plotType" +
+                    DATA_DISPLAY.plotType).removeClass('selected');
+                $("#plotType" + type).addClass('selected');
+                $("#plotType" +
+                    DATA_DISPLAY.plotType + "Mobile").removeClass('selected');
+                $("#plotType" + type + "Mobile").addClass('selected');
 
+
+                // Save the new plot type
                 DATA_DISPLAY.plotType = type;
 
                 if (DATA_DISPLAY.plotType === 'heatmap') {
@@ -1326,33 +1408,129 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.plotDimension = 3;
                 }
 
+                DATA_DISPLAY.purgePlotCanvas();
+                AJAX_SPINNER.startLoadingData(1);
+
                 // Use a bit of a delay just so that the loading spinner has
                 // a chance to start up
                 setTimeout(function () {
                     DATA_DISPLAY.plotData();
-                }, 10);
+                }, 300);
             }
 
         },
 
 
         // Change the color map
-        changeColor : function (colorscale) {
+        changeColor : function (colorScale) {
 
             var debug = false;
 
             if (debug) {
-                console.log('colorscale: ' + colorscale);
+                console.log('colorScale: ' + colorScale);
             }
 
-            if (colorscale !== '') {
+            if (colorScale !== '') {
 
-                DATA_DISPLAY.colorScale = colorscale;
+                // Toggle which item in the list in highlighted
+                $("#plotColor" +
+                    DATA_DISPLAY.colorScale).removeClass('selected');
+                $("#plotColor" + colorScale).addClass('selected');
+                $("#plotColor" + DATA_DISPLAY.colorScale +
+                    "Mobile").removeClass('selected');
+                $("#plotColor" + colorScale + "Mobile").addClass('selected');
 
-                Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
-                    colorscale: DATA_DISPLAY.colorScale
-                }, [0]);
+                // Save the new color scale
+                DATA_DISPLAY.colorScale = colorScale;
+
+                // Change the plot color using a restyle event
+                if (DATA_DISPLAY.plotExists) {
+                    Plotly.restyle(DATA_DISPLAY.plotCanvasDiv, {
+                        colorscale: DATA_DISPLAY.colorScale
+                    }, [0]);
+                }
             }
+        },
+
+
+        // One of the plotly buttons remade - reset zoom / autoscale
+        resetZoom : function () {
+
+            var debug = false;
+
+            if (debug) {
+                console.log();
+            }
+
+            // Start the spinner
+            AJAX_SPINNER.startLoadingData(1);
+
+            // The simplest way to reset the zoom seems to be to just replot
+            // everything
+
+            // For an image series
+            if (DATA_DISPLAY.imageSeries) {
+
+                HANDLE_DATASET.displayImageSeriesInitial(
+                    DATA_DISPLAY.imageTargetUrl,
+                    false,
+                    DATA_DISPLAY.imageSeriesIndex
+                );
+
+
+            // For an image
+            } else if (DATA_DISPLAY.displayType === 'image') {
+
+                HANDLE_DATASET.displayImage(
+                    DATA_DISPLAY.imageTargetUrl,
+                    DATA_DISPLAY.imageShapeDims,
+                    false,
+                    DATA_DISPLAY.imageNodeId,
+                    true
+                );
+
+            // For a line
+            } else if (DATA_DISPLAY.displayType === 'line') {
+
+                DATA_DISPLAY.drawLine(DATA_DISPLAY.lineValues,
+                    DATA_DISPLAY.lineTitle);
+
+            }
+
+        },
+
+
+        // One of the plotly buttons remade - download the plot image
+        downloadPlot : function () {
+
+            // Get the plot dimensions
+            var debug = false, divWidth = $('#plotCanvasDiv').width(),
+                divHeight = $('#plotCanvasDiv').height();
+
+            // Start the spinner
+            AJAX_SPINNER.startLoadingData(1);
+
+            // Download that shit! Wait a bit so that the loader is visible :)
+            setTimeout(function () {
+
+                if (debug) {
+                    console.log('starting plotly download function');
+                }
+
+                Plotly.downloadImage(
+                    DATA_DISPLAY.plotCanvasDiv,
+                    {
+                        format: 'png',
+                        width: divWidth,
+                        height: divHeight,
+                        filename: 'newplot'
+                    }
+                ).then(
+                    // There seems to be a delay between when plotly is done
+                    // creating 3D images, and when the download dialog appears
+                    AJAX_SPINNER.doneLoadingData(1000)
+                );
+            }, 50);
         },
 
 
@@ -1380,21 +1558,32 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 if (debug) {
                     console.log('Log Plot!');
                 }
-                $("#logPlotButton").html('Log Plot!');
-                $("#logPlotButton").addClass('btn-success');
+                $("#logPlotButton").html(' Log!');
+                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log!');
+                $("#plotControlLog").addClass('selected');
+                $("#plotControlLogMobile").addClass('selected');
 
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
             } else {
                 if (debug) {
                     console.log('Log Plot?');
                 }
-                $("#logPlotButton").html('Log Plot?');
-                $("#logPlotButton").removeClass('btn-success');
+                $("#logPlotButton").html(' Log?');
+                $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log?');
+                $("#plotControlLog").removeClass('selected');
+                $("#plotControlLogMobile").removeClass('selected');
 
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.initialDataValues;
             }
 
-            DATA_DISPLAY.updatePlotZData(false, true, false);
+            AJAX_SPINNER.startLoadingData(1);
+
+            // Use a bit of a delay just so that the loading spinner has a
+            // chance to start up and the log button background has time to
+            // change color :p
+            setTimeout(function () {
+                DATA_DISPLAY.updatePlotZData(false, true, false);
+            }, 300);
         },
 
 
@@ -1560,7 +1749,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //------------------------------------------------
         //
         saveImageInfo : function (targetUrl, nodeId, shapeDims, newImage,
-            section, imageIndex) {
+            section, imageIndex, imageTitle) {
 
             var debug = false;
 
@@ -1586,7 +1775,16 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.imageSeriesIndex = imageIndex;
 
+            // Set the plot title
+            if (imageTitle) {
+                DATA_DISPLAY.imageTitle = imageTitle;
+            }
+
             if (debug) {
+                console.log('DATA_DISPLAY.imageTitle: ' +
+                    DATA_DISPLAY.imageTitle);
+                console.log('DATA_DISPLAY.imageSeriesIndex: ' +
+                    DATA_DISPLAY.imageSeriesIndex);
                 console.log('DATA_DISPLAY.imageShapeDims[0]' +
                     DATA_DISPLAY.imageShapeDims[0]);
                 console.log('DATA_DISPLAY.imageShapeDims[1]' +
@@ -1603,87 +1801,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     };
 
 
-// Handle images series button click events
-$('.btn-number').click(function (e) {
-
-    var fieldName, type, input, currentVal;
-
-    e.preventDefault();
-
-    fieldName = $(this).attr('data-field');
-    type = $(this).attr('data-type');
-    input = $("input[name='" + fieldName + "']");
-    currentVal = parseInt(input.val(), 10);
-
-    if (!isNaN(currentVal)) {
-        if (type === 'minus') {
-
-            if (currentVal > input.attr('min')) {
-                input.val(currentVal - 1).change();
-            }
-            if (currentVal === input.attr('min')) {
-                $(this).attr('disabled', true);
-            }
-
-        } else if (type === 'plus') {
-
-            if (currentVal < input.attr('max')) {
-                input.val(currentVal + 1).change();
-            }
-            if (currentVal === input.attr('max')) {
-                $(this).attr('disabled', true);
-            }
-
-        }
-
-    } else {
-        input.val(0);
-    }
-
-});
-
-
 // This function fires when the browser window is resized
 $(window).resize(function () {
 
-    var debug = true, plotHeight = DATA_DISPLAY.plotHeight;
+    var debug = false;
 
     if (debug) {
         console.log('wait for it...');
     }
 
-    if (DATA_DISPLAY.plotExists) {
-
-        // During a window resize event, the resize function will be called
-        // several times per second, on the order of 15 Hz! Best to wait a bit
-        // try to just resize once, as it's a bit costly for plotly to execute
-        // relyout
-        clearTimeout(DATA_DISPLAY.resizeTimer);
-
-        DATA_DISPLAY.resizeTimer = setTimeout(function () {
-
-            if (debug) {
-                console.log('about to run Plotly.relayout');
-            }
-
-            // Calculate the plot dimensions and save them
-            DATA_DISPLAY.calculatePlotSize();
-
-            // Use smaller canvas when displaying text instead of images
-            if (DATA_DISPLAY.displayType === 'text') {
-                plotHeight = 300;
-            } else {
-                plotHeight = DATA_DISPLAY.plotHeight;
-            }
-
-            Plotly.relayout(DATA_DISPLAY.plotCanvasDiv, {
-                width: DATA_DISPLAY.plotWidth,
-                height: plotHeight,
-            });
-
-        }, 200);
-
-    }
+    DATA_DISPLAY.mobileDisplay = window.mobilecheck();
+    DATA_DISPLAY.redrawPlotCanvas(100);
 });
 
 
@@ -1698,12 +1826,5 @@ $(document).ready(function () {
 
     // Calculate the proper plot dimensions and save them
     DATA_DISPLAY.calculatePlotSize();
-
-    // Handle image series slider events
-    $('#slider').slider().on('slideStop', function (slideEvt) {
-
-        // Get an image from the series
-        HANDLE_DATASET.imageSeriesInput(slideEvt.value, false, true, false);
-    });
 
 });

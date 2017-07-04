@@ -1,0 +1,181 @@
+/* image series slider */
+#imageSeriesSlider {
+    width: 100%;
+}
+
+/* image series input range */
+/*
+input[type='range'] {
+*/
+.range {
+    overflow: hidden;
+    width: 800px;
+    -webkit-appearance: none;
+    background-color: #cfe8fb;
+    margin-top : 5px;
+}
+/*
+input[type='range']::-webkit-slider-runnable-track {
+*/
+.range::-webkit-slider-runnable-track {
+    height: 25px;
+    -webkit-appearance: none;
+    color: #000;
+    margin-top: -1px;
+}
+/*
+input[type='range']::-webkit-slider-thumb {
+*/
+.range::-webkit-slider-thumb {
+    width: 25px;
+    -webkit-appearance: none;
+    height: 25px;
+    cursor: ew-resize;
+    background-color: #abd0ec;
+}
+
+.range-darkTheme {
+    background-color: #222;
+    color: #111;
+}
+
+.range-darkTheme::-webkit-slider-thumb {
+    background: #111;
+}
+
+/* Image series buttons */
+.seriesbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #cfe8fb;
+    color: #000;
+}
+
+.seriesbar li {
+    float: right;
+}
+
+.seriesbar li a:hover {
+    background-color: #e7f4f9;
+}
+
+.seriesbar-darkTheme ul {
+    background-color: #111;
+    color: #DDDDCE;
+}
+
+.seriesbar-darkTheme li a:hover {
+    background-color: #111;
+}
+
+.seriesbar-darkTheme ul {
+    background-color: #222;
+    color: #DDDDCE;
+}
+
+.seriesbar-darkTheme li a:hover {
+    background-color: #111;
+}
+
+.imageSeriesButton {
+    text-align: right;
+    width: 50px;
+    background-color: #abd0ec;
+    display: inline-block;
+    text-align: center;
+    display: inline-block;
+    padding-top: 4px;
+    padding-right: 16px;
+    padding-bottom: 4px;
+    padding-left: 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.imageSeriesButton:hover {
+    background-color: #e7f4f9;
+}
+
+.imageSeriesButton-darkTheme {
+    color: #a9a9a9;
+    border-color: #080808;
+    background-color: #111;
+}
+
+.imageSeriesButton-darkTheme:hover, .imageSeriesButton-darkTheme:focus,
+.imageSeriesButton-darkTheme:active, .imageSeriesButton-darkTheme.active,
+.open .dropdown-toggle.imageSeriesButton-darkTheme {
+    color: #ffffff;
+    border-color: #080808;
+    background-color: #000;
+}
+
+#startButton {
+    text-align: right;
+    width: 50px;
+}
+#endButton {
+    text-align: left;
+    width: 100px;
+}
+
+.inputNumber {
+    display: inline-block;
+    text-align: center;
+    display: inline-block;
+    padding-top: 2px;
+    padding-right: 16px;
+    padding-bottom: 2px;
+    padding-left: 16px;
+    text-decoration: none;
+}
+
+.inputNumber:hover {
+    background-color: #e7f4f9;
+}
+
+.inputNumber-darkTheme {
+    color: #a9a9a9;
+    border-color: #080808;
+}
+
+.inputNumber-darkTheme:hover {
+    background-color: #222;
+}
+
+input {
+    width: 100%;
+    font-size: 1em;
+    /*
+    height: 1.5em;
+    */
+    line-height: 1.5em;
+}
+
+span {
+    display: block;
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Media queries */
+@media handheld, screen and (max-width: 767px) {
+    .imageSeriesButton {
+        width: 25px;
+        padding-top: 4px;
+        padding-right: 4px;
+        padding-bottom: 4px;
+        padding-left: 4px;
+        cursor: pointer;
+    }
+
+    .inputNumber {
+        padding-top: 2px;
+        padding-right: 4px;
+        padding-bottom: 2px;
+        padding-left: 4px;
+        text-decoration: none;
+    }
+}

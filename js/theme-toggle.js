@@ -11,7 +11,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         toggleTheme : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             // See if this is a toggle or if a particular theme has been
             // selected
@@ -37,7 +37,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         pageElementsThemeToggle : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('useDarkTheme: ', useDarkTheme);
@@ -48,41 +48,109 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
                 $("body").addClass('darkTheme');
 
-                // Plot control buttons
-                $("#logPlotButton").addClass('btn-darkTheme');
-                $("#selectColorScheme").addClass('btn-darkTheme');
-                $("#selectPlotType").addClass('btn-darkTheme');
-
                 // Image series buttons
-                $("#startButton").addClass('btn-darkTheme');
-                $("#endButton").addClass('btn-darkTheme');
-                $("#plusButton").addClass('btn-darkTheme');
-                $("#minusButton").addClass('btn-darkTheme');
-                $("#inputNumberDiv").addClass('btn-darkTheme');
+                $("#imageSeriesControl").addClass('seriesbar-darkTheme');
+                $("#startButton").addClass('imageSeriesButton-darkTheme');
+                $("#endButton").addClass('imageSeriesButton-darkTheme');
+                $("#plusButton").addClass('imageSeriesButton-darkTheme');
+                $("#minusButton").addClass('imageSeriesButton-darkTheme');
+                $("#inputNumberDiv").addClass('inputNumber-darkTheme');
+                $("#imageSeriesSlider").addClass('range-darkTheme');
 
                 // Side menu
-                $("#navMenu").addClass('navmenu-inverse');
-                $("#navMenu").removeClass('navmenu-default');
+                $("#side-nav-menu").addClass('sidenav-darkTheme');
+
+                // Nav bar
+                $("#navbar").addClass('navbar-darkTheme');
+                $("#data-storage-button").addClass('navbarbtn-darkTheme');
+                $("#logout-btn").addClass('navbarbtn-darkTheme');
+                $("#theme-toggle-btn").addClass('navbarbtn-darkTheme');
+                $("#settings-menu").addClass('navbarbtn-darkTheme');
+                $("#settings-menu-list").addClass('dropdown-content-darkTheme'
+                    );
+
+                // Plot control
+                $("#plotControlColor").addClass('navbarbtn-darkTheme');
+                $("#plotControlLog").addClass('navbarbtn-darkTheme');
+                $("#plotControlType").addClass('navbarbtn-darkTheme');
+                $("#plotControlReset").addClass('navbarbtn-darkTheme');
+                $("#plotControlDownload").addClass('navbarbtn-darkTheme');
+                $("#plot-type-list").addClass('dropdown-content-darkTheme');
+                $("#color-scale-list").addClass('dropdown-content-darkTheme');
+
+                // Plot control mobile
+                $("#mobile-options-list").addClass('dropdown-content-darkTheme'
+                    );
+                $("#mobile-control-list").addClass('dropdown-content-darkTheme'
+                    );
+                $("#plotControlTypeMobile").addClass('navbarbtn-darkTheme');
+                $("#plotControlLogMobile").addClass('navbarbtn-darkTheme');
+                $("#plotControlResetMobile").addClass('navbarbtn-darkTheme');
+                $("#plotControlDownloadMobile").addClass('navbarbtn-darkTheme'
+                    );
+                $("#plot-type-list-mobile").addClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#color-scale-list-mobile").addClass(
+                    'dropdown-content-darkTheme'
+                );
 
             } else {
 
                 $("body").removeClass('darkTheme');
 
-                // Plot control buttons
-                $("#logPlotButton").removeClass('btn-darkTheme');
-                $("#selectColorScheme").removeClass('btn-darkTheme');
-                $("#selectPlotType").removeClass('btn-darkTheme');
-
                 // Image series buttons
-                $("#startButton").removeClass('btn-darkTheme');
-                $("#endButton").removeClass('btn-darkTheme');
-                $("#plusButton").removeClass('btn-darkTheme');
-                $("#minusButton").removeClass('btn-darkTheme');
-                $("#inputNumberDiv").removeClass('btn-darkTheme');
+                $("#imageSeriesControl").removeClass('seriesbar-darkTheme');
+                $("#startButton").removeClass('imageSeriesButton-darkTheme');
+                $("#endButton").removeClass('imageSeriesButton-darkTheme');
+                $("#plusButton").removeClass('imageSeriesButton-darkTheme');
+                $("#minusButton").removeClass('imageSeriesButton-darkTheme');
+                $("#inputNumberDiv").removeClass('inputNumber-darkTheme');
+                $("#imageSeriesSlider").removeClass('range-darkTheme');
 
                 // Side menu
-                $("#navMenu").removeClass('navmenu-inverse');
-                $("#navMenu").addClass('navmenu-default');
+                $("#side-nav-menu").removeClass('sidenav-darkTheme');
+
+                // Nav bar
+                $("#navbar").removeClass('navbar-darkTheme');
+                $("#data-storage-button").removeClass('navbarbtn-darkTheme');
+                $("#logout-btn").removeClass('navbarbtn-darkTheme');
+                $("#theme-toggle-btn").removeClass('navbarbtn-darkTheme');
+                $("#settings-menu").removeClass('navbarbtn-darkTheme');
+                $("#settings-menu-list").removeClass(
+                    'dropdown-content-darkTheme'
+                );
+
+                // Plot control
+                $("#plotControlColor").removeClass('navbarbtn-darkTheme');
+                $("#plotControlLog").removeClass('navbarbtn-darkTheme');
+                $("#plotControlType").removeClass('navbarbtn-darkTheme');
+                $("#plotControlReset").removeClass('navbarbtn-darkTheme');
+                $("#plotControlDownload").removeClass('navbarbtn-darkTheme');
+                $("#plot-type-list").removeClass('dropdown-content-darkTheme');
+                $("#color-scale-list").removeClass('dropdown-content-darkTheme'
+                    );
+
+                // Plot control mobile
+                $("#mobile-options-list").removeClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#mobile-control-list").removeClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#plotControlLogMobile").removeClass('navbarbtn-darkTheme');
+                $("#plotControlResetMobile").removeClass('navbarbtn-darkTheme'
+                    );
+                $("#plotControlDownloadMobile").removeClass(
+                    'navbarbtn-darkTheme'
+                );
+                $("#plotControlTypeMobile").removeClass('navbarbtn-darkTheme');
+                $("#plot-type-list-mobile").removeClass(
+                    'dropdown-content-darkTheme'
+                );
+                $("#color-scale-list-mobile").removeClass(
+                    'dropdown-content-darkTheme'
+                );
 
             }
         },
@@ -90,7 +158,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         fileTreeThemeToggle : function (useDarkTheme) {
 
-            var debug = true, currentTheme;
+            var debug = false, currentTheme;
 
             if (debug) {
                 console.log('useDarkTheme: ', useDarkTheme);
@@ -113,7 +181,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
         plottingThemeToggle : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('useDarkTheme: ', useDarkTheme);
@@ -124,11 +192,10 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
             // Changec color choice - 'Hot' looks nicer in a dark theme I think
             if (DATA_DISPLAY.useDarkTheme) {
-                DATA_DISPLAY.colorScale = 'Hot';
+                DATA_DISPLAY.changeColor('Hot');
             } else {
-                DATA_DISPLAY.colorScale = 'Jet';
+                DATA_DISPLAY.changeColor('Picnic');
             }
-            $('#selectColorScheme').val(DATA_DISPLAY.colorScale);
 
             // The easiest solution for images and lines seems to be just to
             // redraw everything - slower, but it avoids many issues..
@@ -170,10 +237,11 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
 
         // Trying to use retyle to change all the colors in image plots
-        // without redrawing everything - so far unsuccessful
-        plotThemeRestyle : function (useDarkTheme) {
+        // without redrawing everything - so far unsuccessful, just using
+        // the redraw functions in plottingThemeToggle() instead :(
+        plottingThemeRestyle : function (useDarkTheme) {
 
-            var debug = true;
+            var debug = false;
 
             // Restyle the plot, if necessary
             if (DATA_DISPLAY.plotCanvasDiv.layout) {

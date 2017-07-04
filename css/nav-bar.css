@@ -1,0 +1,198 @@
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #cfe8fb;
+    color: #000;
+}
+
+.navbar li {
+    float: right;
+}
+
+.navbar li:hover {
+    background-color: #e7f4f9;
+}
+
+.navbar li a:hover {
+    background-color: #e7f4f9;
+}
+
+.navbar-darkTheme ul {
+    background-color: #222;
+    color: #DDDDCE;
+}
+
+.navbar-darkTheme li:hover {
+    background-color: #111;
+}
+
+.navbar-darkTheme li a:hover {
+    background-color: #111;
+}
+
+.navbarbtn {
+    display: inline-block;
+    color: #000;
+    text-align: center;
+    display: inline-block;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.navbarbtn:hover {
+    background-color: #e7f4f9;
+}
+
+.navbarbtn-darkTheme {
+    color: #DDDDCE;
+}
+
+.navbarbtn-darkTheme:hover {
+    background-color: #111;
+}
+
+.barimage {
+    display: inline-block;
+    color: #DDDDCE;
+    text-align: center;
+    display: inline-block;
+    padding-top: 12px;
+    padding-right: 16px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    text-decoration: none;
+}
+
+.navbarbtnimg {
+    display: inline-block;
+}
+
+/* Dropdown menus */
+.dropdown-content,
+.sub-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #cfe8fb;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1002;
+}
+
+.dropdown-content i,
+.sub-dropdown-content i {
+    min-width: 25px;
+    text-align: center;
+}
+
+.dropdown-content a,
+.sub-dropdown-content a {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover,
+.sub-dropdown-content a:hover {
+    background-color: #111
+}
+
+.dropdown {
+    display: block;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+}
+
+.desktop.dropdown:hover
+.desktop.dropdown-content {
+    display: block;
+}
+.desktop.sub-dropdown {
+    display: none;
+}
+
+
+.desktop.dropdown:hover
+.desktop.sub-dropdown {
+    display: block;
+}
+
+.desktop.sub-dropdown:hover
+.desktop.sub-dropdown-content {
+    display: block;
+}
+
+
+.dropdown-content-darkTheme,
+.sub-dropdown-content-darkTheme {
+    background-color: #222;
+    color: #DDDDCE;
+}
+
+#settings-menu-list,
+#mobile-options-list {
+    right: 0;
+}
+
+#plotControlLogMobile {
+    text-align: left;
+    width: 100px;
+}
+
+#plotControlResetMobile {
+    text-align: left;
+    width: 100px;
+}
+
+#plotControlDownloadMobile {
+    text-align: left;
+    width: 100px;
+}
+
+#mobile-sub-dropdown {
+    text-align: left;
+    width: 140px;
+}
+
+#mobile-sub-dropdown li {
+    float: left;
+}
+
+/* Selected items */
+.selected {
+    background-color: #70a0ff;
+}
+
+.selected-darkTheme {
+    background-color: #572424;
+}
+
+/* Mobile stuff */
+.mobile {
+    display: none;
+}
+
+/* Display different items depending on screen size */
+@media handheld, screen and (max-width: 767px) {
+    .mobile {
+        display: inline-block;
+    }
+    .desktop {
+        display: none;
+    }
+}
+
+/* Hide the logo on smaller screens */
+@media handheld, screen and (max-width: 800px) {
+    #max-iv-logo {
+        display: none;
+    }
+}

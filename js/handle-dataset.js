@@ -36,7 +36,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
         // When an image is selected, get it and plot it
         displayImage : function (inputUrl, shapeDims, section, nodeId,
-            newImage) {
+            newImage, imageTitle) {
 
             // Get the data
             return $.when(HANDLE_DATASET.getImage(inputUrl, section,
@@ -46,7 +46,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                     // Save some information about the image
                     DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims,
-                        newImage, section, false);
+                        newImage, section, false, imageTitle);
 
                     DATA_DISPLAY.initializeImageData(value);
 
@@ -54,7 +54,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     // be false
                     if (newImage) {
                         // Enable plot controls
-                        DATA_DISPLAY.enableImagePlotControls(true, false);
+                        DATA_DISPLAY.enableImagePlotControls(true, true,
+                            false);
 
                         // Plot the data
                         DATA_DISPLAY.plotData();
@@ -159,6 +160,32 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         },
 
 
+        imageSeriesStep : function (stepUp) {
+
+            var debug = false, imageIndex = 0;
+
+            // Need to add a check to see if an image series is being displayed
+
+            if (debug) {
+                console.log('DATA_DISPLAY.imageSeriesIndex: ' +
+                    DATA_DISPLAY.imageSeriesIndex);
+            }
+
+            if (stepUp) {
+                imageIndex = Number(DATA_DISPLAY.imageSeriesIndex) + 1;
+            } else {
+                imageIndex = Number(DATA_DISPLAY.imageSeriesIndex) - 1;
+            }
+
+            if (debug) {
+                console.log('imageIndex: ' + imageIndex);
+            }
+
+            HANDLE_DATASET.imageSeriesInput(imageIndex, true, true, false);
+
+        },
+
+
         // Handle input from image series control buttons
         // This assumes that displayImageSeriesInitial() has at some point
         // already been called
@@ -176,6 +203,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('max: ' + max);
             }
 
+            // Need to add a check to see if an image series is being displayed
+
             if (DATA_DISPLAY.isNumeric(imageIndex)) {
 
                 // Start the spinner
@@ -192,13 +221,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
                 // Set image series entry field value
                 $("#inputNumberDiv").val(imageIndex);
-
-                // Set the slider value
-                $("#slider").slider({
-                    'data-value': imageIndex,
-                    'value': imageIndex,
-                });
-                $("#slider").slider('refresh');
+                $("#imageSeriesSlider").val(imageIndex);
 
                 DATA_DISPLAY.saveImageInfo(false, false, false, true, section,
                     imageIndex);
@@ -229,12 +252,15 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 );
             }
 
+            // If the given image index was not numeric, return to the
+            // beginning of the series
             HANDLE_DATASET.imageSeriesInput(0, false, true, false);
         },
 
 
         // Setup an image series
-        displayImageSeriesInitial : function (targetUrl, shapeDims) {
+        displayImageSeriesInitial : function (targetUrl, shapeDims, imageIndex,
+            imageSeriesTitle) {
 
             var debug = false, nodeId;
 
@@ -250,16 +276,16 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
             // Save some information about the image series
             DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, true,
-                false, 0);
+                false, imageIndex, imageSeriesTitle);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
-                nodeId, 0, false)).then(
+                nodeId, imageIndex, false)).then(
 
                 function (completeImage) {
 
                     // Enable some plot controls
-                    DATA_DISPLAY.enableImagePlotControls(true, true);
+                    DATA_DISPLAY.enableImagePlotControls(true, true, true);
 
                     // Plot the data
                     DATA_DISPLAY.initializeImageData(completeImage);
@@ -300,7 +326,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // When a dataset is selected, display whatever text there is
-        displayText : function (inputUrl, inputText, fontColor) {
+        displayText : function (inputUrl, inputText, fontColor, imageTitle) {
 
             var debug = false;
 
@@ -325,7 +351,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                             }
 
                             // Display the data
-                            DATA_DISPLAY.drawText(inputText, value, fontColor);
+                            DATA_DISPLAY.drawText(inputText, value, fontColor,
+                                imageTitle);
                         }
                     );
 
@@ -333,7 +360,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             );
         },
 
-        displayLine : function (inputUrl, selectedId, nodeTitle) {
+        displayLine : function (inputUrl, selectedId, imageTitle) {
 
             var debug = false, valueUrl;
 
@@ -356,8 +383,11 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                         console.log(response.value);
                     }
 
+                    // Enable some plot controls
+                    DATA_DISPLAY.enableImagePlotControls(true, false, false);
+
                     // Display the data
-                    DATA_DISPLAY.plotLine(response.value, nodeTitle);
+                    DATA_DISPLAY.plotLine(response.value, imageTitle);
                 }
             );
 

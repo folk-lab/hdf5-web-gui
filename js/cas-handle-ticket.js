@@ -7,7 +7,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
     // The gloabl variables for this applicaiton
     CAS_TICKET = {
 
-        displayName : null,
+        firstName : null,
         isLoggedIn : false,
 
 
@@ -92,8 +92,8 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
                         var ticketCheck = response[0];
 
                         // Save the login name and status
-                        if (ticketCheck.hasOwnProperty('displayName')) {
-                            CAS_TICKET.displayName = ticketCheck.displayName;
+                        if (ticketCheck.hasOwnProperty('firstName')) {
+                            CAS_TICKET.firstName = ticketCheck.firstName;
                         }
                         if (ticketCheck.hasOwnProperty('message')) {
                             CAS_TICKET.isLoggedIn = ticketCheck.message;
@@ -103,7 +103,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
                             console.log('CAS_TICKET.isLoggedIn:  ' +
                                 CAS_TICKET.isLoggedIn);
                             console.log('First name: ' +
-                                CAS_TICKET.displayName);
+                                CAS_TICKET.firstName);
                         }
 
                         // Continue with loading the rest of the page

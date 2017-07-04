@@ -2,12 +2,13 @@
 'use strict';
 
 // External libraries
-var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
+var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
 
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
 
-        useDarkTheme : false,
+        "useDarkTheme" : true,
+        "mobileView" : undefined,
 
         // This function is to be called when the page is loaded
         //  - assumes the url has already been checked for a CAS ticket
@@ -41,6 +42,12 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
                         // Show or hide various items
                         PAGE_LOAD.toggleLoginItems();
+
+                        // Maybe the dark theme is tougher to use on a mobile
+                        // device?
+                        if (PAGE_LOAD.useDarkTheme && !PAGE_LOAD.mobileView) {
+                            THEME_TOGGLE.toggleTheme(true);
+                        }
 
                         // Load the plotly libraries after all the hard stuff
                         // is done - it takes a while and is not needed
@@ -79,7 +86,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705171221';
+                version = '?v=201707041051';
 
             if (group === 0) {
                 scripts = [
@@ -90,19 +97,18 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
             if (group === 1) {
                 scripts = [
-                    "../lib/js/bootstrap/3.3.7/js/bootstrap.min.js",
-                    "../lib/js/bootstrap-slider/9.7.0/bootstrap-slider.min.js",
                     "../lib/js/jstree/3.2.1/jstree.min.js",
-                    "../lib/js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js",
+                    "../lib/js/mobile-check/mobile-check.js",
                     "../js/cas-login-logout.js",
                     "../js/data-display.js",
                     "../js/handle-dataset.js",
                     "../js/theme-toggle.js",
+                    '../js/nav-menu.js',
                 ];
             }
 
             if (group === 2) {
-                scripts = ["../lib/js/plotly/1.26.1/plotly.min.js"];
+                scripts = ["../lib/js/plotly/1.21.2/plotly-latest.min.js"];
             }
 
             scripts.forEach(function (script) {
@@ -139,24 +145,24 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201705171221';
+            var cssFiles, version = '?v=201707041051';
 
             if (group === 0) {
                 cssFiles = [
                     '../lib/css/jstree/3.2.1/themes/default/style.min.css',
                     '../lib/css/jstree/3.2.1/themes/default-dark/' +
                         'style.min.css',
-                    '../lib/css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css',
-                    '../lib/css/bootstrap-slider/9.7.0/' +
-                        'bootstrap-slider.min.css',
                     '../css/index.css',
-                    '../css/navmenu.css',
+                    '../css/plot-controls.css',
+                    '../css/nav-menu.css',
+                    '../css/nav-bar.css',
+                    '../lib/css/font-awesome/4.7.0/css/font-awesome.min.css',
                 ];
             }
 
             if (group === 1) {
                 cssFiles = [
-                    '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
+                    // '../lib/css/bootstrap/3.3.7/css/bootstrap.min.css',
                     '../css/theme-toggle.css',
                 ];
             }
@@ -182,7 +188,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
 
             // Create the welcome message, which depends upon login status
             if (CAS_TICKET.isLoggedIn) {
-                messageRow1 = 'Welcome ' + CAS_TICKET.displayName + '!';
+                messageRow1 = 'Welcome ' + CAS_TICKET.firstName + '!';
                 messageRow2 = '(click stuff on the left)';
             } else {
                 messageRow1 = 'Welcome!';
@@ -203,17 +209,21 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
         // some other items
         toggleLoginItems : function () {
 
-            var i, debug = false, alwaysShow = ['#navMenu', '#navMenuMobile'],
-                whenLoggedInShow = ['#logoutButton', '#logoutButtonMobile',
-                    '#treeSectionDiv', '#plotContainer'],
-                whenLoggedOutShow = ['#loginButton', '#loginButtonMobile'];
+            var i, debug = false,
+                // alwaysShow = ['#data-storage-button', '#max-iv-logo',
+                //     '#theme-toggle-btn', '#navbar'],
+                alwaysShow = ['#navbar'],
+                whenLoggedInShow = ['#side-nav-menu', '#displayContainer'];
+
+            // Mobile display?
+            PAGE_LOAD.mobileView = window.mobilecheck();
 
             if (debug) {
                 console.log('CAS_TICKET.isLoggedIn: ' + CAS_TICKET.isLoggedIn);
             }
 
             // Some thigs are initially hidden, as they look ugly without the
-            // proper js and css loaded, but they should be shown
+            // proper js and css loaded, but they should eventully be shown
             for (i = 0; i < alwaysShow.length; i += 1) {
                 $(alwaysShow[i]).show();
             }
@@ -224,14 +234,6 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY,
                     $(whenLoggedInShow[i]).show();
                 } else {
                     $(whenLoggedInShow[i]).hide();
-                }
-            }
-
-            for (i = 0; i < whenLoggedOutShow.length; i += 1) {
-                if (!CAS_TICKET.isLoggedIn) {
-                    $(whenLoggedOutShow[i]).show();
-                } else {
-                    $(whenLoggedOutShow[i]).hide();
                 }
             }
 

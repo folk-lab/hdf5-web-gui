@@ -102,7 +102,7 @@ var AJAX_SPINNER = {
 
 
         // When data is doen being lodaded, turn off the spinner
-        doneLoadingData : function () {
+        doneLoadingData : function (timeout) {
 
             if (AJAX_SPINNER.debug) {
                 console.log('doneLoadingData');
@@ -110,7 +110,7 @@ var AJAX_SPINNER = {
 
             AJAX_SPINNER.loadingData = false;
 
-            AJAX_SPINNER.showLoadingSpinner(false, 0);
+            AJAX_SPINNER.showLoadingSpinner(false, timeout);
         },
 
 
