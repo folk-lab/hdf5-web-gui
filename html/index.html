@@ -19,7 +19,17 @@
         <meta http-equiv="Pragma" content="no-cache"/>
         <meta http-equiv="Expires" content="0"/>
 
-        <!-- Javascript to load first and execute immediately -->
+        <!-- jQuery is need by most things, load it first -->
+        <script type="text/javascript"
+            src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
+
+        <!-- Javascript needed to check CAS stuff -->
+        <script type="text/javascript"
+            src="../lib/js/ping/ping.min.js?v=201705171221"></script>
+        <script type="text/javascript"
+            src="../js/server-communication.js?v=201705171221"></script>
+
+        <!-- Javascript to load and execute immediately -->
         <script type="text/javascript"
             src="../js/cas-immediate-login.js?v=201705171221"></script>
     </head>
