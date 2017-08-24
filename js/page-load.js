@@ -86,18 +86,10 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201707041051';
-
-            if (group === 0) {
-                scripts = [
-                    "../js/file-navigation.js",
-                    "../js/page-load.js",
-                ];
-            }
+                version = '?v=201708211613';
 
             if (group === 1) {
                 scripts = [
-                    "../lib/js/jstree/3.2.1/jstree.min.js",
                     "../lib/js/mobile-check/mobile-check.js",
                     "../js/cas-login-logout.js",
                     "../js/data-display.js",
@@ -145,7 +137,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         // Load a bunch of css files
         loadCSSFiles : function (group) {
 
-            var cssFiles, version = '?v=201707041051';
+            var cssFiles, version = '?v=201708211613';
 
             if (group === 0) {
                 cssFiles = [

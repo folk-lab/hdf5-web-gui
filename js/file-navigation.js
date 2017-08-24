@@ -4,6 +4,7 @@
 
 // External libraries
 var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
+    EventSource,
 
     // Some gloabl variables
     FILE_NAV =
@@ -131,7 +132,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         },
 
 
-        // Given a file path, file name, and a ath within an HDF5 file,
+        // Given a file path, file name, and a path within an HDF5 file,
         // get the target url of an object
         findH5ObjectUrl : function (filePath, h5Path) {
 
@@ -296,7 +297,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         getH5ObjectLinkInfo : function (title, filePath, h5path, h5domain,
             responses) {
 
-            var debug = false, fileName, dirName = '';
+            var debug = true, fileName, dirName = '';
 
             dirName =  filePath.substring(0, filePath.lastIndexOf('/'));
             fileName = dirName + '/' + h5domain;
@@ -464,7 +465,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
@@ -585,13 +586,14 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     // Check if this id exists already
                     if (!createNewTree) {
                         doesNodeExist = $('#jstree_div').jstree(true).get_node(
-                            treeId
+                            filePath
+                            // treeId
                         );
                     }
 
                     // If this has not already been added to the tree, add it
-                    // Do not add MXCube data files, they should be linked to
-                    // from the master file
+                    // Do not add MXCube data files, as they should be linked
+                    // to from the master file
                     if (!doesNodeExist && !dotFile &&
                             !itemList[keyTitle].mxData &&
                             (itemList[keyTitle].readable ||
@@ -600,21 +602,24 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         FILE_NAV.jstreeDict.push({
 
                             // The key-value pairs needed by jstree
-                            id : treeId,
-                            parent : (selectedId === false ? '#' : selectedId),
-                            text : keyTitle,
-                            icon : icon,
+                            // "id" : treeId,
+                            "id" : filePath,
+                            "parent" : (selectedId === false ? '#' :
+                                    selectedId),
+                            "text" : keyTitle,
+                            "icon" : icon,
 
                             // Save some additional information - is this a
                             // good place to put it?
-                            data : {
-                                type : type,
-                                target : itemList[keyTitle].target,
-                                filePath : filePath,
-                                h5Path : h5Path,
-                                h5domain : itemList[keyTitle].h5domain,
-                                dataType : itemList[keyTitle].dataType,
-                                shapeDims : itemList[keyTitle].shapeDims,
+                            "data" : {
+                                "type" : type,
+                                "target" : itemList[keyTitle].target,
+                                "filePath" : filePath,
+                                "treeId" : treeId,
+                                "h5Path" : h5Path,
+                                "h5domain" : itemList[keyTitle].h5domain,
+                                "dataType" : itemList[keyTitle].dataType,
+                                "shapeDims" : itemList[keyTitle].shapeDims,
                             },
 
                             state : {
@@ -626,6 +631,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
                 }
             }
+
+            // needToRefresh = true;
 
             // Create or add to the jstree object
             if (createNewTree) {
@@ -657,7 +664,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     FILE_NAV.processSelectNodeEvent = false;
                     $('#jstree_div').jstree(true).settings.core.data =
                         FILE_NAV.jstreeDict;
-                    $('#jstree_div').jstree(true).refresh(selectedId);
+                    // $('#jstree_div').jstree(true).refresh(selectedId);
+                    $('#jstree_div').jstree(true).refresh(filePath);
                 }
             }
 
@@ -674,7 +682,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // datasets) saving some information about each one.
         getListOfLinks : function (linksUrl, selectedId, createNewTree) {
 
-            var debug = false, parentTreeNode = false, filePath = false;
+            var debug = true, parentTreeNode = false, filePath = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(linksUrl)).then(
                 function (response) {
@@ -808,7 +816,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                     // Get the file path of the jstree parent
                                     // of this item - not such a pretty method
                                     parentTreeNode =
-                                        $('#jstree_div').jstree(true).get_node(
+                                        $('#jstree_div').jstree(true).et_node(
                                             selectedId
                                         );
 
@@ -837,7 +845,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                     // Wait until the extra information about all the datasets
                     // has been aquired, then add to the jstree object - should
-                    // proabaly add some timeouts to this
+                    // probably add some timeouts to this
                     $.when.apply(null, promises).done(function () {
 
                         if (debug) {
@@ -935,10 +943,11 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Get a list of items in a file, then update the jstree object
         getFileContents : function (inputUrl, selectedId) {
 
-            var debug = false;
+            var debug = true;
 
             if (debug) {
                 console.log('inputUrl: ' + inputUrl);
+                console.log('selectedId: ' + selectedId);
             }
 
             // Get the url to the links available
@@ -998,168 +1007,203 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
         },
 
+        changeFolderIcon : function (eventInfo, data, open) {
+
+            var debug = true;
+
+            if (debug) {
+                console.log(eventInfo);
+            }
+
+            if (data.node.data.type === 'folder') {
+                if (open) {
+                    data.instance.set_icon(data.node, 'fa fa-folder-open');
+                } else {
+                    data.instance.set_icon(data.node, 'fa fa-folder');
+                }
+            }
+
+        },
+
+        // When an item in the tree is clicked, do something - open a folder,
+        // file, display an image, etc.
+        treeItemClicked : function (eventInfo, data) {
+
+            var debug = false, keyData, keyNode, imageTitle;
+
+            // Open or close the node
+            // data.instance.toggle_node(data.node);
+            $('#jstree_div').jstree(true).toggle_node(data.node.id);
+
+            if (debug) {
+
+                console.log('');
+                console.log('select_node.jstree ' + data.node.id);
+                console.log(eventInfo);
+                console.log(data.selected);
+
+                console.log('');
+                console.log('*** data ***');
+                for (keyData in data) {
+                    if (data.hasOwnProperty(keyData)) {
+                        console.log(keyData + ' -> ' + data[keyData]);
+                    }
+                }
+
+                console.log('');
+                console.log('*** data.node ***');
+                for (keyNode in data.node) {
+                    if (data.node.hasOwnProperty(keyNode)) {
+                        console.log(keyNode + ' -> ' + data.node[keyNode]);
+                    }
+                }
+
+                console.log('');
+                console.log('*** data.node.state ***');
+                for (keyData in data.node.state) {
+                    if (data.node.state.hasOwnProperty(keyData)) {
+                        console.log(keyData + ' -> ' +
+                            data.node.state[keyData]);
+                    }
+                }
+
+                console.log('');
+                console.log('*** data.node.data ***');
+                for (keyData in data.node.data) {
+                    if (data.node.data.hasOwnProperty(keyData)) {
+                        console.log(keyData + ' -> ' +
+                            data.node.data[keyData]);
+                    }
+                }
+
+                console.log('FILE_NAV.processSelectNodeEvent: ' +
+                    FILE_NAV.processSelectNodeEvent);
+            }
+
+
+            if (FILE_NAV.processSelectNodeEvent) {
+
+                // Do different things depending on what type of item has been
+                // clicked
+                switch (data.node.data.type) {
+
+                case 'folder':
+                    FILE_NAV.getFolderContents(data.node.data.target,
+                        data.selected, false);
+                    break;
+
+                case 'file':
+                    FILE_NAV.getFileContents(data.node.data.target,
+                        data.selected);
+                    break;
+
+                case 'datasets':
+
+                    // Empty the plot canvas, get ready for some new stuff
+                    DATA_DISPLAY.purgePlotCanvas();
+
+                    // Remove plot controls
+                    DATA_DISPLAY.enableImagePlotControls(false, false);
+
+                    switch (data.node.data.dataType) {
+
+                    case 'image-series':
+                        AJAX_SPINNER.startLoadingData(10);
+                        imageTitle = data.node.data.filePath + '/' +
+                            data.node.data.h5Path;
+                        HANDLE_DATASET.displayImageSeriesInitial(
+                            data.node.data.target,
+                            data.node.data.shapeDims,
+                            0,
+                            imageTitle
+                        );
+                        break;
+
+                    case 'image':
+                        AJAX_SPINNER.startLoadingData(10);
+                        imageTitle = data.node.data.filePath + '/' +
+                            data.node.data.h5Path;
+                        HANDLE_DATASET.displayImage(data.node.data.target,
+                            data.node.data.shapeDims, false, data.selected,
+                            true, imageTitle);
+                        break;
+
+                    case 'line':
+                        AJAX_SPINNER.startLoadingData(10);
+                        imageTitle = data.node.data.filePath + '/' +
+                            data.node.data.h5Path;
+                        HANDLE_DATASET.displayLine(data.node.data.target,
+                            data.selected, imageTitle);
+                        break;
+
+                    case 'number':
+                        imageTitle = data.node.data.filePath + '/' +
+                            data.node.data.h5Path;
+                        HANDLE_DATASET.displayText(data.node.data.target,
+                            data.node.text, '#ad3a3a', imageTitle);
+                        break;
+
+                    case 'text':
+                        imageTitle = data.node.data.filePath + '/' +
+                            data.node.data.h5Path;
+                        HANDLE_DATASET.displayText(data.node.data.target,
+                            data.node.text, '#3a74ad', imageTitle);
+                        break;
+
+                    default:
+                        console.log('Is this a fucking dataset? No!');
+                        DATA_DISPLAY.displayErrorMessage(
+                            data.node.data.target
+                        );
+                    }
+
+                    break;
+
+                default:
+                    console.log('What the fuck do you want?');
+                    DATA_DISPLAY.displayErrorMessage(data.node.data.target);
+                }
+
+            } else {
+                FILE_NAV.processSelectNodeEvent = true;
+            }
+
+        },
+
+
+        handleFileChangeEvent : function (messageData) {
+            // var msg = $.parseJSON(messageData);
+            var msg = JSON.parse(messageData);
+            console.log(msg);
+        },
+
+
+        subscribeFileChangeEvents : function () {
+
+            var source = new EventSource(SERVER_COMMUNICATION.hdf5DataServer +
+                '/events');
+
+            source.onmessage = function (message) {
+                console.log(message.data);
+                FILE_NAV.handleFileChangeEvent(message.data);
+            };
+        }
+
     };
 
 
 // Change the icon when a folder is opened
 $("#jstree_div").on('open_node.jstree', function (eventInfo, data) {
-
-    var debug = false;
-
-    if (debug) {
-        console.log(eventInfo);
-    }
-
-    if (data.node.data.type === 'folder') {
-        data.instance.set_icon(data.node, 'fa fa-folder-open');
-    }
-
+    FILE_NAV.changeFolderIcon(eventInfo, data, true);
 // Change the icon when a folder is closed
 }).on('close_node.jstree', function (eventInfo, data) {
-    var debug = false;
-
-    if (debug) {
-        console.log(eventInfo);
-    }
-
-    if (data.node.data.type === 'folder') {
-        data.instance.set_icon(data.node, 'fa fa-folder');
-    }
+    FILE_NAV.changeFolderIcon(eventInfo, data, false);
 });
 
 
 // When an item in the tree is clicked, do some stuff
 $('#jstree_div').on("select_node.jstree", function (eventInfo, data) {
-
-    var debug = false, keyData, keyNode, imageTitle;
-
-    // Open or close the node
-    // data.instance.toggle_node(data.node);
-    $('#jstree_div').jstree(true).toggle_node(data.node.id);
-
-    if (debug) {
-
-        console.log('');
-        console.log('select_node.jstree ' + data.node.id);
-        console.log(eventInfo);
-        console.log(data.selected);
-
-        console.log('');
-        console.log('*** data ***');
-        for (keyData in data) {
-            if (data.hasOwnProperty(keyData)) {
-                console.log(keyData + ' -> ' + data[keyData]);
-            }
-        }
-
-        console.log('');
-        console.log('*** data.node ***');
-        for (keyNode in data.node) {
-            if (data.node.hasOwnProperty(keyNode)) {
-                console.log(keyNode + ' -> ' + data.node[keyNode]);
-            }
-        }
-
-        console.log('');
-        console.log('*** data.node.state ***');
-        for (keyData in data.node.state) {
-            if (data.node.state.hasOwnProperty(keyData)) {
-                console.log(keyData + ' -> ' + data.node.state[keyData]);
-            }
-        }
-
-        console.log('');
-        console.log('*** data.node.data ***');
-        for (keyData in data.node.data) {
-            if (data.node.data.hasOwnProperty(keyData)) {
-                console.log(keyData + ' -> ' + data.node.data[keyData]);
-            }
-        }
-
-        console.log('FILE_NAV.processSelectNodeEvent: ' +
-            FILE_NAV.processSelectNodeEvent);
-    }
-
-
-    if (FILE_NAV.processSelectNodeEvent) {
-
-        // Do different things depending on what type of item has been clicked
-        switch (data.node.data.type) {
-
-        case 'folder':
-            FILE_NAV.getFolderContents(data.node.data.target, data.selected,
-                false);
-            break;
-
-        case 'file':
-            FILE_NAV.getFileContents(data.node.data.target, data.selected);
-            break;
-
-        case 'datasets':
-
-            // Empty the plot canvas, get ready for some new stuff
-            DATA_DISPLAY.purgePlotCanvas();
-
-            // Remove plot controls
-            DATA_DISPLAY.enableImagePlotControls(false, false);
-
-            switch (data.node.data.dataType) {
-
-            case 'image-series':
-                AJAX_SPINNER.startLoadingData(10);
-                imageTitle = data.node.data.filePath + '/' +
-                    data.node.data.h5Path;
-                HANDLE_DATASET.displayImageSeriesInitial(data.node.data.target,
-                    data.node.data.shapeDims, 0, imageTitle);
-                break;
-
-            case 'image':
-                AJAX_SPINNER.startLoadingData(10);
-                imageTitle = data.node.data.filePath + '/' +
-                    data.node.data.h5Path;
-                HANDLE_DATASET.displayImage(data.node.data.target,
-                    data.node.data.shapeDims, false, data.selected, true,
-                    imageTitle);
-                break;
-
-            case 'line':
-                AJAX_SPINNER.startLoadingData(10);
-                imageTitle = data.node.data.filePath + '/' +
-                    data.node.data.h5Path;
-                HANDLE_DATASET.displayLine(data.node.data.target,
-                    data.selected, imageTitle);
-                break;
-
-            case 'number':
-                imageTitle = data.node.data.filePath + '/' +
-                    data.node.data.h5Path;
-                HANDLE_DATASET.displayText(data.node.data.target,
-                    data.node.text, '#ad3a3a', imageTitle);
-                break;
-
-            case 'text':
-                imageTitle = data.node.data.filePath + '/' +
-                    data.node.data.h5Path;
-                HANDLE_DATASET.displayText(data.node.data.target,
-                    data.node.text, '#3a74ad', imageTitle);
-                break;
-
-            default:
-                console.log('Is this a fucking dataset? Me thinks not matey!');
-                DATA_DISPLAY.displayErrorMessage(data.node.data.target);
-            }
-
-            break;
-
-        default:
-            console.log('What the fuck do you want me to do with this shit?');
-            DATA_DISPLAY.displayErrorMessage(data.node.data.target);
-        }
-
-    } else {
-        FILE_NAV.processSelectNodeEvent = true;
-    }
-
+    FILE_NAV.treeItemClicked(eventInfo, data);
 });
 
 
@@ -1181,6 +1225,9 @@ $(document).ready(function () {
 
     // Set the height of the div containing the file browsing tree
     FILE_NAV.setTreeDivHeight();
+
+    // Handle events sent by the file system watcher
+    FILE_NAV.subscribeFileChangeEvents();
 
     ///////////////////////////////////////////////////////////////////////////
     // TESTING //

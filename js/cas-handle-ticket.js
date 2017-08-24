@@ -129,10 +129,11 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201705161440';
+                version = '?v=201708211613';
 
             if (group === 0) {
                 scripts = [
+                    "../lib/js/jstree/3.2.1/jstree.min.js",
                     "../js/file-navigation.js",
                     "../js/page-load.js",
                 ];
