@@ -10,6 +10,9 @@ var DATA_DISPLAY,
 
         // Assume that h5serv is running on the same server, and ssl is
         // enabled, running on a specific port
+        hdf5DataServerBase: window.location.protocol + '//' +
+            window.location.hostname,
+
         hdf5DataServer: window.location.protocol + '//' +
             window.location.hostname + ':6050',
 

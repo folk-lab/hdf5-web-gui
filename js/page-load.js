@@ -90,8 +90,6 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
 
             if (group === 1) {
                 scripts = [
-                    "../lib/js/mobile-check/mobile-check.js",
-                    "../js/cas-login-logout.js",
                     "../js/data-display.js",
                     "../js/handle-dataset.js",
                     "../js/theme-toggle.js",
@@ -179,7 +177,7 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
             AJAX_SPINNER.hideLoader = true;
 
             // Create the welcome message, which depends upon login status
-            if (CAS_TICKET.isLoggedIn) {
+            if (CAS_TICKET.isLoggedIn || !CAS_TICKET.loginNeeded) {
                 messageRow1 = 'Welcome ' + CAS_TICKET.firstName + '!';
                 messageRow2 = '(click stuff on the left)';
             } else {
@@ -205,7 +203,8 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
                 // alwaysShow = ['#data-storage-button', '#max-iv-logo',
                 //     '#theme-toggle-btn', '#navbar'],
                 alwaysShow = ['#navbar'],
-                whenLoggedInShow = ['#side-nav-menu', '#displayContainer'];
+                whenInShow = ['#side-nav-menu', '#displayContainer'],
+                whenLoggedInShow = ['#logout-btn', '#logout-btn-mobile'];
 
             // Mobile display?
             PAGE_LOAD.mobileView = window.mobilecheck();
@@ -220,6 +219,14 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
                 $(alwaysShow[i]).show();
             }
 
+            // Show or hide the login & logout related items
+            for (i = 0; i < whenInShow.length; i += 1) {
+                if (CAS_TICKET.isLoggedIn || !CAS_TICKET.loginNeeded) {
+                    $(whenInShow[i]).show();
+                } else {
+                    $(whenInShow[i]).hide();
+                }
+            }
             // Show or hide the login & logout related items
             for (i = 0; i < whenLoggedInShow.length; i += 1) {
                 if (CAS_TICKET.isLoggedIn) {

@@ -19,13 +19,26 @@
         <meta http-equiv="Pragma" content="no-cache"/>
         <meta http-equiv="Expires" content="0"/>
 
-        <!-- Javascript to load first and execute immediately -->
+        <!-- jQuery is need by most things, load it first -->
         <script type="text/javascript"
-            src="../js/cas-immediate-login.js?v=201705171221"></script>
+            src="../lib/js/jquery/jquery-3.1.1.min.js?v=201705010000"></script>
+
+        <!-- Javascript needed to check CAS stuff -->
+        <script type="text/javascript"
+            src="../lib/js/ping/ping.min.js?v=201708281323"></script>
+        <script type="text/javascript"
+            src="../js/server-communication.js?v=201708281323"></script>
+
+        <!-- Javascript to load and execute immediately -->
+        <script type="text/javascript" defer
+            src="../js/cas-immediate-login.js?v=201708281323"></script>
     </head>
 
     <body>
-        Hello!
+        <!-- Simple status and error message while page loads and tries to
+            contact servers -->
+        <p id="loadMsg"> </p>
+        <p id="errMsg"> </p>
     </body>
 
 </html>
