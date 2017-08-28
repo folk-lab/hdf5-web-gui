@@ -7,11 +7,8 @@ var SERVER_COMMUNICATION, Ping,
     // The gloabl variables for this applicaiton
     CAS_IMMEDIATE = {
 
-        // The CAS authentication server
-        // casServer : 'https://cas.maxiv.lu.se/cas',
+        // The CAS authentication server - e.g. https://cas.maxiv.lu.se/cas
         casServer : '',
-        usingCAS : undefined,
-        casServerReachable : undefined,
 
         // The url to which CAS will redirect the upon successful login
         serviceUrl : window.location.protocol + '//' + window.location.hostname
@@ -21,66 +18,143 @@ var SERVER_COMMUNICATION, Ping,
         // Log into the CAS server
         loginCAS : function () {
 
-            var debug = true, loginUrl;
+            var debug = true, loginUrl, pingH5serv = new Ping(), url;
 
-            // Check with the HDF5 server to see if CAS authentication is being
-            // used
-            $.when(
-                CAS_IMMEDIATE.usingCASAuthentication()
-            ).then(
-                function (response) {
+            document.getElementById("loadMsg").innerHTML =
+                'Attempting to contact HDF5 server... ';
 
-                    CAS_IMMEDIATE.casServer = response;
-                    console.log('cas server:' + CAS_IMMEDIATE.casServer);
+            // See if the CAS server is reachable
+            url = SERVER_COMMUNICATION.hdf5DataServerBase;
+            pingH5serv.ping(url, function (err, data) {
 
-                    // If this is a valid url
-                    if (CAS_IMMEDIATE.isValidURL(CAS_IMMEDIATE.casServer)) {
-                        var p = new Ping();
+                // Display error if err is returned.
+                if (err) {
 
-                        CAS_IMMEDIATE.usingCAS = true;
+                    console.log("error loading HDF5 server: " +
+                        SERVER_COMMUNICATION.hdf5DataServerBase);
+                    document.getElementById("loadMsg"
+                        ).innerHTML +=
+                        '<span style="color:red">failed</span>';
 
-                        // See if this server is reachable
-                        p.ping(CAS_IMMEDIATE.casServer, function (err, data) {
+                    document.getElementById("errMsg"
+                        ).innerHTML = 'Apparently the HDF5 ' +
+                        'server is not reachable.</br>' +
+                        'Better find someone who can fix this.';
+                } else {
 
-                            // Display error if err is returned.
-                            if (err) {
-                                console.log("error loading CAS server" +
-                                    CAS_IMMEDIATE.casServer);
-                                CAS_IMMEDIATE.casServerReachable = false;
+                    console.log('HDF5 server reached ' + data);
+                    document.getElementById("loadMsg").innerHTML +=
+                        '<span style="color:green">success</span>';
+                    document.getElementById("loadMsg").innerHTML +=
+                        '</br>Checking if authentication is required... ';
+
+                    // Check with the HDF5 server to see if CAS authentication
+                    // is being used
+                    $.when(CAS_IMMEDIATE.getCASServerUrl()).then(
+                        function (response) {
+
+                            CAS_IMMEDIATE.casServer = response;
+                            console.log('cas server: ' +
+                                CAS_IMMEDIATE.casServer);
+
+                            // If the CAS url given is a valid url
+                            if (CAS_IMMEDIATE.isValidURL(
+                                    CAS_IMMEDIATE.casServer
+                                )) {
+
+                                var pingCAS = new Ping();
+
+                                document.getElementById("loadMsg").innerHTML +=
+                                    '<span style="color:blue">yes</span>';
+                                document.getElementById("loadMsg").innerHTML +=
+                                    '</br>Attempting to contact ' +
+                                    'authentication server... ';
+
+                                // See if the CAS server is reachable
+                                url = CAS_IMMEDIATE.casServer;
+                                pingCAS.ping(url, function (err, data) {
+
+                                    // Display error if err is returned.
+                                    if (err) {
+
+                                        console.log("error loading CAS " +
+                                            "server" +
+                                            CAS_IMMEDIATE.casServer);
+                                        document.getElementById("loadMsg"
+                                            ).innerHTML +=
+                                            '<span style="color:red">' +
+                                            'failed</span>';
+
+                                        document.getElementById("errMsg"
+                                            ).innerHTML = 'Apparently ' +
+                                            'the HDF5 server requires ' +
+                                            'authentication, </br>' +
+                                            'but the authentication ' +
+                                            'server is not reachable.' +
+                                            '</br>Better find someone' +
+                                            ' who can fix this.';
+                                    } else {
+
+                                        console.log('CAS server reached ' +
+                                            data);
+                                        document.getElementById("loadMsg"
+                                            ).innerHTML +=
+                                            '<span style="color:green">' +
+                                            'success</span>';
+
+                                        // Construct the login url which
+                                        // contains the service url to
+                                        // which the browser will be
+                                        // redirected after successfully
+                                        // logging in
+                                        loginUrl =
+                                            CAS_IMMEDIATE.casServer +
+                                            '/login?service=' +
+                                            encodeURIComponent(
+                                                CAS_IMMEDIATE.serviceUrl
+                                            );
+
+                                        if (debug) {
+                                            console.log('loginUrl: ' +
+                                                loginUrl);
+                                            console.log('Redirecting to ' +
+                                                'CAS server');
+                                        }
+
+                                        document.getElementById("errMsg"
+                                            ).innerHTML = 'Redirecting to ' +
+                                                CAS_IMMEDIATE.casServer;
+
+                                        // Redirect to the CAS server
+                                        window.location = loginUrl;
+
+                                    }
+                                });
+
                             } else {
-                                console.log('CAS server reached ' + data);
-                                CAS_IMMEDIATE.casServerReachable = true;
 
-                                // Construct the login url which contains the
-                                // service url to which the browser will be
-                                // redirected after successfully logging in
-                                loginUrl = CAS_IMMEDIATE.casServer +
-                                    '/login?service=' +
-                                    encodeURIComponent(
-                                        CAS_IMMEDIATE.serviceUrl
-                                    );
+                                console.log('Invalid CAS url given, ' +
+                                    'assumming no CAS' +
+                                    ' authentication is required');
+                                document.getElementById("loadMsg").innerHTML +=
+                                    '<span style="color:blue">no</span>';
 
-                                if (debug) {
-                                    console.log('loginUrl: ' + loginUrl);
-                                    console.log('Redirecting to CAS server');
-                                }
+                                document.getElementById("errMsg"
+                                    ).innerHTML = 'Now opening the HDF5 ' +
+                                    'viewer...';
 
                                 // Redirect to the CAS server
-                                window.location = loginUrl;
+                                window.location = CAS_IMMEDIATE.serviceUrl;
                             }
-                        });
-                    } else {
-                        console.log('Invalid CAS url given, assume no CAS');
-                        CAS_IMMEDIATE.usingCAS = false;
-                    }
-
+                        }
+                    );
                 }
-            );
+            });
         },
 
 
         // Check with the HDF5 server to see if CAS use is configured
-        usingCASAuthentication : function () {
+        getCASServerUrl : function () {
 
             var debug = true, casCheckUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/usecas';
@@ -93,32 +167,9 @@ var SERVER_COMMUNICATION, Ping,
         },
 
 
-        isServerReachable : function (url) {
-
-            var debug = true, p = new Ping();
-
-            if (debug) {
-                console.log('Checking server availablity');
-            }
-
-            return $.when(p.ping(url, function (err, data) {
-
-                // Also display error if err is returned.
-                if (err) {
-                    console.log("error loading resource");
-                    data = data + " " + err;
-                    return false;
-                }
-
-                console.log(data);
-                return true;
-            })
-                );
-        },
-
-
         // Check if a given string is a valid url
         isValidURL : function (str) {
+
             var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
                 // domain name
                 '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' +
@@ -126,6 +177,11 @@ var SERVER_COMMUNICATION, Ping,
                 '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
                 '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
                 '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+
+            if (str === 'None') {
+                str = '';
+            }
+
             return pattern.test(str);
         },
 

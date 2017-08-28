@@ -9,7 +9,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
     {
 
         // Return a dataset value
-        getDatasetValue : function (inputUrl, nodeId) {
+        getDatasetValue : function (inputUrl) {
 
             var debug = false, valueUrl;
 
@@ -18,7 +18,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('inputUrl: ' + inputUrl);
             }
 
-            valueUrl = inputUrl.replace(nodeId, nodeId + '/value');
+            valueUrl = inputUrl.replace('?host', '/value?host');
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);
@@ -35,17 +35,16 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // When an image is selected, get it and plot it
-        displayImage : function (inputUrl, shapeDims, section, nodeId,
-            newImage, imageTitle) {
+        displayImage : function (inputUrl, shapeDims, section, newImage,
+            imageTitle) {
 
             // Get the data
-            return $.when(HANDLE_DATASET.getImage(inputUrl, section,
-                nodeId)).then(
+            return $.when(HANDLE_DATASET.getImage(inputUrl, section)).then(
 
                 function (value) {
 
                     // Save some information about the image
-                    DATA_DISPLAY.saveImageInfo(inputUrl, nodeId, shapeDims,
+                    DATA_DISPLAY.saveImageInfo(inputUrl, shapeDims,
                         newImage, section, false, imageTitle);
 
                     DATA_DISPLAY.initializeImageData(value);
@@ -53,6 +52,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                     // For zooming in large downsampled image, this should
                     // be false
                     if (newImage) {
+
                         // Enable plot controls
                         DATA_DISPLAY.enableImagePlotControls(true, true,
                             false);
@@ -66,16 +66,16 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
 
 
         // When a dataset is selected, plot the data
-        getImage : function (inputUrl, section, nodeId) {
+        getImage : function (inputUrl, section) {
 
-            var debug = false, valueUrl;
+            var debug = true, valueUrl;
 
 
             if (debug) {
                 console.log('inputUrl: ' + inputUrl);
             }
 
-            valueUrl = inputUrl.replace(nodeId, nodeId + '/value');
+            valueUrl = inputUrl.replace('?host', '/value?host');
 
             if (section) {
                 valueUrl += '&select=[' + section[2] + ':' + section[3] + ','
@@ -105,8 +105,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // Get a single image from a stack of images, which are typically
         // saved as 3 dimensional arrays, with the first dimension being
         // the image number
-        readImageFromSeries : function (targetUrl, nodeId, imageIndex,
-            section) {
+        readImageFromSeries : function (targetUrl, imageIndex, section) {
 
             var debug = false, valueUrl, chunks, matrix, numChunkRows,
                 numChunkColumns, imageIndexStart, imageIndexStop;
@@ -120,7 +119,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 console.log('targetUrl: ' + targetUrl);
             }
 
-            valueUrl = targetUrl.replace(nodeId, nodeId + '/value') +
+            valueUrl = targetUrl.replace('?host', '/value?host') +
                 '&select=[' + imageIndexStart + ':' + imageIndexStop + ',';
 
             if (section) {
@@ -223,14 +222,13 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
                 $("#inputNumberDiv").val(imageIndex);
                 $("#imageSeriesSlider").val(imageIndex);
 
-                DATA_DISPLAY.saveImageInfo(false, false, false, true, section,
-                    imageIndex);
+                DATA_DISPLAY.saveImageInfo(false, false, true, section,
+                    imageIndex, false);
 
                 // Get an image from the series and display it
                 return $.when(
                     HANDLE_DATASET.readImageFromSeries(
                         DATA_DISPLAY.imageTargetUrl,
-                        DATA_DISPLAY.imageNodeId,
                         imageIndex,
                         DATA_DISPLAY.imageZoomSection
                     )
@@ -262,25 +260,20 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         displayImageSeriesInitial : function (targetUrl, shapeDims, imageIndex,
             imageSeriesTitle) {
 
-            var debug = false, nodeId;
-
-            // Extract the id from the target url
-            nodeId = targetUrl.match(new RegExp('datasets/' + "(.*)" +
-                '\\?host'))[1];
+            var debug = false;
 
             if (debug) {
-                console.log('nodeId: ' + nodeId);
                 console.log(shapeDims.length);
                 console.log(shapeDims);
             }
 
             // Save some information about the image series
-            DATA_DISPLAY.saveImageInfo(targetUrl, nodeId, shapeDims, true,
-                false, imageIndex, imageSeriesTitle);
+            DATA_DISPLAY.saveImageInfo(targetUrl, shapeDims, true, false,
+                imageIndex, imageSeriesTitle);
 
             // Get the first image in the series and display it
             $.when(HANDLE_DATASET.readImageFromSeries(targetUrl,
-                nodeId, imageIndex, false)).then(
+                imageIndex, false)).then(
 
                 function (completeImage) {
 
@@ -360,7 +353,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             );
         },
 
-        displayLine : function (inputUrl, selectedId, imageTitle) {
+        displayLine : function (inputUrl, imageTitle) {
 
             var debug = false, valueUrl;
 
@@ -369,7 +362,8 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
             }
 
             // Create the url that gets the data from the server
-            valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+            // valueUrl = inputUrl.replace(selectedId, selectedId + '/value');
+            valueUrl = inputUrl.replace('?host', '/value?host');
 
             if (debug) {
                 console.log('valueUrl: ' + valueUrl);

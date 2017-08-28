@@ -297,7 +297,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         getH5ObjectLinkInfo : function (title, filePath, h5path, h5domain,
             responses) {
 
-            var debug = true, fileName, dirName = '';
+            var debug = false, fileName, dirName = '';
 
             dirName =  filePath.substring(0, filePath.lastIndexOf('/'));
             fileName = dirName + '/' + h5domain;
@@ -465,7 +465,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = true, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
@@ -494,7 +494,11 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     // Folders and datasets within HDF5 files have an 'id'
                     if (itemList[keyTitle].id) {
 
-                        treeId = itemList[keyTitle].id;
+                        // treeId = itemList[keyTitle].id;
+                        if (debug) {
+                            console.log(keyTitle + " -> id: " +
+                                itemList[keyTitle].id);
+                        }
 
                         if (itemList[keyTitle].collection === 'groups') {
                             type = 'folder';
@@ -536,7 +540,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     // HDF5 files have an 'h5domain'
                     if (itemList[keyTitle].h5domain &&
                             !itemList[keyTitle].dataType) {
-                        treeId = itemList[keyTitle].h5domain;
+                        // treeId = itemList[keyTitle].h5domain;
                         type = 'file';
                         icon = '../images/hdf5-16px.png';
 
@@ -583,12 +587,21 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         filePath = keyTitle;
                     }
 
+                    treeId = filePath + '/' + h5Path;
+
+                    if (debug) {
+                        console.log('filePath     : ' + filePath);
+                        console.log('treeId     : ' + treeId);
+                    }
+
                     // Check if this id exists already
                     if (!createNewTree) {
                         doesNodeExist = $('#jstree_div').jstree(true).get_node(
-                            filePath
-                            // treeId
+                            treeId
                         );
+                        if (debug) {
+                            console.log('doesNodeExist: ' + doesNodeExist);
+                        }
                     }
 
                     // If this has not already been added to the tree, add it
@@ -602,8 +615,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         FILE_NAV.jstreeDict.push({
 
                             // The key-value pairs needed by jstree
-                            // "id" : treeId,
-                            "id" : filePath,
+                            "id" : treeId,
                             "parent" : (selectedId === false ? '#' :
                                     selectedId),
                             "text" : keyTitle,
@@ -660,12 +672,12 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
                 );
             } else {
+                console.log('needToRefresh: ' + needToRefresh);
                 if (needToRefresh) {
                     FILE_NAV.processSelectNodeEvent = false;
                     $('#jstree_div').jstree(true).settings.core.data =
                         FILE_NAV.jstreeDict;
-                    // $('#jstree_div').jstree(true).refresh(selectedId);
-                    $('#jstree_div').jstree(true).refresh(filePath);
+                    $('#jstree_div').jstree(true).refresh(selectedId);
                 }
             }
 
@@ -682,7 +694,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // datasets) saving some information about each one.
         getListOfLinks : function (linksUrl, selectedId, createNewTree) {
 
-            var debug = true, parentTreeNode = false, filePath = false;
+            var debug = false, parentTreeNode = false, filePath = false;
 
             return $.when(SERVER_COMMUNICATION.ajaxRequest(linksUrl)).then(
                 function (response) {
@@ -816,7 +828,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                     // Get the file path of the jstree parent
                                     // of this item - not such a pretty method
                                     parentTreeNode =
-                                        $('#jstree_div').jstree(true).et_node(
+                                        $('#jstree_div').jstree(true).get_node(
                                             selectedId
                                         );
 
@@ -943,7 +955,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Get a list of items in a file, then update the jstree object
         getFileContents : function (inputUrl, selectedId) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log('inputUrl: ' + inputUrl);
@@ -1009,7 +1021,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
         changeFolderIcon : function (eventInfo, data, open) {
 
-            var debug = true;
+            var debug = false;
 
             if (debug) {
                 console.log(eventInfo);
@@ -1124,8 +1136,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                         imageTitle = data.node.data.filePath + '/' +
                             data.node.data.h5Path;
                         HANDLE_DATASET.displayImage(data.node.data.target,
-                            data.node.data.shapeDims, false, data.selected,
-                            true, imageTitle);
+                            data.node.data.shapeDims, false, true, imageTitle);
+
                         break;
 
                     case 'line':

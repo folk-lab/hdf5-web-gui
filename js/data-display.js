@@ -28,7 +28,6 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         imageSeries : false,
         imageSeriesRange : 0,
         imageSeriesIndex : false,
-        imageNodeId : undefined,
         imageTargetUrl : undefined,
         imageShapeDims : undefined,
         imageIsDownsampled : false,
@@ -792,7 +791,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                                     DATA_DISPLAY.imageTargetUrl,
                                     DATA_DISPLAY.imageShapeDims,
                                     false,
-                                    DATA_DISPLAY.imageNodeId,
+                                    false,
                                     false
                                 )
                             );
@@ -884,7 +883,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                             DATA_DISPLAY.imageTargetUrl,
                             DATA_DISPLAY.imageShapeDims,
                             ranges,
-                            DATA_DISPLAY.imageNodeId,
+                            false,
                             false
                         )
                     );
@@ -1485,8 +1484,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     DATA_DISPLAY.imageTargetUrl,
                     DATA_DISPLAY.imageShapeDims,
                     false,
-                    DATA_DISPLAY.imageNodeId,
-                    true
+                    true,
+                    false
                 );
 
             // For a line
@@ -1646,7 +1645,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //
         initializeImageData : function (value) {
 
-            var debug = false;
+            var debug = true;
 
             DATA_DISPLAY.dataValues = value;
 
@@ -1748,17 +1747,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //  - size of returned image (could be downsampled or not)
         //------------------------------------------------
         //
-        saveImageInfo : function (targetUrl, nodeId, shapeDims, newImage,
-            section, imageIndex, imageTitle) {
+        saveImageInfo : function (targetUrl, shapeDims, newImage, section,
+            imageIndex, imageTitle) {
 
-            var debug = false;
+            var debug = true;
 
             // Save data, if provided
             if (targetUrl) {
                 DATA_DISPLAY.imageTargetUrl = targetUrl;
-            }
-            if (nodeId) {
-                DATA_DISPLAY.imageNodeId = nodeId;
             }
             if (shapeDims) {
                 DATA_DISPLAY.imageShapeDims = shapeDims;

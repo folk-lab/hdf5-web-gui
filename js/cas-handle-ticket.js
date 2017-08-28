@@ -2,12 +2,13 @@
 'use strict';
 
 // External libraries
-var SERVER_COMMUNICATION, PAGE_LOAD,
+var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
 
     // The gloabl variables for this applicaiton
     CAS_TICKET = {
 
-        firstName : null,
+        firstName : '',
+        loginNeeded : true,
         isLoggedIn : false,
 
 
@@ -31,7 +32,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
         // remove that information from the url
         checkUrlForTicket : function () {
 
-            var debug = false, url, queryString, queryParams = {}, param,
+            var debug = true, url, queryString, queryParams = {}, param,
                 params, i, ticketFound = false, casTicket;
 
             // Get the full url
@@ -78,6 +79,8 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
 
             if (ticketFound) {
 
+                CAS_TICKET.loginNeeded = true;
+
                 // Sending the ticket to the HDF5 server and having it verified
                 // can be slow, so at the same time load some javascript that
                 // will be used in the next step.
@@ -102,8 +105,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
                         if (debug) {
                             console.log('CAS_TICKET.isLoggedIn:  ' +
                                 CAS_TICKET.isLoggedIn);
-                            console.log('First name: ' +
-                                CAS_TICKET.firstName);
+                            console.log('First name: ' + CAS_TICKET.firstName);
                         }
 
                         // Continue with loading the rest of the page
@@ -121,7 +123,27 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
                 console.log('No CAS ticket found in url');
             }
 
-            return undefined;
+            // If no ticket found, assume this was a redirect from
+            // cas-immediate-login.js and that no CAS authentication is
+            // required by the HDF5 server - this assumption will be verifed
+            // prior to data being loaded
+            CAS_TICKET.loginNeeded = false;
+
+            // Load some javascript and make sure to remove any leftover
+            // cookies
+            return $.when(
+                CAS_TICKET.loadJavaScriptScripts(0),
+                CAS_LOGIN_LOGOUT.logoutServer()
+            ).then(
+                function () {
+
+                    // Continue with loading the rest of the page
+                    PAGE_LOAD.initialPageLoad(true);
+
+                    return true;
+                }
+            );
+
         },
 
 
@@ -134,6 +156,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD,
             if (group === 0) {
                 scripts = [
                     "../lib/js/jstree/3.2.1/jstree.min.js",
+                    "../lib/js/mobile-check/mobile-check.js",
                     "../js/file-navigation.js",
                     "../js/page-load.js",
                 ];
