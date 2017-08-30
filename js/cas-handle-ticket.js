@@ -21,7 +21,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
                 '?ticket=' + casTicket;
 
             if (debug) {
-                console.log('ticketCheckUrl: ' + ticketCheckUrl);
+                console.debug('ticketCheckUrl: ' + ticketCheckUrl);
             }
 
             return SERVER_COMMUNICATION.ajaxRequest(ticketCheckUrl, false);
@@ -32,27 +32,27 @@ var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
         // remove that information from the url
         checkUrlForTicket : function () {
 
-            var debug = true, url, queryString, queryParams = {}, param,
+            var debug = false, url, queryString, queryParams = {}, param,
                 params, i, ticketFound = false, casTicket;
 
             // Get the full url
             url = window.location.href;
 
             if (debug) {
-                console.log('url: ' + url);
+                console.debug('url: ' + url);
             }
 
             // Check if it contains CAS ticket information
             if (url.indexOf("ticket=ST") > -1) {
 
                 if (debug) {
-                    console.log('CAS ticket found?');
+                    console.debug('CAS ticket found?');
                 }
 
                 // Get the ticket information
                 queryString = window.location.search.substring(1);
                 if (debug) {
-                    console.log('queryString: ' + queryString);
+                    console.debug('queryString: ' + queryString);
                 }
 
                 // Look for any parameters, save them
@@ -62,7 +62,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
                     queryParams[param[0]] = param[1];
                 }
                 if (debug) {
-                    console.log(queryParams);
+                    console.debug(queryParams);
                 }
 
                 // If there is a ticket key, save the value
@@ -103,9 +103,10 @@ var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
                         }
 
                         if (debug) {
-                            console.log('CAS_TICKET.isLoggedIn:  ' +
+                            console.debug('CAS_TICKET.isLoggedIn:  ' +
                                 CAS_TICKET.isLoggedIn);
-                            console.log('First name: ' + CAS_TICKET.firstName);
+                            console.debug('First name: ' +
+                                CAS_TICKET.firstName);
                         }
 
                         // Continue with loading the rest of the page
@@ -120,7 +121,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
             }
 
             if (debug) {
-                console.log('No CAS ticket found in url');
+                console.debug('No CAS ticket found in url');
             }
 
             // If no ticket found, assume this was a redirect from
@@ -168,7 +169,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
 
             return $.when.apply(null, promises).done(function () {
                 if (debug) {
-                    console.log('All done loading javascript!');
+                    console.debug('All done loading javascript!');
                 }
 
                 return true;

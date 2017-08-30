@@ -68,7 +68,7 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
         // When a dataset is selected, plot the data
         getImage : function (inputUrl, section) {
 
-            var debug = true, valueUrl;
+            var debug = false, valueUrl;
 
 
             if (debug) {

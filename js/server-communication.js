@@ -30,12 +30,12 @@ var DATA_DISPLAY,
                     var key = '';
 
                     if (debug) {
-                        console.log("AJAX " + url + " request success");
-                        console.log(response);
+                        console.debug("AJAX " + url + " request success");
+                        console.debug(response);
 
                         for (key in response) {
                             if (response.hasOwnProperty(key)) {
-                                console.log(key + " -> " + response[key]);
+                                console.debug(key + " -> " + response[key]);
                             }
                         }
                     }
@@ -53,13 +53,13 @@ var DATA_DISPLAY,
                             'You need to get permission first',
                             '#ad3a74'
                         );
-                        console.log(
+                        console.error(
                             'HTTP 403: Forbidden (Access is not permitted)'
                         );
 
                     // Other errors
                     } else {
-                        console.log("An error occurred: " + status +
+                        console.error("An error occurred: " + status +
                             "Error: " + error);
                     }
                 },

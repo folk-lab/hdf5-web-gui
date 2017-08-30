@@ -132,7 +132,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 endButtonWidth = parseInt(endButtonWidth, 10) + 'px';
 
                 if (debug) {
-                    console.log('endButtonWidth: ' + endButtonWidth);
+                    console.debug('endButtonWidth: ' + endButtonWidth);
                 }
 
                 $('#endButton').css("width", endButtonWidth);
@@ -165,8 +165,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log(itemTitle + ' --> ' + itemValue);
-                console.log(string1 + ' --> ' + string2);
+                console.debug(itemTitle + ' --> ' + itemValue);
+                console.debug(string1 + ' --> ' + string2);
             }
 
             // Check for color choice
@@ -267,7 +267,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             DATA_DISPLAY.drawText('I don\'t know how to handle this yet!',
                 'Sorry for the inconvenience :(',
                 '#ad3a74', '');
-            console.log('inputUrl: ' + inputUrl);
+            console.debug('inputUrl: ' + inputUrl);
         },
 
 
@@ -512,7 +512,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 function (eventdata) {
 
                     if (debug) {
-                        console.log('DATA_DISPLAY.plotCanvasDiv' +
+                        console.debug('DATA_DISPLAY.plotCanvasDiv' +
                             'plotly_relayout ' + DATA_DISPLAY.plotType);
                     }
 
@@ -545,23 +545,23 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('xFactor: ' + xFactor);
-                console.log('yFactor: ' + yFactor);
-                console.log('xMin:           ' + xMin);
-                console.log('xMax:           ' + xMax);
-                console.log('yMin:           ' + yMin);
-                console.log('yMax:           ' + yMax);
-                console.log('xFactor:        ' + xFactor);
-                console.log('yFactor:        ' + yFactor);
-                console.log('DATA_DISPLAY.dataValues.length: ' +
+                console.debug('xFactor: ' + xFactor);
+                console.debug('yFactor: ' + yFactor);
+                console.debug('xMin:           ' + xMin);
+                console.debug('xMax:           ' + xMax);
+                console.debug('yMin:           ' + yMin);
+                console.debug('yMax:           ' + yMax);
+                console.debug('xFactor:        ' + xFactor);
+                console.debug('yFactor:        ' + yFactor);
+                console.debug('DATA_DISPLAY.dataValues.length: ' +
                     DATA_DISPLAY.dataValues.length);
-                console.log('DATA_DISPLAY.dataValues[i].length: ' +
+                console.debug('DATA_DISPLAY.dataValues[i].length: ' +
                     DATA_DISPLAY.dataValues[0].length);
-                console.log('DATA_DISPLAY.loadedImageRange: ' +
+                console.debug('DATA_DISPLAY.loadedImageRange: ' +
                     DATA_DISPLAY.loadedImageRange);
-                console.log('DATA_DISPLAY.loadedImageRangeSize: ' +
+                console.debug('DATA_DISPLAY.loadedImageRangeSize: ' +
                     DATA_DISPLAY.loadedImageRangeSize);
-                console.log('DATA_DISPLAY.imageZoomSection:   ' +
+                console.debug('DATA_DISPLAY.imageZoomSection:   ' +
                     DATA_DISPLAY.imageZoomSection);
             }
 
@@ -609,14 +609,14 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('yProfileXAxis.length: ' + yProfileXAxis.length);
-                console.log('yProfileYValues.length: ' +
+                console.debug('yProfileXAxis.length: ' + yProfileXAxis.length);
+                console.debug('yProfileYValues.length: ' +
                     yProfileYValues.length);
-                console.log('xProfileXAxis.length: ' + xProfileXAxis.length);
-                console.log('xProfileYValues.length: ' +
+                console.debug('xProfileXAxis.length: ' + xProfileXAxis.length);
+                console.debug('xProfileYValues.length: ' +
                     xProfileYValues.length);
-                console.log('zMin: ' + zMin);
-                console.log('zMax: ' + zMax);
+                console.debug('zMin: ' + zMin);
+                console.debug('zMax: ' + zMax);
             }
 
             return {
@@ -642,7 +642,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
 
             if (debug) {
-                console.log(JSON.stringify(eventdata));
+                console.debug(JSON.stringify(eventdata));
             }
 
             // Zoom events return json objects containing keys like
@@ -674,8 +674,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             if (debug) {
                 // Get the present layout range
                 plotLayout = DATA_DISPLAY.plotCanvasDiv.layout;
-                console.log('plotLayout: ');
-                console.log(plotLayout);
+                console.debug('plotLayout: ');
+                console.debug(plotLayout);
             }
 
             // Loop over the 4 range values - x & y, min & max
@@ -687,8 +687,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                     ranges[i] = eventdata[rangeKeys[i]];
 
                     if (debug) {
-                        console.log(rangeKeys[i]);
-                        console.log(eventdata[rangeKeys[i]]);
+                        console.debug(rangeKeys[i]);
+                        console.debug(eventdata[rangeKeys[i]]);
                     }
 
                 }
@@ -706,7 +706,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 if (!DATA_DISPLAY.isEven(i)) {
                     ranges[i] += 1;
                     if (debug) {
-                        console.log('ranges[' + i + ']: ' + ranges[i]);
+                        console.debug('ranges[' + i + ']: ' + ranges[i]);
                     }
                 }
             }
@@ -737,10 +737,10 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('x-axis start: ' + ranges[0]);
-                console.log('x-axis end:   ' + ranges[1]);
-                console.log('y-axis start: ' + ranges[2]);
-                console.log('y-axis end:   ' + ranges[3]);
+                console.debug('x-axis start: ' + ranges[0]);
+                console.debug('x-axis end:   ' + ranges[1]);
+                console.debug('y-axis start: ' + ranges[2]);
+                console.debug('y-axis end:   ' + ranges[3]);
             }
 
             // Save for later
@@ -756,7 +756,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             var debug = false, promises = [], newImageFetched = false;
 
             if (debug) {
-                console.log(JSON.stringify(eventdata));
+                console.debug(JSON.stringify(eventdata));
             }
 
             // Try and guess if the 'Rest camera to default' button has been
@@ -770,7 +770,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                             eventdata.scene.eye.z === 1.25) {
 
                         if (debug) {
-                            console.log('reset button pressed?');
+                            console.debug('reset button pressed?');
                         }
 
                         // For an image series
@@ -800,7 +800,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                         newImageFetched = true;
 
                         if (debug) {
-                            console.log('newImageFetched: ' +
+                            console.debug('newImageFetched: ' +
                                 newImageFetched);
                         }
 
@@ -831,13 +831,13 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // Check if this is a zoom event
             if (!DATA_DISPLAY.isZoomEvent(eventdata)) {
                 if (debug) {
-                    console.log('Does not Look like a zoom event, exiting');
+                    console.debug('Does not Look like a zoom event, exiting');
                 }
                 return;
             }
 
             if (debug) {
-                console.log('** Plot zoom event **');
+                console.debug('** Plot zoom event **');
             }
 
             // Get the zoom range
@@ -854,11 +854,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             AJAX_SPINNER.startLoadingData(10);
 
             if (debug) {
-                console.log('DATA_DISPLAY.imageIsDownsampled: ' +
+                console.debug('DATA_DISPLAY.imageIsDownsampled: ' +
                     DATA_DISPLAY.imageIsDownsampled);
-                console.log('DATA_DISPLAY.usingOriginalImage: ' +
+                console.debug('DATA_DISPLAY.usingOriginalImage: ' +
                     DATA_DISPLAY.usingOriginalImage);
-                console.log('resetZoomEvent: ' + resetZoomEvent);
+                console.debug('resetZoomEvent: ' + resetZoomEvent);
             }
 
             // If the original image was downsampled, fetch a new image from
@@ -894,7 +894,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
 
             if (debug) {
-                console.log('newImageFetched: ' + newImageFetched);
+                console.debug('newImageFetched: ' + newImageFetched);
             }
 
             if (newImageFetched) {
@@ -920,9 +920,9 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 layout, options, mainDataPlot, plotMargins = {}, imageTitle;
 
             if (debug) {
-                console.log('DATA_DISPLAY.imageShapeDims[0]' +
+                console.debug('DATA_DISPLAY.imageShapeDims[0]' +
                     DATA_DISPLAY.imageShapeDims[0]);
-                console.log('DATA_DISPLAY.imageShapeDims[1]' +
+                console.debug('DATA_DISPLAY.imageShapeDims[1]' +
                     DATA_DISPLAY.imageShapeDims[1]);
             }
 
@@ -1118,7 +1118,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 function (eventdata) {
 
                     if (debug) {
-                        console.log('DATA_DISPLAY.plotCanvasDiv' +
+                        console.debug('DATA_DISPLAY.plotCanvasDiv' +
                             'plotly_relayout ' + DATA_DISPLAY.plotType);
                     }
 
@@ -1145,7 +1145,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 DATA_DISPLAY.resizeTimer = setTimeout(function () {
 
                     if (debug) {
-                        console.log('about to run Plotly.relayout');
+                        console.debug('about to run Plotly.relayout');
                     }
 
                     // Calculate the plot dimensions and save them
@@ -1202,18 +1202,18 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('DATA_DISPLAY.imageSeries: ' +
+                console.debug('DATA_DISPLAY.imageSeries: ' +
                     DATA_DISPLAY.imageSeries);
-                console.log('DATA_DISPLAY.mobileDisplay: ' +
+                console.debug('DATA_DISPLAY.mobileDisplay: ' +
                     DATA_DISPLAY.mobileDisplay);
-                console.log('windowWidth:  ' + windowWidth);
-                console.log('windowHeight: ' + windowHeight);
-                console.log('divWidth:     ' + divWidth);
-                console.log('divHeight:    ' + divHeight);
-                console.log('containerWidth:   ' + containerWidth);
-                console.log('containerHeight:  ' + containerHeight);
-                console.log('newPlotDivHeight: ' + newPlotDivHeight);
-                console.log('newPlotDivWidth:  ' + newPlotDivWidth);
+                console.debug('windowWidth:  ' + windowWidth);
+                console.debug('windowHeight: ' + windowHeight);
+                console.debug('divWidth:     ' + divWidth);
+                console.debug('divHeight:    ' + divHeight);
+                console.debug('containerWidth:   ' + containerWidth);
+                console.debug('containerHeight:  ' + containerHeight);
+                console.debug('newPlotDivHeight: ' + newPlotDivHeight);
+                console.debug('newPlotDivWidth:  ' + newPlotDivWidth);
             }
 
             $('#plotCanvasDiv').height(newPlotDivHeight);
@@ -1264,11 +1264,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             var debug = false, profiles;
 
             if (debug) {
-                console.log('** updatePlotZData **');
-                console.log('refilling histograms');
-                console.log('ranges:');
-                console.log(ranges);
-                console.log('newImageFetched: ' + newImageFetched);
+                console.debug('** updatePlotZData **');
+                console.debug('refilling histograms');
+                console.debug('ranges:');
+                console.debug(ranges);
+                console.debug('newImageFetched: ' + newImageFetched);
             }
 
             if (!ranges) {
@@ -1283,8 +1283,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             profiles = DATA_DISPLAY.fillProfileHistograms(ranges);
 
             if (debug) {
-                console.log('profiles:');
-                console.log(profiles);
+                console.debug('profiles:');
+                console.debug(profiles);
             }
 
             if (newImageFetched) {
@@ -1317,11 +1317,11 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 // bands will appears when not centered on data.
                 if (DATA_DISPLAY.plotDimension === 2) {
                     if (debug) {
-                        console.log('DATA_DISPLAY.imageZoomSection:');
-                        console.log(DATA_DISPLAY.imageZoomSection[0]);
-                        console.log(DATA_DISPLAY.imageZoomSection[1]);
-                        console.log(DATA_DISPLAY.imageZoomSection[2]);
-                        console.log(DATA_DISPLAY.imageZoomSection[3]);
+                        console.debug('DATA_DISPLAY.imageZoomSection:');
+                        console.debug(DATA_DISPLAY.imageZoomSection[0]);
+                        console.debug(DATA_DISPLAY.imageZoomSection[1]);
+                        console.debug(DATA_DISPLAY.imageZoomSection[2]);
+                        console.debug(DATA_DISPLAY.imageZoomSection[3]);
                     }
 
                     if (setAxesRange) {
@@ -1378,7 +1378,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             AJAX_SPINNER.doneLoadingData();
 
             if (debug) {
-                console.log('** End of updatePlotZData **');
+                console.debug('** End of updatePlotZData **');
             }
         },
 
@@ -1426,7 +1426,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             var debug = false;
 
             if (debug) {
-                console.log('colorScale: ' + colorScale);
+                console.debug('colorScale: ' + colorScale);
             }
 
             if (colorScale !== '') {
@@ -1458,7 +1458,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             var debug = false;
 
             if (debug) {
-                console.log();
+                console.debug();
             }
 
             // Start the spinner
@@ -1513,7 +1513,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             setTimeout(function () {
 
                 if (debug) {
-                    console.log('starting plotly download function');
+                    console.debug('starting plotly download function');
                 }
 
                 Plotly.downloadImage(
@@ -1539,7 +1539,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             var debug = false;
 
             if (debug) {
-                console.log('useLog: ' + useLog);
+                console.debug('useLog: ' + useLog);
             }
 
             if (useLog === undefined) {
@@ -1549,13 +1549,13 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('DATA_DISPLAY.plotLogValues: ' +
+                console.debug('DATA_DISPLAY.plotLogValues: ' +
                     DATA_DISPLAY.plotLogValues);
             }
 
             if (DATA_DISPLAY.plotLogValues) {
                 if (debug) {
-                    console.log('Log Plot!');
+                    console.debug('Log Plot!');
                 }
                 $("#logPlotButton").html(' Log!');
                 $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log!');
@@ -1565,7 +1565,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
                 DATA_DISPLAY.dataValues = DATA_DISPLAY.logOfDataValues;
             } else {
                 if (debug) {
-                    console.log('Log Plot?');
+                    console.debug('Log Plot?');
                 }
                 $("#logPlotButton").html(' Log?');
                 $("#logPlotButtonMobile").html('&nbsp;&nbsp;Log?');
@@ -1645,7 +1645,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //
         initializeImageData : function (value) {
 
-            var debug = true;
+            var debug = false;
 
             DATA_DISPLAY.dataValues = value;
 
@@ -1689,17 +1689,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('DATA_DISPLAY.loadedImageSize: ' +
+                console.debug('DATA_DISPLAY.loadedImageSize: ' +
                     DATA_DISPLAY.loadedImageSize);
-                console.log('DATA_DISPLAY.loadedImageRange: ' +
+                console.debug('DATA_DISPLAY.loadedImageRange: ' +
                     DATA_DISPLAY.loadedImageRange);
-                console.log('DATA_DISPLAY.loadedImageRangeSize: ' +
+                console.debug('DATA_DISPLAY.loadedImageRangeSize: ' +
                     DATA_DISPLAY.loadedImageRangeSize);
-                console.log('DATA_DISPLAY.imageZoomSection:   ' +
+                console.debug('DATA_DISPLAY.imageZoomSection:   ' +
                     DATA_DISPLAY.imageZoomSection);
-                console.log('DATA_DISPLAY.imageIsDownsampled: ' +
+                console.debug('DATA_DISPLAY.imageIsDownsampled: ' +
                     DATA_DISPLAY.imageIsDownsampled);
-                console.log('DATA_DISPLAY.usingOriginalImage: ' +
+                console.debug('DATA_DISPLAY.usingOriginalImage: ' +
                     DATA_DISPLAY.usingOriginalImage);
             }
 
@@ -1707,8 +1707,8 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             DATA_DISPLAY.calculateLogValues(value);
 
             if (debug) {
-                console.log('DATA_DISPLAY.initialDataValues:');
-                console.log(DATA_DISPLAY.initialDataValues);
+                console.debug('DATA_DISPLAY.initialDataValues:');
+                console.debug(DATA_DISPLAY.initialDataValues);
             }
         },
 
@@ -1750,7 +1750,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         saveImageInfo : function (targetUrl, shapeDims, newImage, section,
             imageIndex, imageTitle) {
 
-            var debug = true;
+            var debug = false;
 
             // Save data, if provided
             if (targetUrl) {
@@ -1777,17 +1777,17 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             }
 
             if (debug) {
-                console.log('DATA_DISPLAY.imageTitle: ' +
+                console.debug('DATA_DISPLAY.imageTitle: ' +
                     DATA_DISPLAY.imageTitle);
-                console.log('DATA_DISPLAY.imageSeriesIndex: ' +
+                console.debug('DATA_DISPLAY.imageSeriesIndex: ' +
                     DATA_DISPLAY.imageSeriesIndex);
-                console.log('DATA_DISPLAY.imageShapeDims[0]' +
+                console.debug('DATA_DISPLAY.imageShapeDims[0]' +
                     DATA_DISPLAY.imageShapeDims[0]);
-                console.log('DATA_DISPLAY.imageShapeDims[1]' +
+                console.debug('DATA_DISPLAY.imageShapeDims[1]' +
                     DATA_DISPLAY.imageShapeDims[1]);
-                console.log('DATA_DISPLAY.imageZoomSection:   ' +
+                console.debug('DATA_DISPLAY.imageZoomSection:   ' +
                     DATA_DISPLAY.imageZoomSection);
-                console.log('DATA_DISPLAY.usingOriginalImage: ' +
+                console.debug('DATA_DISPLAY.usingOriginalImage: ' +
                     DATA_DISPLAY.usingOriginalImage);
             }
 
@@ -1803,7 +1803,7 @@ $(window).resize(function () {
     var debug = false;
 
     if (debug) {
-        console.log('wait for it...');
+        console.debug('wait for it...');
     }
 
     DATA_DISPLAY.mobileDisplay = window.mobilecheck();
@@ -1817,7 +1817,7 @@ $(document).ready(function () {
     var debug = false;
 
     if (debug) {
-        console.log('document is ready');
+        console.debug('document is ready');
     }
 
     // Calculate the proper plot dimensions and save them

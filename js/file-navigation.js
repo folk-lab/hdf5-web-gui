@@ -9,7 +9,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
     // Some gloabl variables
     FILE_NAV =
     {
-        jstreeDict : [],
+        jstreeArray : [],
         processSelectNodeEvent : true,
         data : null,
         useDarkTheme : false,
@@ -465,12 +465,12 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // Add new item to the file browser tree
         addToTree : function (itemList, selectedId, createNewTree) {
 
-            var debug = false, i, keyTitle = '', type = '', icon = '', treeId,
+            var debug = true, keyTitle = '', type = '', icon = '', treeId,
                 doesNodeExist = false, dotFile = false, needToRefresh = false,
                 filePath = '', h5Path = '', parentTreeNode;
 
             if (createNewTree) {
-                FILE_NAV.jstreeDict = [];
+                FILE_NAV.jstreeArray = [];
             }
 
             // Loop over the list of items
@@ -600,7 +600,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             treeId
                         );
                         if (debug) {
-                            console.log('doesNodeExist: ' + doesNodeExist);
+                            console.log('doesNodeExist: ');
+                            console.log(doesNodeExist);
                         }
                     }
 
@@ -612,7 +613,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                             (itemList[keyTitle].readable ||
                              itemList[keyTitle].readable === undefined)) {
 
-                        FILE_NAV.jstreeDict.push({
+                        FILE_NAV.jstreeArray.push({
 
                             // The key-value pairs needed by jstree
                             "id" : treeId,
@@ -644,14 +645,12 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 }
             }
 
-            // needToRefresh = true;
-
             // Create or add to the jstree object
             if (createNewTree) {
                 $('#jstree_div').jstree(
                     {
                         "core" : {
-                            "data" : FILE_NAV.jstreeDict,
+                            "data" : FILE_NAV.jstreeArray,
                             "themes" : {
                                 "name" : (FILE_NAV.useDarkTheme === true ?
                                         "default-dark" : "default"),
@@ -676,15 +675,14 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 if (needToRefresh) {
                     FILE_NAV.processSelectNodeEvent = false;
                     $('#jstree_div').jstree(true).settings.core.data =
-                        FILE_NAV.jstreeDict;
+                        FILE_NAV.jstreeArray;
                     $('#jstree_div').jstree(true).refresh(selectedId);
+                    // $('#jstree_div').jstree(true).redraw(true);
                 }
             }
 
             if (debug) {
-                for (i = 0; i < FILE_NAV.jstreeDict.length; i += 1) {
-                    console.log(FILE_NAV.jstreeDict[i]);
-                }
+                console.table(FILE_NAV.jstreeArray, "id");
             }
 
         },
@@ -996,7 +994,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
 
                     // Get the contents of this folder
-                    // FILE_NAV.getFolderContents(topLevelUrl, false, true);
                     return $.when(FILE_NAV.getFolderContents(topLevelUrl,
                         false, true)).then(
                         function () {
@@ -1100,6 +1097,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 switch (data.node.data.type) {
 
                 case 'folder':
+                    console.log("data.node.data.target: " +
+                        data.node.data.target);
+                    console.log("data.selected: " + data.selected);
                     FILE_NAV.getFolderContents(data.node.data.target,
                         data.selected, false);
                     break;
@@ -1184,9 +1184,105 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
 
         handleFileChangeEvent : function (messageData) {
-            // var msg = $.parseJSON(messageData);
-            var msg = JSON.parse(messageData);
+
+            var msg = JSON.parse(messageData), filePath, dataPath, idModified,
+                nodeModified, nodeDataTarget, nodeDataParent, testy,
+                parentDataParent, parentDataTarget;
+
             console.log(msg);
+
+            filePath = msg.filePath;
+            dataPath = msg.dataPath;
+
+            console.log('filePath: ' + filePath);
+            console.log('dataPath: ' + dataPath);
+
+            // Massage the file path and data directory into a form which
+            // matches that use in the jstree id parameter
+            filePath = filePath.replace(dataPath, '');
+            filePath = filePath.replace('.h5', '');
+            idModified = filePath + '/';
+
+            console.log('filePath: ' + filePath);
+            console.log('idModified: ' + idModified);
+
+            // See if the jstree object exists
+            nodeModified = $('#jstree_div').jstree(true).get_node(idModified);
+            console.log('nodeModified: ');
+            console.log(nodeModified);
+
+            if (nodeModified) {
+
+                console.table(FILE_NAV.jstreeArray, "id");
+
+                // Search for the node in the tree dictionary, exterminate it
+                // along with all of it's descendants
+                testy = FILE_NAV.jstreeArray.filter(
+                    function (element) {
+
+                        var keepElement = true;
+
+                        // Save some information about the file that has been
+                        // modified
+                        if (element.id === idModified) {
+                            nodeDataTarget = element.data.target;
+                            nodeDataParent = element.parent[0];
+                            keepElement = false;
+                        }
+
+                        // Exterminate all descendants
+                        if (element.data.filePath === filePath) {
+                            keepElement = false;
+                        }
+
+                        return keepElement;
+                    }
+                );
+                console.log('nodeDataTarget: ' + nodeDataTarget);
+                console.log('nodeDataParent: ' + nodeDataParent);
+                console.log("testy");
+                console.log(testy);
+                FILE_NAV.jstreeArray = testy;
+
+                // Find the target url of the parent node for the node just
+                // modified
+                testy = FILE_NAV.jstreeArray.filter(
+                    function (element) {
+
+                        if (element.id === nodeDataParent) {
+                            parentDataTarget = element.data.target;
+                            parentDataParent = element.parent[0];
+                        }
+
+                        return true;
+                    }
+                );
+                console.log("parentDataTarget: " + parentDataTarget);
+                console.log("parentDataParent: " + parentDataParent);
+
+
+                // Redo addition of node contents to tree dictionary
+                // FILE_NAV.getFileContents(nodeDataTarget, idModified);
+                // FILE_NAV.getFileContents(nodeDataParent, idModified);
+                //
+                // FILE_NAV.getFolderContents(data.node.data.target,
+                //    nodeDataParent, false);
+
+                console.table(FILE_NAV.jstreeArray, "id");
+
+                // Remove children
+                // Re-add node and children to tree array
+
+                // Reload/redraw/refresh the jstree object
+                $('#jstree_div').jstree(true).settings.core.data =
+                    FILE_NAV.jstreeArray;
+                // $('#jstree_div').jstree(true).refresh('#');
+                $('#jstree_div').jstree(true).refresh(nodeDataParent);
+                FILE_NAV.getFolderContents(parentDataTarget, nodeDataParent,
+                    false);
+                $('#jstree_div').jstree(true).refresh(idModified);
+                // FILE_NAV.getFileContents(nodeDataTarget, idModified);
+            }
         },
 
 
@@ -1196,7 +1292,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 '/events');
 
             source.onmessage = function (message) {
-                console.log(message.data);
+                console.debug(message.data);
                 FILE_NAV.handleFileChangeEvent(message.data);
             };
         }

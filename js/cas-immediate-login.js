@@ -18,7 +18,7 @@ var SERVER_COMMUNICATION, Ping,
         // Log into the CAS server
         loginCAS : function () {
 
-            var debug = true, loginUrl, pingH5serv = new Ping(), url;
+            var debug = false, loginUrl, pingH5serv = new Ping(), url;
 
             document.getElementById("loadMsg").innerHTML =
                 'Attempting to contact HDF5 server... ';
@@ -30,8 +30,9 @@ var SERVER_COMMUNICATION, Ping,
                 // Display error if err is returned.
                 if (err) {
 
-                    console.log("error loading HDF5 server: " +
+                    console.error("error loading HDF5 server: " +
                         SERVER_COMMUNICATION.hdf5DataServerBase);
+
                     document.getElementById("loadMsg"
                         ).innerHTML +=
                         '<span style="color:red">failed</span>';
@@ -42,7 +43,10 @@ var SERVER_COMMUNICATION, Ping,
                         'Better find someone who can fix this.';
                 } else {
 
-                    console.log('HDF5 server reached ' + data);
+                    if (debug) {
+                        console.debug('HDF5 server reached ' + data);
+                    }
+
                     document.getElementById("loadMsg").innerHTML +=
                         '<span style="color:green">success</span>';
                     document.getElementById("loadMsg").innerHTML +=
@@ -54,8 +58,11 @@ var SERVER_COMMUNICATION, Ping,
                         function (response) {
 
                             CAS_IMMEDIATE.casServer = response;
-                            console.log('cas server: ' +
-                                CAS_IMMEDIATE.casServer);
+
+                            if (debug) {
+                                console.debug('cas server: ' +
+                                    CAS_IMMEDIATE.casServer);
+                            }
 
                             // If the CAS url given is a valid url
                             if (CAS_IMMEDIATE.isValidURL(
@@ -77,9 +84,10 @@ var SERVER_COMMUNICATION, Ping,
                                     // Display error if err is returned.
                                     if (err) {
 
-                                        console.log("error loading CAS " +
-                                            "server" +
+                                        console.error("error loading CAS " +
+                                            "server: " +
                                             CAS_IMMEDIATE.casServer);
+
                                         document.getElementById("loadMsg"
                                             ).innerHTML +=
                                             '<span style="color:red">' +
@@ -95,8 +103,11 @@ var SERVER_COMMUNICATION, Ping,
                                             ' who can fix this.';
                                     } else {
 
-                                        console.log('CAS server reached ' +
-                                            data);
+                                        if (debug) {
+                                            console.debug('CAS server ' +
+                                                'reached ' + data);
+                                        }
+
                                         document.getElementById("loadMsg"
                                             ).innerHTML +=
                                             '<span style="color:green">' +
@@ -107,18 +118,15 @@ var SERVER_COMMUNICATION, Ping,
                                         // which the browser will be
                                         // redirected after successfully
                                         // logging in
-                                        loginUrl =
-                                            CAS_IMMEDIATE.casServer +
+                                        loginUrl = CAS_IMMEDIATE.casServer +
                                             '/login?service=' +
                                             encodeURIComponent(
                                                 CAS_IMMEDIATE.serviceUrl
                                             );
 
                                         if (debug) {
-                                            console.log('loginUrl: ' +
+                                            console.debug('Redirecting to ' +
                                                 loginUrl);
-                                            console.log('Redirecting to ' +
-                                                'CAS server');
                                         }
 
                                         document.getElementById("errMsg"
@@ -133,15 +141,16 @@ var SERVER_COMMUNICATION, Ping,
 
                             } else {
 
-                                console.log('Invalid CAS url given, ' +
-                                    'assumming no CAS' +
-                                    ' authentication is required');
+                                console.debug('Invalid CAS url given, ' +
+                                    'assumming no CAS authentication is ' +
+                                    'required');
+
                                 document.getElementById("loadMsg").innerHTML +=
                                     '<span style="color:blue">no</span>';
 
                                 document.getElementById("errMsg"
                                     ).innerHTML = 'Now opening the HDF5 ' +
-                                    'viewer...';
+                                    'viewer... ' + CAS_IMMEDIATE.serviceUrl;
 
                                 // Redirect to the CAS server
                                 window.location = CAS_IMMEDIATE.serviceUrl;
@@ -156,11 +165,11 @@ var SERVER_COMMUNICATION, Ping,
         // Check with the HDF5 server to see if CAS use is configured
         getCASServerUrl : function () {
 
-            var debug = true, casCheckUrl =
+            var debug = false, casCheckUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/usecas';
 
             if (debug) {
-                console.log('casCheckUrl: ' + casCheckUrl);
+                console.debug('casCheckUrl: ' + casCheckUrl);
             }
 
             return SERVER_COMMUNICATION.ajaxRequest(casCheckUrl, false);
