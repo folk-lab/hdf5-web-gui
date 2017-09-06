@@ -11,6 +11,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
     {
         jstreeArray : [],
         processSelectNodeEvent : true,
+        fileChangeEvent : false,
+        idsToReload : [],
         data : null,
         useDarkTheme : false,
         temp : false,
@@ -59,7 +61,8 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
 
         // Recursively follow a file path - either through folders on disk,
-        // or wihtin an HDF5 file
+        // or wihtin an HDF5 file - this is probably a waste of time, should
+        // just do something smarter on the server side...
         followFilePath : function (topLevelUrl, filePathPieces, index) {
 
             var debug = false;
@@ -677,7 +680,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     $('#jstree_div').jstree(true).settings.core.data =
                         FILE_NAV.jstreeArray;
                     $('#jstree_div').jstree(true).refresh(selectedId);
-                    // $('#jstree_div').jstree(true).redraw(true);
                 }
             }
 
@@ -925,7 +927,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
             }
 
             // Get the url to the links available
-            $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
+            return $.when(FILE_NAV.getTopLevelUrl(topLevelUrl, 'hrefs',
                 'links')).then(
 
                 function (linksUrl) {
@@ -961,7 +963,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
             }
 
             // Get the url to the links available
-            $.when(FILE_NAV.getTopLevelUrl(inputUrl, 'hrefs', 'root')).then(
+            return $.when(FILE_NAV.getTopLevelUrl(inputUrl, 'hrefs',
+                'root')).then(
+
                 function (topLevelUrl) {
 
                     if (debug) {
@@ -969,7 +973,13 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     }
 
                     // Treat the contents of the file as one would a folder
-                    FILE_NAV.getFolderContents(topLevelUrl, selectedId, false);
+                    return $.when(FILE_NAV.getFolderContents(topLevelUrl,
+                        selectedId, false)).then(
+                        function () {
+                            console.log('getFileContents done?');
+                            return true;
+                        }
+                    );
 
                 }
             );
@@ -1038,11 +1048,17 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         // file, display an image, etc.
         treeItemClicked : function (eventInfo, data) {
 
-            var debug = false, keyData, keyNode, imageTitle;
+            var debug = false, keyData, keyNode, imageTitle, dataTarget;
+
+            console.log('FILE_NAV.fileChangeEvent: ' +
+                FILE_NAV.fileChangeEvent);
+            console.log('FILE_NAV.processSelectNodeEvent: ' +
+                FILE_NAV.processSelectNodeEvent);
 
             // Open or close the node
-            // data.instance.toggle_node(data.node);
-            $('#jstree_div').jstree(true).toggle_node(data.node.id);
+            if (!FILE_NAV.fileChangeEvent) {
+                $('#jstree_div').jstree(true).toggle_node(data.node.id);
+            }
 
             if (debug) {
 
@@ -1092,21 +1108,21 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
             if (FILE_NAV.processSelectNodeEvent) {
 
+                dataTarget = data.node.data.target;
+                console.log("dataTarget: " + dataTarget);
+                console.log("data.selected: " + data.selected);
+
                 // Do different things depending on what type of item has been
                 // clicked
                 switch (data.node.data.type) {
 
                 case 'folder':
-                    console.log("data.node.data.target: " +
-                        data.node.data.target);
-                    console.log("data.selected: " + data.selected);
-                    FILE_NAV.getFolderContents(data.node.data.target,
-                        data.selected, false);
+                    FILE_NAV.getFolderContents(dataTarget, data.selected,
+                        false);
                     break;
 
                 case 'file':
-                    FILE_NAV.getFileContents(data.node.data.target,
-                        data.selected);
+                    FILE_NAV.getFileContents(dataTarget, data.selected);
                     break;
 
                 case 'datasets':
@@ -1117,69 +1133,63 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                     // Remove plot controls
                     DATA_DISPLAY.enableImagePlotControls(false, false);
 
+                    imageTitle = data.node.data.filePath + '/' +
+                        data.node.data.h5Path;
+
                     switch (data.node.data.dataType) {
 
                     case 'image-series':
                         AJAX_SPINNER.startLoadingData(10);
-                        imageTitle = data.node.data.filePath + '/' +
-                            data.node.data.h5Path;
-                        HANDLE_DATASET.displayImageSeriesInitial(
-                            data.node.data.target,
-                            data.node.data.shapeDims,
-                            0,
-                            imageTitle
-                        );
+                        HANDLE_DATASET.displayImageSeriesInitial(dataTarget,
+                            data.node.data.shapeDims, 0, imageTitle);
                         break;
 
                     case 'image':
                         AJAX_SPINNER.startLoadingData(10);
-                        imageTitle = data.node.data.filePath + '/' +
-                            data.node.data.h5Path;
-                        HANDLE_DATASET.displayImage(data.node.data.target,
+                        HANDLE_DATASET.displayImage(dataTarget,
                             data.node.data.shapeDims, false, true, imageTitle);
-
                         break;
 
                     case 'line':
                         AJAX_SPINNER.startLoadingData(10);
-                        imageTitle = data.node.data.filePath + '/' +
-                            data.node.data.h5Path;
-                        HANDLE_DATASET.displayLine(data.node.data.target,
-                            data.selected, imageTitle);
+                        HANDLE_DATASET.displayLine(dataTarget, data.selected,
+                            imageTitle);
                         break;
 
                     case 'number':
-                        imageTitle = data.node.data.filePath + '/' +
-                            data.node.data.h5Path;
-                        HANDLE_DATASET.displayText(data.node.data.target,
-                            data.node.text, '#ad3a3a', imageTitle);
+                        HANDLE_DATASET.displayText(dataTarget, data.node.text,
+                            '#ad3a3a', imageTitle);
                         break;
 
                     case 'text':
-                        imageTitle = data.node.data.filePath + '/' +
-                            data.node.data.h5Path;
-                        HANDLE_DATASET.displayText(data.node.data.target,
-                            data.node.text, '#3a74ad', imageTitle);
+                        HANDLE_DATASET.displayText(dataTarget, data.node.text,
+                            '#3a74ad', imageTitle);
                         break;
 
                     default:
                         console.log('Is this a fucking dataset? No!');
-                        DATA_DISPLAY.displayErrorMessage(
-                            data.node.data.target
-                        );
+                        DATA_DISPLAY.displayErrorMessage(dataTarget);
                     }
 
                     break;
 
                 default:
                     console.log('What the fuck do you want?');
-                    DATA_DISPLAY.displayErrorMessage(data.node.data.target);
+                    DATA_DISPLAY.displayErrorMessage(dataTarget);
                 }
 
             } else {
+                console.log('tree item selected, didn\'t do shit though');
                 FILE_NAV.processSelectNodeEvent = true;
+                if (FILE_NAV.fileChangeEvent) {
+                    FILE_NAV.fileChangeEvent = false;
+                }
             }
 
+            console.log('FILE_NAV.fileChangeEvent: ' +
+                FILE_NAV.fileChangeEvent);
+            console.log('FILE_NAV.processSelectNodeEvent: ' +
+                FILE_NAV.processSelectNodeEvent);
         },
 
 
@@ -1187,7 +1197,10 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
             var msg = JSON.parse(messageData), filePath, dataPath, idModified,
                 nodeModified, nodeDataTarget, nodeDataParent, testy,
-                parentDataParent, parentDataTarget;
+                parentDataTarget;
+
+            FILE_NAV.processSelectNodeEvent = false;
+            FILE_NAV.fileChangeEvent = true;
 
             console.log(msg);
 
@@ -1215,34 +1228,38 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                 console.table(FILE_NAV.jstreeArray, "id");
 
-                // Search for the node in the tree dictionary, exterminate it
-                // along with all of it's descendants
+                // Search for the node in the tree dictionary, exterminate all
+                // of it's descendants, but keep the node itself
                 testy = FILE_NAV.jstreeArray.filter(
                     function (element) {
 
                         var keepElement = true;
-
-                        // Save some information about the file that has been
-                        // modified
-                        if (element.id === idModified) {
-                            nodeDataTarget = element.data.target;
-                            nodeDataParent = element.parent[0];
-                            keepElement = false;
-                        }
 
                         // Exterminate all descendants
                         if (element.data.filePath === filePath) {
                             keepElement = false;
                         }
 
+                        // Save some information about the file that has been
+                        // modified
+                        if (element.id === idModified) {
+                            nodeDataTarget = element.data.target;
+                            nodeDataParent = element.parent[0];
+                            keepElement = true;
+                        }
+
+
                         return keepElement;
                     }
                 );
-                console.log('nodeDataTarget: ' + nodeDataTarget);
-                console.log('nodeDataParent: ' + nodeDataParent);
-                console.log("testy");
-                console.log(testy);
+
+                // Replace the jstree array and data
                 FILE_NAV.jstreeArray = testy;
+                $('#jstree_div').jstree(true).settings.core.data =
+                    FILE_NAV.jstreeArray;
+
+                console.log("FILE_NAV.jstreeArray:");
+                console.table(FILE_NAV.jstreeArray, "id");
 
                 // Find the target url of the parent node for the node just
                 // modified
@@ -1251,15 +1268,16 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
 
                         if (element.id === nodeDataParent) {
                             parentDataTarget = element.data.target;
-                            parentDataParent = element.parent[0];
                         }
 
                         return true;
                     }
                 );
+                console.log('nodeDataTarget: ' + nodeDataTarget);
+                console.log('nodeDataParent: ' + nodeDataParent);
                 console.log("parentDataTarget: " + parentDataTarget);
-                console.log("parentDataParent: " + parentDataParent);
 
+                FILE_NAV.idsToReload = [idModified];
 
                 // Redo addition of node contents to tree dictionary
                 // FILE_NAV.getFileContents(nodeDataTarget, idModified);
@@ -1268,20 +1286,33 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                 // FILE_NAV.getFolderContents(data.node.data.target,
                 //    nodeDataParent, false);
 
-                console.table(FILE_NAV.jstreeArray, "id");
 
-                // Remove children
-                // Re-add node and children to tree array
-
-                // Reload/redraw/refresh the jstree object
-                $('#jstree_div').jstree(true).settings.core.data =
-                    FILE_NAV.jstreeArray;
+                // Reload/redraw/refresh the jstree object The argument -1
+                // stops the jstree loading spinner from being displayed
+                $('#jstree_div').jstree(true).refresh(-1);
                 // $('#jstree_div').jstree(true).refresh('#');
-                $('#jstree_div').jstree(true).refresh(nodeDataParent);
-                FILE_NAV.getFolderContents(parentDataTarget, nodeDataParent,
-                    false);
-                $('#jstree_div').jstree(true).refresh(idModified);
-                // FILE_NAV.getFileContents(nodeDataTarget, idModified);
+                // $('#jstree_div').jstree(true).refresh();
+                // $('#jstree_div').jstree(true).refresh(nodeDataParent);
+
+                // TEMPORARY - need to find a way to do this after refresh
+                // action is completed
+                // setTimeout(function () {
+                //     console.log('timer fired!');
+
+                //     FILE_NAV.fileChangeEvent = false;
+                //     FILE_NAV.processSelectNodeEvent = true;
+
+                //     // $('#jstree_div').jstree('select_node', idModified);
+
+                //     // console.log('FILE_NAV.fileChangeEvent: ' +
+                //     //     FILE_NAV.fileChangeEvent);
+                //     // console.log('FILE_NAV.processSelectNodeEvent: ' +
+                //     //     FILE_NAV.processSelectNodeEvent);
+
+                //     // FILE_NAV.getFolderContents(parentDataTarget,
+                //     //     nodeDataParent, false);
+                // }, 3000);
+
             }
         },
 
