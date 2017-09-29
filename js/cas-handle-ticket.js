@@ -152,7 +152,7 @@ var SERVER_COMMUNICATION, PAGE_LOAD, CAS_LOGIN_LOGOUT,
         loadJavaScriptScripts : function (group) {
 
             var debug = false, promises = [], scripts = [],
-                version = '?v=201708211613';
+                version = '?v=201709291222';
 
             if (group === 0) {
                 scripts = [

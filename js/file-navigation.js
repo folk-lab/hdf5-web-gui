@@ -778,9 +778,9 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
                                             linkItem.title.includes('_data_'));
                                     }
 
-                                    mxData = linkItem.title.split('_data_');
-                                    mxMaster = mxData[0];
-                                    mxData = mxData[1];
+                                    // mxData = linkItem.title.split('_data_');
+                                    // mxMaster = mxData[0];
+                                    // mxData = mxData[1];
                                 }
 
                                 // Save some of the information
@@ -1440,6 +1440,6 @@ $(document).ready(function () {
     FILE_NAV.setTreeDivHeight();
 
     // Subscribe to and handle events sent by the file system watcher
-    FILE_NAV.subscribeFileChangeEvents();
+    // FILE_NAV.subscribeFileChangeEvents();
 
 });
