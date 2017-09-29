@@ -35,7 +35,7 @@ var SERVER_COMMUNICATION,
         // Removes the cookie created by the HDF5 server
         logoutServer : function () {
 
-            var debug = true, logoutUrl =
+            var debug = false, logoutUrl =
                 SERVER_COMMUNICATION.hdf5DataServer + '/logout';
 
             if (debug) {
