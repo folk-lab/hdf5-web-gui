@@ -57,7 +57,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         enableImagePlotControls : function (enablePlotControls,
             enableImageControls, enableSeriesControls) {
 
-            var i, debug = false, seriesMax = 0, endButtonWidth = '50px',
+            var i, debug = true, seriesMax = 0, endButtonWidth = '50px',
                 plotControlDiv = [ '#plotControlDownload',
                     '#plotControlReset'],
                 imageControlDiv = ['#plotControlType', '#plotControlLog',
@@ -148,7 +148,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
             DATA_DISPLAY.enableImagePlotControls(false, false, false);
 
-            var debug = false, data, layout, options, mainDataPlot, string1,
+            var debug = true, data, layout, options, mainDataPlot, string1,
                 string2;
 
             DATA_DISPLAY.displayType = 'text';
@@ -364,7 +364,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         draw3DPlot : function () {
 
-            var debug = false, data, layout, options, plotMargins, profiles,
+            var debug = true, data, layout, options, plotMargins, profiles,
                 imageTitle;
 
             // Get the proper x & y axes ranges if this image has been
@@ -526,7 +526,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // of the section of the image being viewed
         fillProfileHistograms : function (ranges) {
 
-            var debug = false, i, j,
+            var debug = true, i, j,
                 imageYAxis = [], imageXAxis = [],
                 yProfileXAxis = [], yProfileYValues = [],
                 xProfileXAxis = [], xProfileYValues = [],
@@ -636,7 +636,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Check if an event is a zoom event
         isZoomEvent : function (eventdata) {
 
-            var debug = false, i = 0, zoomEvent = false,
+            var debug = true, i = 0, zoomEvent = false,
                 rangeKeys = ['xaxis.range[0]', 'xaxis.range[1]',
                     'yaxis.range[0]', 'yaxis.range[1]'],
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
@@ -666,7 +666,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         getZoomRange : function (eventdata) {
 
-            var debug = false, i = 0, ranges = [-1, -1, -1, -1],
+            var debug = true, i = 0, ranges = [-1, -1, -1, -1],
                 plotLayout, rangeKeys = ['xaxis.range[0]', 'xaxis.range[1]',
                 'yaxis.range[0]', 'yaxis.range[1]'],
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
@@ -753,7 +753,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 3D image
         handle3DZoom : function (eventdata) {
 
-            var debug = false, promises = [], newImageFetched = false;
+            var debug = true, promises = [], newImageFetched = false;
 
             if (debug) {
                 console.debug(JSON.stringify(eventdata));
@@ -824,7 +824,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Do what it takes to handle a zoom event in a 2D image
         handle2DZoom : function (eventdata) {
 
-            var debug = false, i = 0, ranges = [-1, -1, -1, -1],
+            var debug = true, i = 0, ranges = [-1, -1, -1, -1],
                 promises = [], newImageFetched = false, resetZoomEvent = false,
                 autoKeys = ['xaxis.autorange', 'yaxis.autorange'];
 
@@ -916,7 +916,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // that update when zooming
         draw2DPlot : function () {
 
-            var debug = false, profiles, xProfilePlot, yProfilePlot, data,
+            var debug = true, profiles, xProfilePlot, yProfilePlot, data,
                 layout, options, mainDataPlot, plotMargins = {}, imageTitle;
 
             if (debug) {
@@ -1130,7 +1130,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 
         redrawPlotCanvas : function (timeDelay) {
 
-            var debug = false, plotHeight = DATA_DISPLAY.plotHeight;
+            var debug = true, plotHeight = DATA_DISPLAY.plotHeight;
 
             if (DATA_DISPLAY.plotExists) {
 
@@ -1175,7 +1175,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Calculate the plot size - needs to be improved for small screens
         calculatePlotSize : function () {
 
-            var debug = false, newPlotDivHeight, newPlotDivWidth,
+            var debug = true, newPlotDivHeight, newPlotDivWidth,
                 windowWidth = $(window).width(),
                 windowHeight = $(window).height(),
                 containerWidth = $('#displayContainer').width(),
@@ -1261,7 +1261,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Change the data used in the plot without redrawing everything
         updatePlotZData : function (ranges, newImageFetched, setAxesRange) {
 
-            var debug = false, profiles;
+            var debug = true, profiles;
 
             if (debug) {
                 console.debug('** updatePlotZData **');
@@ -1423,7 +1423,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Change the color map
         changeColor : function (colorScale) {
 
-            var debug = false;
+            var debug = true;
 
             if (debug) {
                 console.debug('colorScale: ' + colorScale);
@@ -1455,7 +1455,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // One of the plotly buttons remade - reset zoom / autoscale
         resetZoom : function () {
 
-            var debug = false;
+            var debug = true;
 
             if (debug) {
                 console.debug();
@@ -1536,7 +1536,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         // Switch between the use of log and non-log values
         toggleLogPlot : function (useLog) {
 
-            var debug = false;
+            var debug = true;
 
             if (debug) {
                 console.debug('useLog: ' + useLog);
@@ -1645,7 +1645,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         //
         initializeImageData : function (value) {
 
-            var debug = false;
+            var debug = true;
 
             DATA_DISPLAY.dataValues = value;
 
@@ -1750,7 +1750,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
         saveImageInfo : function (targetUrl, shapeDims, newImage, section,
             imageIndex, imageTitle) {
 
-            var debug = false;
+            var debug = true;
 
             // Save data, if provided
             if (targetUrl) {
@@ -1800,7 +1800,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
 // This function fires when the browser window is resized
 $(window).resize(function () {
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.debug('wait for it...');
@@ -1814,7 +1814,7 @@ $(window).resize(function () {
 // This function fires when the page is ready
 $(document).ready(function () {
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         console.debug('document is ready');

@@ -10,11 +10,14 @@ var DATA_DISPLAY,
 
         // Assume that h5serv is running on the same server, and ssl is
         // enabled, running on a specific port
-        hdf5DataServerBase: window.location.protocol + '//' +
-            window.location.hostname,
+//         hdf5DataServerBase: window.location.protocol + '//' +
+//             window.location.hostname,
 
-        hdf5DataServer: window.location.protocol + '//' +
-            window.location.hostname + ':6050',
+//         hdf5DataServer: window.location.protocol + '//' +
+//             window.location.hostname + ':6050',
+        
+        // probably needs to be changed later
+        hdf5DataServer : "https://127.0.0.1:6050",
 
         // Send a request to the HDF5 REST server
         ajaxRequest : function (url, debug) {

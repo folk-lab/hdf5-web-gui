@@ -2,7 +2,7 @@
 'use strict';
 
 // External libraries
-var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
+var FILE_NAV, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
 
     // The gloabl variables for this applicaiton
     PAGE_LOAD = {
@@ -11,7 +11,6 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
         "mobileView" : undefined,
 
         // This function is to be called when the page is loaded
-        //  - assumes the url has already been checked for a CAS ticket
         //  - load the data tree or display a message
         //  - display a welcome message
         //  - show hidden items
@@ -176,16 +175,9 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
             // being secretly downloaded inthe background - sshh!
             AJAX_SPINNER.hideLoader = true;
 
-            // Create the welcome message, which depends upon login status
-            if (CAS_TICKET.isLoggedIn || !CAS_TICKET.loginNeeded) {
-                messageRow1 = 'Welcome ' + CAS_TICKET.firstName + '!';
-                messageRow2 = '(click stuff on the left)';
-            } else {
-                messageRow1 = 'Welcome!';
-                messageRow2 = '(Login to view data)';
-
-                console.log('Not logged in?');
-            }
+            // Create the welcome message
+            messageRow1 = 'Welcome!';
+            messageRow2 = '(click stuff on the left)';
 
             // Un-hide the welcome message
             document.getElementById("welcomeDiv1").innerHTML = messageRow1;
@@ -202,38 +194,15 @@ var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, THEME_TOGGLE,
             var i, debug = false,
                 // alwaysShow = ['#data-storage-button', '#max-iv-logo',
                 //     '#theme-toggle-btn', '#navbar'],
-                alwaysShow = ['#navbar'],
-                whenInShow = ['#side-nav-menu', '#displayContainer'],
-                whenLoggedInShow = ['#logout-btn', '#logout-btn-mobile'];
+                alwaysShow = ['#navbar', '#side-nav-menu', '#displayContainer'];
 
             // Mobile display?
             PAGE_LOAD.mobileView = window.mobilecheck();
-
-            if (debug) {
-                console.log('CAS_TICKET.isLoggedIn: ' + CAS_TICKET.isLoggedIn);
-            }
 
             // Some thigs are initially hidden, as they look ugly without the
             // proper js and css loaded, but they should eventully be shown
             for (i = 0; i < alwaysShow.length; i += 1) {
                 $(alwaysShow[i]).show();
-            }
-
-            // Show or hide the login & logout related items
-            for (i = 0; i < whenInShow.length; i += 1) {
-                if (CAS_TICKET.isLoggedIn || !CAS_TICKET.loginNeeded) {
-                    $(whenInShow[i]).show();
-                } else {
-                    $(whenInShow[i]).hide();
-                }
-            }
-            // Show or hide the login & logout related items
-            for (i = 0; i < whenLoggedInShow.length; i += 1) {
-                if (CAS_TICKET.isLoggedIn) {
-                    $(whenLoggedInShow[i]).show();
-                } else {
-                    $(whenLoggedInShow[i]).hide();
-                }
             }
 
         },

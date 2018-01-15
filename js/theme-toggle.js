@@ -2,7 +2,7 @@
 'use strict';
 
 // External libraries
-var FILE_NAV, CAS_TICKET, AJAX_SPINNER, DATA_DISPLAY, Plotly,
+var FILE_NAV, AJAX_SPINNER, DATA_DISPLAY, Plotly,
 
     // The gloabl variables for this applicaiton
     THEME_TOGGLE = {
