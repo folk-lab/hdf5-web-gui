@@ -8,10 +8,6 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
     // Some gloabl variables
     FILE_NAV =
     {
-        // h5serv has an issue with full hostnames
-        hdf5DataServer : window.location.protocol + '//' +
-                         window.location.hostname.replace('.maxiv.lu.se', '') +
-                         ':5000',
         jstreeDict : [],
         processSelectNodeEvent : true,
         data : null,
@@ -507,7 +503,7 @@ var SERVER_COMMUNICATION, AJAX_SPINNER, HANDLE_DATASET, DATA_DISPLAY,
         getRootDirectoryContents : function () {
 
             var debug = false,
-                initialUrl = FILE_NAV.hdf5DataServer + '/groups';
+                initialUrl = SERVER_COMMUNICATION.hdf5DataServer + '/groups';
 
             // Get the url which will gve info about the groups
             $.when(FILE_NAV.getTopLevelUrl(initialUrl, 'hrefs', 'root')).then(

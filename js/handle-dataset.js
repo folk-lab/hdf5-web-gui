@@ -7,11 +7,6 @@ var SERVER_COMMUNICATION, DATA_DISPLAY, FILE_NAV, AJAX_SPINNER,
     // The gloabl variables for this applicaiton
     HANDLE_DATASET =
     {
-        // h5serv has an issue with full hostnames - dumb fix
-        hdf5DataServer: window.location.protocol + '//' +
-                        window.location.hostname.replace('.maxiv.lu.se',
-                        '') + ':5000',
-
 
         // When a dataset is selected, plot the data
         displayImage : function (inputUrl, selectedId, shapeDims) {

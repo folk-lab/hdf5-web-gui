@@ -3,7 +3,7 @@
 
     <head>
 
-        <title>MAX IV HDF5 Data Viewer</title>
+        <title>Measurements</title>
 
         <!-- Basic stuff -->
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -13,253 +13,32 @@
             content="no-cache, no-store, must-revalidate"/>
         <meta http-equiv="Pragma" content="no-cache"/>
         <meta http-equiv="Expires" content="0"/>
+        
+        <!-- Favicon!!! -->
+        <link rel="icon" href="../images/favicon.ico?v=0" >
+        <link rel="shortcut icon" type="image/x-icon"
+            href="../images/favicon.ico?v=0" >
 
-        <!-- Make the app fullscreen on a smartphone. -->
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="icon" href="../images/rings.png?v=201701010000">
-        <link rel="apple-touch-icon"
-            href="../images/rings.png?v=201701010000">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0,
-            maximum-scale=1.0, user-scalable=no">
-
-        <!-- External css -->
-        <link rel="stylesheet"
-            href="../css/bootstrap/3.3.7/css/bootstrap.min.css?v=201701010000"/>
-        <!--
-        <link rel="stylesheet"
-            href="../css/jstree/3.2.1/themes/default-dark/style.min.css?v=201701010000"/>
-        -->
-        <link rel="stylesheet"
-            href="../css/jstree/3.2.1/themes/default/style.min.css?v=201701010000"/>
-        <link rel="stylesheet"
-            href="../css/jasny-bootstrap/3.1.3/jasny-bootstrap.min.css?v=201701010000">
-        <link rel="stylesheet"
-            href="../css/bootstrap-slider/9.7.0/bootstrap-slider.min.css?v=201701010000">
-
-        <!-- External javascript -->
+        <!-- jQuery is need by most things, load it first -->
         <script type="text/javascript"
-            src="../js/jquery/jquery-3.1.1.min.js?v=201701010000"></script>
-        <script type="text/javascript" defer
-            src="../js/plotly/plotly-latest.min.js?v=201701010000"></script>
-        <script type="text/javascript" defer
-            src="../js/bootstrap/3.3.7/js/bootstrap.min.js?v=201701010000">
-        </script>
-        <script type="text/javascript" defer
-            src="../js/jstree/3.2.1/jstree.min.js?v=201701010000">
-        </script>
-        <script type="text/javascript" defer
-            src="../js/jasny-bootstrap/3.1.3/jasny-bootstrap.min.js?v=201701010000"></script>
-        <script type="text/javascript" defer
-            src="../js/bootstrap-slider/9.7.0/bootstrap-slider.min.js?v=201701010000">
-        </script>
+            src="../js/jquery/jquery-3.1.1.min.js?v=0"></script>
 
-        <!-- css for this page -->
-        <link rel="stylesheet"
-            href="../css/data-plot-controls.css?v=201702071721"/>
-        <link rel="stylesheet"
-            href="../css/navmenu.css?v=201702071721">
-
-        <!-- Javascript for this page -->
+        <!-- Javascript needed to check CAS stuff -->
         <script type="text/javascript"
-            src="../js/ajax-spinner.js?v=201702071721"></script>
-        <script type="text/javascript" defer
-            src="../js/server-communication.js?v=201702071721"></script>
-        <script type="text/javascript" defer
-            src="../js/file-navigation.js?v=201702071721"></script>
-        <script type="text/javascript" defer
-            src="../js/data-display.js?v=201702071721"></script>
-        <script type="text/javascript" defer
-            src="../js/handle-dataset.js?v=201702071721"></script>
+            src="../js/ping/ping.min.js?v=0"></script>
+        <script type="text/javascript"
+            src="../js/server-communication.js?v=0"></script>
 
+        <!-- Javascript to load and execute immediately -->
+        <script type="text/javascript" defer
+            src="../js/server-check.js?v=0"></script>
     </head>
 
-
     <body>
-    <!--
-    <body style="background-color:#333333">
-    -->
-
-        <!-- Use the Bootstrap layout library to set up the html -->
-        <div class="container-fluid fill-height fill-width"
-            id="applicationContainer">
-
-            <div class="navmenu navmenu-default navmenu-fixed-left
-                offcanvas-sm">
-
-                <!-- Brand image and name -->
-                <div class="col-xs-5">
-                    <a class="navbar-brand" href="#">
-                        <img alt="Brand" id="logoImage"
-                           src="../images/maxiv-logo-101x35.png"></a>
-                </div>
-
-                <div class="col-xs-7">
-                    <a class="navmenu-brand visible-md visible-lg"
-                        href="#">HDF5 Data Viewer</a>
-                </div>
-
-                <!-- The file browser-->
-                <div id="treeSectionDiv" class="col-xs-12">
-
-                    <div class="col-xs-12 ">
-                        <div class="glyphicon glyphicon-hdd">&nbsp;</div>
-                        <b>Data Storage</b>
-                    </div>
-
-                    <div class="col-xs-12 " id="jstree_div"></div>
-
-                </div>
-
-            </div>
-
-            <!-- The mobile menu button -->
-            <div class="navbar navbar-default navbar-fixed-top hidden-md
-                hidden-lg">
-                <button type="button" class="navbar-toggle"
-                    data-toggle="offcanvas" data-target=".navmenu">
-                    <span class="icon-bar">&nbsp;</span>
-                    <span class="icon-bar">&nbsp;</span>
-                    <span class="icon-bar">&nbsp;</span>
-                </button>
-                <a class="navbar-brand" href="#">HDF5 Data Viewer</a>
-            </div>
-
-            <!-- Container for plot canvas and controls -->
-            <div id="plotContainer" class="container">
-                <div
-                    class="collapse navbar-collapse col-lg-8">
-
-                    <!-- Image Plot Controls -->
-                    <form id="plotControls" class="navbar-form navbar-left">
-
-                        <div id="plotTypeButtonDiv"
-                            class="col-xs-5 form-group hidden-xs hidden-sm
-                            hidden-md hidden-lg" >
-                            <select class="form-control" id="selectPlotType"
-                                onchange="DATA_DISPLAY.changeType(value);" >
-                                <option value="" disabled>Plot Type</option>
-                                <option value="heatmap" selected>
-                                    2D + profiles </option>
-                                <option value="surface">3D</option>
-                            </select>
-                        </div>
-
-                        <div id="logButtonDiv" class="col-xs-4
-                            hidden-xs hidden-sm hidden-md hidden-lg" >
-                            <button type="button" class="btn"
-                                id="logPlotButton"
-                                onclick='DATA_DISPLAY.toggleLogPlot()' > Log Plot?
-                            </button>
-                        </div>
-
-                        <div id="colorButtonDiv" class="form-group col-xs-3
-                            hidden-xs hidden-sm hidden-md hidden-lg" >
-                            <select id="selectColorScheme"
-                                class="form-control"
-                                onchange="DATA_DISPLAY.changeColor(value);" >
-                                <option value="" disabled>Color Scale </option>
-                                <option value="Blackbody">Blackbod</option>
-                                <option value="Bluered"  >Bluered </option>
-                                <option value="Earth"    >Earth   </option>
-                                <option value="Electric" >Electric</option>
-                                <option value="Greens"   >Greens  </option>
-                                <option value="Greys"    >Greys   </option>
-                                <option value="Hot"      >Hot     </option>
-                                <option value="Jet" selected> Jet </option>
-                                <option value="Picnic"   >Picnic  </option>
-                                <option value="Portland" >Portland</option>
-                                <option value="RdBu"     >RdBu    </option>
-                            </select>
-                        </div>
-
-                    </form>
-
-                </div>
-
-                <!-- The plotting canvas will be placed here -->
-                <div id="plotCanvasDiv" class="col-xs-12 animate-bottom"
-                    style="display:none;"></div>
-
-                <div class="col-xs-12">
-                    <!-- Image Series Control -->
-                    <div class="input-group col-xs-12">
-
-                        <!-- Beginning button -->
-                        <div id="beginButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
-                            <button type="button" class="btn btn-primary
-                                btn-number"  data-type="minus"
-                                onclick='HANDLE_DATASET.imageSeriesInput(-1);'>
-                                <div class="glyphicon glyphicon-step-backward">
-                                </div>
-                            </button>
-                        </div>
-
-                        <!-- Minus button -->
-                        <div id="minusButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
-                            <button type="button" class="btn btn-info
-                                btn-number"  data-type="minus"
-                                data-field="quant[0]">
-                                <div class="glyphicon glyphicon-triangle-left">
-                                </div>
-                            </button>
-                        </div>
-
-                        <!-- Display and enter values -->
-                        <input id="inputNumberDiv" type="text" name="quant[0]"
-                            class="form-control input-number
-                                hidden-xs hidden-sm hidden-md hidden-lg"
-                            value="0" min="0" max="10000000" maxlength="7"
-                            size="7"
-                            onchange='HANDLE_DATASET.imageSeriesInput(value);'>
-
-                        <!-- Plus button -->
-                        <div id="plusButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
-                            <button type="button"
-                                class="btn btn-info btn-number"
-                                data-type="plus" data-field="quant[0]">
-                                <div class="glyphicon glyphicon-triangle-right">
-                                </div>
-                            </button>
-                        </div>
-
-                        <!-- End button -->
-                        <div id="endButtonDiv" class="input-group-btn
-                            hidden-xs hidden-sm hidden-md hidden-lg">
-                            <button type="button"
-                                class="btn btn-primary btn-number"
-                                data-type="plus"
-                                onclick='HANDLE_DATASET.imageSeriesInput(
-                                    10000000);'>
-                                <div class="glyphicon glyphicon-step-forward">
-                                </div>
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div id="sliderDiv" class="input-group col-xs-12
-                        hidden-xs hidden-sm hidden-md hidden-lg">
-                        <input id="slider" data-slider-id='imageSeriesSlider'
-                            data-slider-tooltip="hide"
-                            type="text" data-slider-handle="square"
-                            data-slider-min="0" data-slider-max="27440"
-                            data-slider-step="1" data-slider-value="0"
-                            value=""/>
-                    </div>
-
-                </div>
-
-                <!-- Process loading icon -->
-                <div id="loader" ></div>
-
-            </div>
-
-        </div>
-
+        <!-- Simple status and error message while page loads and tries to
+            contact servers -->
+        <p id="loadMsg"> </p>
+        <p id="errMsg"> </p>
     </body>
 
 </html>
