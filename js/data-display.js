@@ -9,7 +9,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
     DATA_DISPLAY =
     {
         plotCanvasDiv : document.getElementById('plotCanvasDiv'),
-        colorScale : 'Jet',
+        colorScale : 'Electric',
         plotLogValues : false,
         plotType : 'heatmap',
         displayType : '',
@@ -290,7 +290,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // And the layout
             layout = {
                 showlegend: false,
-                title: 'Title goes here',
+                title: '',
                 autosize: false,
                 width: DATA_DISPLAY.plotWidth,
                 height: DATA_DISPLAY.plotHeight,
@@ -483,7 +483,7 @@ var AJAX_SPINNER, Plotly, HANDLE_DATASET,
             // of space each plot takes up is a range from 0 to 1, and follows
             // the keyword 'domain'
             layout = {
-                title: 'Title goes here',
+                title: '',
                 showlegend: false,
                 autosize: false,
                 width: DATA_DISPLAY.plotWidth,
